@@ -51,6 +51,9 @@ armlevel.gain <- segs.clean[segs.clean$cn.type == cntype.gain] %>%
 armlevel.amp <- segs.clean[segs.clean$cn.subtype %in% c(cntype.strongamp, cntype.weakamp)] %>%
   armlevel_alt(kit.coverage = oncoscan.cov)
 
+#' Remove amplified segments from armlevel.gain
+armlevel.gain <- armlevel.gain[!(names(armlevel.gain) %in% names(armlevel.amp))]
+
 #' Get the number of LST, LOH, TDplus and TD
 n.lst <- score_lst(segs.clean, oncoscan.cov)
 n.loh <- score_loh(segs.clean, oncoscan.cov, names(armlevel.loh))

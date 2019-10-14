@@ -73,6 +73,10 @@ armlevel_alt <- function(segments, kit.coverage, threshold = 0.8){
 score_lst <- function(segments, kit.coverage){
   #Prune all segments < 3Mb
   segs.min3mb <- prune_by_size(segments, 3000)
+  if(length(segs.min3mb)==0){
+    return(0)
+  }
+
   #Merge segments by CN at a distance of 3Mb
   segs.merged <- merge_segments(segs.min3mb, 3000)
 
@@ -141,6 +145,9 @@ score_lst <- function(segments, kit.coverage){
 #' score_loh(segs.chas_example, oncoscan_na33.cov, names(armlevel.loh))
 score_loh <- function(segments, kit.coverage, armlevel.loh){
   is.cn_segment(segments, raise_error = TRUE)
+  if(is.null(segments$cn.type)){
+    stop("Segments are missing the field 'cn.subtype'.")
+  }
 
   if(length(armlevel.loh) > 0){
     # Check on each chromosome if both arms are within the parameter 'armlevel.loh'. Also account
@@ -187,6 +194,9 @@ score_loh <- function(segments, kit.coverage, armlevel.loh){
 #' score_td(segs.chas_example)
 score_td <- function(segments){
   is.cn_segment(segments, raise_error = TRUE)
+  if(is.null(segments$cn.type)){
+    stop("Segments are missing the field 'cn.subtype'.")
+  }
 
   segs.gain <- segments[segments$cn.subtype == cntype.gain]
   segs.width <- width(segs.gain)

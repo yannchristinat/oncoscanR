@@ -10,8 +10,17 @@ Date: 2019-09-13
 URL: https://github.com/yannchristinat/oncoscanR
 Encoding: UTF-8
 LazyData: true
-Imports: GenomicRanges, IRanges, readr, S4Vectors, magrittr, jsonlite
+biocViews:
+Imports:
+   methods,
+  	GenomicRanges, 
+  	IRanges, 
+  	readr, 
+  	S4Vectors,
+  	magrittr,
+  	jsonlite
 RoxygenNote: 6.1.1
-Depends: R (>= 2.10)
+Depends: 
+    R (>= 2.10)
 Suggests: 
     testthat (>= 2.1.0)

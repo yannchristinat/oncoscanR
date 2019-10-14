@@ -23,7 +23,8 @@
 #' @export
 #'
 #' @importFrom readr read_tsv cols_only col_number col_character
-#' @import GenomicRanges IRanges
+#' @import GenomicRanges
+#' @import IRanges
 #'
 #' @examples
 #' segs.filename <- system.file("extdata", "chas_example.txt", package = "oncoscanR")
@@ -94,7 +95,7 @@ load_chas <- function(filename, kit.coverage){
                                       end = rep(seg_end, 2)))
 
       # Get the segments overlapping with the arms
-      o <- findOverlapPairs(c(parm, qarm), seg)
+      o <- IRanges::findOverlapPairs(c(parm, qarm), seg)
       new_segs <- pintersect(o)
       new_segs$cn <- rep(seg_cn, length(new_segs))
       new_segs$cn.type <- rep(seg_cntype, length(new_segs))
@@ -169,7 +170,8 @@ load_bed <- function(filename, gender){
 #'
 #' @export
 #'
-#' @import GenomicRanges IRanges
+#' @import GenomicRanges
+#' @import IRanges
 #' @importFrom readr read_csv cols_only col_character col_integer
 #'
 #' @examples
@@ -284,6 +286,7 @@ get_cn_subtype <- function(segments, gender){
 #' @export
 #'
 #' @import GenomicRanges
+#' @import IRanges
 #'
 #' @examples
 #' segs.trimmed <- trim_to_coverage(segs.chas_example, oncoscan_na33.cov)
@@ -294,7 +297,7 @@ trim_to_coverage <- function(segments, kit.coverage){
   segs.clean <- lapply(unique(seqnames(segments)), function(arm){
     # Trim segments wrt coverage
     arm.cov <- kit.coverage[seqnames(kit.coverage) == arm]
-    o <- findOverlapPairs(segments[seqnames(segments) == arm], arm.cov)
+    o <- IRanges::findOverlapPairs(segments[seqnames(segments) == arm], arm.cov)
     new_segs <- sort(pintersect(o))
     if(length(new_segs) == 0){
       return(new_segs)
@@ -368,7 +371,7 @@ merge_segments <- function(segments, kit.resolution = 300){
 #' @export
 #'
 #' @import GenomicRanges
-#' @import IRanges
+#' @importFrom IRanges findOverlapPairs
 #' @importFrom S4Vectors first second
 #'
 #' @examples
@@ -381,14 +384,14 @@ adjust_loh <- function(segments){
     # Detect overlaps between LOH and Loss and trim the LOH segment if necessary
     segs.loh <- segments[segments$cn.type == cntype.loh & seqnames(segments) == arm]
     segs.loss <- segments[segments$cn.type == cntype.loss & seqnames(segments) == arm]
-    op <- findOverlapPairs(segs.loh, segs.loss)
+    op <- IRanges::findOverlapPairs(segs.loh, segs.loss)
 
     loh.todelete <- GRanges()
     loh.toadd <- GRanges()
 
     for(i in seq_along(op)){
-      loh <- first(op[i])
-      loss <- second(op[i])
+      loh <- S4Vectors::first(op[i])
+      loss <- S4Vectors::second(op[i])
       if(loh %within% loss){ # If the LOH is completely within the loss, then delete LOH segment
         loh.todelete <- append(loh.todelete, loh)
       }
