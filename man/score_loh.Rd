@@ -4,7 +4,7 @@
 \alias{score_loh}
 \title{Compute the number HR deficiency-associated LOH regions.}
 \usage{
-score_loh(segments, kit.coverage, armlevel.loh)
+score_loh(segments, kit.coverage, armlevel.loh, armlevel.hetloss)
 }
 \arguments{
 \item{segments}{A \code{GRanges} object containing the segments, their copy number and copy number types.}
@@ -12,6 +12,8 @@ score_loh(segments, kit.coverage, armlevel.loh)
 \item{kit.coverage}{A \code{GRanges} object containing the regions covered on each chromosome arm.}
 
 \item{armlevel.loh}{A list of arms with global/arm-level LOH alteration.}
+
+\item{armlevel.hetloss}{A list of arms with global/arm-level heterozygous losses.}
 }
 \value{
 An integer representing the number of HRD-LOH regions.
@@ -28,5 +30,7 @@ Note that the function will merge overlapping or neighbor LOH segments (at a dis
 \examples{
 armlevel.loh <- armlevel_alt(segs.chas_example[segs.chas_example$cn.type == cntype.loh],
                              kit.coverage = oncoscan_na33.cov)
-score_loh(segs.chas_example, oncoscan_na33.cov, names(armlevel.loh))
+armlevel.hetloss <- armlevel_alt(segs.chas_example[segs.chas_example$cn.subtype == cntype.hetloss],
+                             kit.coverage = oncoscan_na33.cov)
+score_loh(segs.chas_example, oncoscan_na33.cov, names(armlevel.loh), names(armlevel.hetloss))
 }

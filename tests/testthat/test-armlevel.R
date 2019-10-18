@@ -68,3 +68,14 @@ test_that("Arm-level alteration detection works - overlaps", {
   expected <- c('1p'=0.7, '2p'=0.8, '3p'=0.3, '4p'=0.8)
   expect_equal(arms, expected)
 })
+
+test_that("Arm-level alteration detection works - empty segments", {
+  cov <- GRanges(seqnames = factor(paste0(1:4, 'p'), levels = paste0(1:4, 'p')),
+                 ranges = IRanges(start = c(1,1,101,101),
+                                  end = c(100,100,200,200)))
+  segs <- GRanges(seqnames = factor(c(), levels = paste0(1:4, 'p')),
+                  ranges = IRanges())
+  arms <- armlevel_alt(segs, cov)
+  expect_equal(length(arms), 0)
+})
+

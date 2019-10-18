@@ -41,3 +41,21 @@ test_that("TD score works - CN checks", {
   expected <- list(TDplus=2, TD=2)
   expect_equal(n, expected)
 })
+
+test_that("TD scores work - real case", {
+  chas.fn <- system.file("testdata", "TDplus_gene_list_full_location.txt", package = "oncoscanR")
+  segments <- load_chas(chas.fn, oncoscanR::oncoscan_na33.cov)
+  segments$cn.subtype <- get_cn_subtype(segments, 'F')
+  segs.clean <- trim_to_coverage(segments, oncoscanR::oncoscan_na33.cov) %>%
+    prune_by_size()
+
+  n <- score_td(segs.clean)
+  expect_true(n$TDplus==102 && n$TD==21) #Verified by hand in Excel and ChAS
+})
+
+test_that("TD scores work - empty segments", {
+  segs <- GRanges(seqnames = factor(c(), levels = paste0(1:4, 'p')),
+                  ranges = IRanges())
+  n <- score_td(segs)
+  expect_identical(unlist(n), c(TDplus=0,TD=0))
+})

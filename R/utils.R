@@ -45,7 +45,7 @@ same_segments <- function(x, y){
                length(x), length(y)))
   }
 
-  #replace any NA by NULL in cn, cn.type and cn.subtype
+  # Replace any NA by NULL in cn, cn.type and cn.subtype
   if (!is.null(x$cn) && is.na(x$cn)){
     x$cn <- NULL
   }
@@ -127,7 +127,7 @@ same_segments <- function(x, y){
 #'               cn = 6)
 #' is.cn_segment(s2, raise_error = FALSE)
 is.cn_segment <- function(obj, raise_error = TRUE){
-  test <- class(obj)[1] == 'GRanges' && !is.null(obj$cn) && !is.null(obj$cn.type)
+  test <- class(obj)[1] == 'GRanges' && (length(obj)==0 || (!is.null(obj$cn) && !is.null(obj$cn.type)))
   if(!test && raise_error){
     stop("The parameter has to be a CNV segment (GRanges object with 'cn' and 'cn.type' columns).")
   }

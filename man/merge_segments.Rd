@@ -9,7 +9,7 @@ merge_segments(segments, kit.resolution = 300)
 \arguments{
 \item{segments}{A \code{GRanges} object containing the segments, their copy number and copy number types.}
 
-\item{kit.resolution}{Number indicating the minimum segment size detectable by the technique (in kilobases).
+\item{kit.resolution}{Number >0 indicating the minimum segment size detectable by the technique (in kilobases).
 Defaults to the Oncoscan assay resolution outside of cancer genes: 300Kb.}
 }
 \value{

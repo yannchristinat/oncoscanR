@@ -71,16 +71,16 @@ armlevel_alt <- function(segments, kit.coverage, threshold = 0.8){
 #' @examples
 #' score_lst(segs.chas_example, oncoscan_na33.cov)
 score_lst <- function(segments, kit.coverage){
-  #Prune all segments < 3Mb
+  # Prune all segments < 3Mb
   segs.min3mb <- prune_by_size(segments, 3000)
   if(length(segs.min3mb)==0){
     return(0)
   }
 
-  #Merge segments by CN at a distance of 3Mb
+  # Merge segments by CN at a distance of 3Mb
   segs.merged <- merge_segments(segs.min3mb, 3000)
 
-  #Compute the number of Large-scale State Transitions for each arm
+  # Compute the number of Large-scale State Transitions for each arm
   vals <- lapply(unique(seqnames(segs.merged)), function(arm){
     arm.cov <- kit.coverage[seqnames(kit.coverage) == arm]
     segs <- segs.merged[seqnames(segs.merged) == arm]
@@ -135,6 +135,7 @@ score_lst <- function(segments, kit.coverage){
 #' @param segments A \code{GRanges} object containing the segments, their copy number and copy number types.
 #' @param kit.coverage A \code{GRanges} object containing the regions covered on each chromosome arm.
 #' @param armlevel.loh A list of arms with global/arm-level LOH alteration.
+#' @param armlevel.hetloss A list of arms with global/arm-level heterozygous losses.
 #'
 #' @return An integer representing the number of HRD-LOH regions.
 #' @export
@@ -142,36 +143,56 @@ score_lst <- function(segments, kit.coverage){
 #' @examples
 #' armlevel.loh <- armlevel_alt(segs.chas_example[segs.chas_example$cn.type == cntype.loh],
 #'                              kit.coverage = oncoscan_na33.cov)
-#' score_loh(segs.chas_example, oncoscan_na33.cov, names(armlevel.loh))
-score_loh <- function(segments, kit.coverage, armlevel.loh){
+#' armlevel.hetloss <- armlevel_alt(segs.chas_example[segs.chas_example$cn.subtype == cntype.hetloss],
+#'                              kit.coverage = oncoscan_na33.cov)
+#' score_loh(segs.chas_example, oncoscan_na33.cov, names(armlevel.loh), names(armlevel.hetloss))
+score_loh <- function(segments, kit.coverage, armlevel.loh, armlevel.hetloss){
   is.cn_segment(segments, raise_error = TRUE)
+
+  if(length(segments)==0){
+    return(0)
+  }
+
   if(is.null(segments$cn.type)){
     stop("Segments are missing the field 'cn.subtype'.")
   }
 
+  arms.to_ban <- c()
+  # Get chromosomes with LOH on both arms
   if(length(armlevel.loh) > 0){
     # Check on each chromosome if both arms are within the parameter 'armlevel.loh'. Also account
     # for the fact that a chromosome may have only one arm covered by the kit.
     chromnames <- unique(unlist(strsplit(as.character(seqnames(kit.coverage)), '[pq]')))
-    arms.to_ban <- lapply(chromnames, function(chrom){
+    arms_found.to_ban <- lapply(chromnames, function(chrom){
       arms <- paste0(chrom, c('p','q'))
       arms.covered <- intersect(arms, seqnames(kit.coverage))
       arms.found <- unique(intersect(arms.covered, armlevel.loh))
       if(length(arms.found) == length(arms.covered)){
         return(as.character(arms.covered))
       }
-
     })
-    arms.to_ban <- do.call("c", arms.to_ban)
+    arms.to_ban <- append(arms.to_ban, do.call("c", arms_found.to_ban))
   }
-  else {
-    arms.to_ban <- c()
+  # Get chromosomes with het loss on both arms
+  if(length(armlevel.hetloss) > 0){
+    # Check on each chromosome if both arms are within the parameter 'armlevel.loh'. Also account
+    # for the fact that a chromosome may have only one arm covered by the kit.
+    chromnames <- unique(unlist(strsplit(as.character(seqnames(kit.coverage)), '[pq]')))
+    arms_found.to_ban <- lapply(chromnames, function(chrom){
+      arms <- paste0(chrom, c('p','q'))
+      arms.covered <- intersect(arms, seqnames(kit.coverage))
+      arms.found <- unique(intersect(arms.covered, armlevel.hetloss))
+      if(length(arms.found) == length(arms.covered)){
+        return(as.character(arms.covered))
+      }
+    })
+    arms.to_ban <- append(arms.to_ban, do.call("c", arms_found.to_ban))
   }
-  # Get LOH segments larger than 15Mb and not in 'arms.to_ban'
+    # Get LOH segments larger than 15Mb and not in 'arms.to_ban'
   segs.loh <- segments[segments$cn.subtype %in% c(cntype.loh, cntype.hetloss) &
                              !(seqnames(segments) %in% arms.to_ban)]
-  segs.merged <- reduce(segs.loh)
-  segs.loh_15m <- segs.loh[width(segs.merged) > 15*10^6]
+  segs.merged <- merge_segments(segs.loh, 1/1000)
+  segs.loh_15m <- segs.merged[width(segs.merged) > 15*10^6]
   return(length(segs.loh_15m))
 }
 
@@ -194,6 +215,11 @@ score_loh <- function(segments, kit.coverage, armlevel.loh){
 #' score_td(segs.chas_example)
 score_td <- function(segments){
   is.cn_segment(segments, raise_error = TRUE)
+
+  if(length(segments)==0){
+    return(list(TDplus=0, TD=0))
+  }
+
   if(is.null(segments$cn.type)){
     stop("Segments are missing the field 'cn.subtype'.")
   }
@@ -206,4 +232,23 @@ score_td <- function(segments){
   return(list(TDplus=length(segs.tdplus), TD=length(segs.td)))
 }
 
+
+#' Compute the total number of chromosomes (ploidy).
+#'
+#' @details For each chromosome get the maximum copy number variation (positive or negative) that cover 80%
+#' of each arm of the chromosome. If an arm is not part of the kit coverage, then it is assumed that the other
+#' arm is equally altered.
+#'
+#' @param segments A \code{GRanges} object containing the segments, their copy number and copy number types.
+#' @param kit.coverage A \code{GRanges} object containing the regions covered on each chromosome arm.
+#'
+#' @return the total number of chromosomes
+#' @export
+#'
+#' @examples
+#' ploidy(segs.chas_example, kit.coverage = oncoscan_na33.cov)
+ploidy <- function(segments, kit.coverage){
+  warning("Not yet implemented!")
+  return(NULL)
+}
 

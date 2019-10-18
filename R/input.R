@@ -32,9 +32,18 @@
 load_chas <- function(filename, kit.coverage){
   # Reads in the ChAS file
   oncoscan_table <- read_tsv(filename, comment = "#", col_names = TRUE,
-                  col_types = cols_only(`CN State` = col_number(),
-                                        Type = col_character(),
-                                        `Full Location` = col_character()))
+                             col_types = cols_only(`CN State` = col_number(),
+                                                   Type = col_character(),
+                                                   `Full Location` = col_character()))
+
+  if(dim(oncoscan_table)[2]!=3){
+    stop('Parsing ChAS file failed.')
+  }
+  if(dim(oncoscan_table)[1]==0){
+    warning('No segments loaded!')
+    return(GRanges())
+  }
+
 
   # Allocate the place for the GRanges segments. At most we will end up with twice as much segments
   # as present in the raw data.
@@ -44,8 +53,7 @@ load_chas <- function(filename, kit.coverage){
   counter <- 0
   for (i in 1:dim(oncoscan_table)[1]){
     counter <- counter+1
-    ########
-    #Start: Extract chr no, start, end, copy number
+    # Start: Extract chr no, start, end, copy number
 
     # Full location from oncoscan file
     loc_cord <- oncoscan_table$`Full Location`[i]
@@ -125,6 +133,10 @@ load_chas <- function(filename, kit.coverage){
       }
     }
   })
+
+  if(length(segs)==0){
+    warning('No segments loaded!')
+  }
 
   return(segs)
 }
@@ -293,6 +305,10 @@ get_cn_subtype <- function(segments, gender){
 trim_to_coverage <- function(segments, kit.coverage){
   is.cn_segment(segments, raise_error = TRUE)
 
+  if(length(segments)==0){
+    return(segments)
+  }
+
   # Apply on each arm...
   segs.clean <- lapply(unique(seqnames(segments)), function(arm){
     # Trim segments wrt coverage
@@ -317,7 +333,7 @@ trim_to_coverage <- function(segments, kit.coverage){
 #'
 #'
 #' @param segments A \code{GRanges} object containing the segments, their copy number and copy number types.
-#' @param kit.resolution Number indicating the minimum segment size detectable by the technique (in kilobases).
+#' @param kit.resolution Number >0 indicating the minimum segment size detectable by the technique (in kilobases).
 #' Defaults to the Oncoscan assay resolution outside of cancer genes: 300Kb.
 #'
 #' @return A \code{GRanges} object containing the cleaned segments, their copy number and copy number types.
@@ -330,6 +346,14 @@ trim_to_coverage <- function(segments, kit.coverage){
 #' segs.merged_50k <- merge_segments(segs.chas_example, 50)
 merge_segments <- function(segments, kit.resolution = 300){
   is.cn_segment(segments, raise_error = TRUE)
+
+  if(kit.resolution<1/1000){
+    stop("Kit resolution has to be greater than zero.")
+  }
+
+  if(length(segments)==0){
+    return(segments)
+  }
 
   # Go through each arm...
   segs.merged <- lapply(unique(seqnames(segments)), function(arm){
@@ -378,6 +402,10 @@ merge_segments <- function(segments, kit.resolution = 300){
 #' segs.adj <- adjust_loh(segs.chas_example)
 adjust_loh <- function(segments){
   is.cn_segment(segments, raise_error = TRUE)
+
+  if(length(segments)==0){
+    return(segments)
+  }
 
   # Apply on each arm...
   loh.adj <- lapply(unique(seqnames(segments)), function(arm){
@@ -433,6 +461,13 @@ adjust_loh <- function(segments){
 #' segs.50k <- prune_by_size(segs.chas_example, 50)
 prune_by_size <- function(segments, threshold = 300){
   is.cn_segment(segments, raise_error = TRUE)
+
+  if(threshold<0){
+    stop("Threshold has to be greater than or equal to zero.")
+  }
+  if(length(segments)==0){
+    return(segments)
+  }
 
   return(segments[width(segments) >= threshold*1000])
 }

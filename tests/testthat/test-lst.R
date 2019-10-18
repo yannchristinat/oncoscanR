@@ -86,3 +86,28 @@ test_that("LST works - case 5", {
   expect_equal(n, 3)
 })
 
+test_that("LST works - real case", {
+  oncoscan.cov <- oncoscanR::oncoscan_na33.cov[seqnames(oncoscanR::oncoscan_na33.cov) != '21p']
+
+  chas.fn <- system.file("testdata", "LST_gene_list_full_location.txt", package = "oncoscanR")
+  segments <- load_chas(chas.fn, oncoscan.cov)
+  segments$cn.subtype <- get_cn_subtype(segments, 'F')
+  segs.clean <- trim_to_coverage(segments, oncoscan.cov) %>%
+    adjust_loh() %>%
+    merge_segments() %>%
+    prune_by_size()
+
+  n <- score_lst(segs.clean, oncoscan.cov)
+  expect_equal(n, 26) # Verified by hand in ChAS (on the 4 first chromosomes)
+})
+
+test_that("LST works - empty segments", {
+  cov <- GRanges(seqnames = factor(paste0(1:4, 'p'), levels = paste0(1:4, 'p')),
+                 ranges = IRanges(start = c(1,1,101,101),
+                                  end = c(100,100,200,200)))
+  segs <- GRanges(seqnames = factor(c(), levels = paste0(1:4, 'p')),
+                  ranges = IRanges())
+  n <- score_lst(segs, cov)
+  expect_equal(n, 0)
+})
+

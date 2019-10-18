@@ -95,3 +95,14 @@
 #' their copy number types (field \code{cn.type}).
 "segs.chas_example"
 
+# Set the objects as global variables otherwise R CMD CHECK complains
+utils::globalVariables(c("cntype.gain",
+                         "cntype.amp",
+                         "cntype.strongamp",
+                         "cntype.weakamp",
+                         "cntype.loh",
+                         "cntype.loss",
+                         "cntype.homloss",
+                         "cntype.hetloss",
+                         "oncoscan_na33",
+                         "segs.chas_example"))
