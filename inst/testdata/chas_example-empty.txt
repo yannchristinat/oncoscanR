@@ -1,0 +1,1 @@
+﻿File	CN State	Type	Chromosome	Cytoband Start	Size (kbp)	Marker Count	Gene Count	Genes	OMIM ® Genes Count	OMIM ® Genes	CytoRegions	Call	Segment Interpretation	Curation By	Materially Modified Segment	Microarray Nomenclature	Full Location
