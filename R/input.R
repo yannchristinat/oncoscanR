@@ -162,7 +162,7 @@ load_chas <- function(filename, kit.coverage){
 #' segs.filename <- system.file("extdata", "cnv_example.bed", package = "oncoscanR")
 #' segs.cnv_example <- load_bed(segs.filename, "F")
 load_bed <- function(filename, gender){
-  warning("Not yet implemented!")
+  warning("Not yet implemented! Please request it if needed.")
   return(NULL)
 }
 
