@@ -6,6 +6,11 @@ The package also allows for identification of arm-level alterations (i.e. gain o
 
 **IMPORTANT**: The package expects as input the text exported file from ChAS (Chromosome Analysis Suite; the Affymetrix software to identify CNV segments from the Oncoscan Assay). The package assumes that all segments given in the file are correct and true. The ChAS text file has to contain the columns `Type`, `CN State` and `Full Location` (to setup in ChAS).
 
+## Installation
+In R, set the working directory to where the compressed package is and run `install.packages('oncoscanR_0.1.0.tar.gz', repos=NULL, type='source')`.
+
+The package requires the prior installation of the packages `GenomicRanges` (bioconductor), `magrittr`, `jsonlite` and `readr`.
+
 ## Usage
 The main workflow can be launched either in R via the `workflow_oncoscan.run(chas.fn, gender)` function or via the script "bin/run_oncoscan_workflow.R":
 
