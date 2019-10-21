@@ -426,17 +426,15 @@ adjust_loh <- function(segments){
       else if (!(start(loh)<start(loss) && end(loh)>end(loss))){
         # If the LOH is not larger than the loss on both ends, then
         new_loh <- setdiff(loh, loss)
+        new_loh$cn <- NA
+        new_loh$cn.type <- cntype.loh
+        new_loh$cn.subtype <- cntype.loh
+
         loh.toadd <- append(loh.toadd, new_loh)
         loh.todelete <- append(loh.todelete, loh)
       }
     }
     adj <- c(segs.loh[!(segs.loh %in% loh.todelete)], loh.toadd)
-    if(length(adj)>0){
-      adj$cn.type <- cntype.loh
-      if(!is.null(segs.loh$cn.subtype)){
-        adj$cn.subtype <- cntype.loh
-      }
-    }
 
     return(adj)
   })

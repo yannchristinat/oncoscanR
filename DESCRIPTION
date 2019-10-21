@@ -12,15 +12,14 @@ Encoding: UTF-8
 LazyData: true
 biocViews:
 Imports:
-   methods,
-  	GenomicRanges, 
-  	IRanges, 
-  	readr, 
+    readr,
   	S4Vectors,
-  	magrittr,
-  	jsonlite
+  	magrittr
 RoxygenNote: 6.1.1
 Depends: 
-    R (>= 2.10)
+    R (>= 3.3.0),
+    IRanges (>= 2.6.1),
+    GenomicRanges (>= 1.24.3)
 Suggests: 
-    testthat (>= 2.1.0)
+    testthat (>= 2.1.0),
+    jsonlite
