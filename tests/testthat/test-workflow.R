@@ -111,7 +111,7 @@ test_that("Oncoscan workflow returns the correct structure", {
   dat <- workflow_oncoscan.run(segs.filename, 'M')
 
   armlevel.nametest <- identical(sort(names(dat[['armlevel']])), c('AMP', 'GAIN', 'LOH', 'LOSS'))
-  scores.nametest <- identical(sort(names(dat[['scores']])), c("LOH", "LST", "TDplus"))
+  scores.nametest <- identical(sort(names(dat[['scores']])), c("avgCN", "HRD", "TDplus"))
   gender.test <- dat[['gender']] == 'M'
   file.test <- dat[['file']] == basename(segs.filename)
 

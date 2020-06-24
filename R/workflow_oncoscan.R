@@ -3,12 +3,12 @@
 # Functions to run the complete workflow from input files to scores and arm-level alterations.
 #
 # Author: Yann Christinat
-# Date: 15.10.2019
+# Date: 23.06.2020
 
 #' Run the standard workflow for Oncoscan ChAS files.
 #'
-#' @details Identifies the globally altered arms (\>=80\% of arm altered), computes the LST, HR-LOH,
-#' TD+ and TD scores. The amplification is defined as a CN subtype \code{cntype.weakamp} or
+#' @details Identifies the globally altered arms (\>=80\% of arm altered), computes the HRD and
+#' TD+ scores. The amplification is defined as a CN subtype \code{cntype.weakamp} or
 #' \code{cntype.strongamp}. An arm is gained if of CN type \code{cntype.gain} unless the arm is
 #' amplified.
 #'
@@ -62,12 +62,10 @@ workflow_oncoscan.run <- function(chas.fn, gender){
   # Remove amplified segments from armlevel.gain
   armlevel.gain <- armlevel.gain[!(names(armlevel.gain) %in% names(armlevel.amp))]
 
-  # Get the number of LST, LOH, TDplus and TD
-  n.lst <- score_lst(segs.clean, oncoscan.cov)
+  # Get the number of nLST and TDplus
+  wgd <- score_estwgd(segs.clean, oncoscan_na33.cov) # Get the avg CN, including 21p
+  hrd <- score_nlst(segs.clean, wgd['WGD'], oncoscan.cov)
 
-  armlevel.hetloss <- segs.clean[segs.clean$cn.subtype == cntype.hetloss] %>%
-    armlevel_alt(kit.coverage = oncoscan.cov)
-  n.loh <- score_loh(segs.clean, oncoscan.cov, names(armlevel.loh), names(armlevel.hetloss))
   n.td <- score_td(segs.clean)
 
   # Get the alterations into a single list and print it in a JSON format.
@@ -75,7 +73,8 @@ workflow_oncoscan.run <- function(chas.fn, gender){
                             LOSS=sort(names(armlevel.loss)),
                             LOH=sort(names(armlevel.loh)),
                             GAIN=sort(names(armlevel.gain)))
-  scores.list <- list(LST=n.lst, LOH=n.loh, TDplus=n.td$TDplus)
+  scores.list <- list(HRD=paste0(hrd['HRD'], ', nLST=', hrd['nLST']), TDplus=n.td$TDplus,
+                      avgCN=substr(as.character(wgd['avgCN']), 1, 4))
 
   return(list(armlevel=armlevel_alt.list,
        scores=scores.list,

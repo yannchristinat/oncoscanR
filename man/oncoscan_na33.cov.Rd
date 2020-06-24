@@ -7,7 +7,8 @@
 \format{A \code{GRanges} object containing the regions covered on each chromosome arm. Arms not covered by
 the kit are absent from the object.}
 \source{
-Processing of the file OncoScan.na33.r1.annot.csv (obtained on Affymetrix website) by the function
+Processing of the file OncoScan.na33.r1.annot.csv (obtained from
+https://www.affymetrix.com/analysis/downloads/na33/genotyping/) by the function
 \code{oncoscan_na33.cov <- get_oncoscan_coverage_from_probes()}.
 }
 \usage{

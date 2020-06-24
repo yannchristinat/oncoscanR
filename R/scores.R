@@ -233,22 +233,129 @@ score_td <- function(segments){
 }
 
 
-#' Compute the total number of chromosomes (ploidy).
+
+#' Compute the average copy number variation across the genome.
 #'
-#' @details For each chromosome get the maximum copy number variation (positive or negative) that cover 80%
-#' of each arm of the chromosome. If an arm is not part of the kit coverage, then it is assumed that the other
-#' arm is equally altered.
+#' @details Compute the weighted average (by segment length) of the copy number variation. LOH segments and
+#' sexual chromosomes are excluded. Copy number variation is rounded to the next level (1.67 -> 1 but 2.33
+#' -> 3).
 #'
 #' @param segments A \code{GRanges} object containing the segments, their copy number and copy number types.
 #' @param kit.coverage A \code{GRanges} object containing the regions covered on each chromosome arm.
 #'
-#' @return the total number of chromosomes
+#' @return A decimal value
 #' @export
 #'
 #' @examples
-#' ploidy(segs.chas_example, kit.coverage = oncoscan_na33.cov)
-ploidy <- function(segments, kit.coverage){
-  warning("Not yet implemented!")
-  return(NULL)
+#' score_avgcn(segs.chas_example, oncoscan_na33.cov)
+score_avgcn <- function(segments, kit.coverage){
+  autosomes <- seqnames(kit.coverage)[!(as.vector(seqnames(kit.coverage)) %in% c('Xp','Xq','Yp','Yq'))]
+
+  # Total number of bases (in Mbp) covered by the kit
+  kitwidth.noXY <- sum(width(kit.coverage[as.vector(seqnames(kit.coverage)) %in% autosomes])/10^6)
+
+  # Select segments on autosomes and with non-copy neutral alterations
+  segs <- segments[as.vector(seqnames(segments)) %in% autosomes & segments$cn.type %in% c(cntype.gain, cntype.loss)]
+  if (length(segs)==0){
+    return(2)
+  }
+
+  segs.w <- width(segs)/10^6 # Width of each segment in Mbp
+
+  # Round the copy number in case of subclones
+  cn <- segs$cn
+  cn[cn<2] <- floor(cn[cn<2])
+  cn[cn>2] <- ceiling(cn[cn>2])
+
+  avgcn <- (sum(segs.w*cn) + 2*(kitwidth.noXY - sum(segs.w)))/kitwidth.noXY
+  return(avgcn)
 }
 
+
+#' Estimates the number of whole-genome doubling events (WGD).
+#'
+#' @details Based on the publication from Carter et al. (Nature Biotechnology 2012; PubMed ID: 22544022).
+#' On a pan-cancer cohort, they observed that tumors that underwent one whole-genome doubling event had a
+#' ploidy (average copy number) between 2.2 and 3.4. This function relies on the function \code{score_avgcn}
+#' to compute the ploidy.
+#'
+#' @param segments A \code{GRanges} object containing the segments, their copy number and copy number types.
+#' @param kit.coverage A \code{GRanges} object containing the regions covered on each chromosome arm.
+#'
+#' @return A named list with two values: WGD (whole-genome doubling events) and avgCN (the average copy
+#' number). WGD values are 0 for no WGD event, 1 for one WGD event, 2 for several WGD events.
+#' @export
+#'
+#' @examples
+#' score_estwgd(segs.chas_example, oncoscan_na33.cov)
+score_estwgd <- function(segments, kit.coverage){
+  # Get the average copy number
+  avgcn <- score_avgcn(segments, kit.coverage)
+
+  # Estimate the number of WGD events
+  wgd.est <- ifelse(avgcn > 3.4, 2, ifelse(avgcn > 2.2, 1, 0))
+
+  return(c(WGD=wgd.est, avgCN=avgcn))
+}
+
+
+#' Compute the number of LSTs, normalized by the number of WGD events.
+#'
+#' @details Compute the number of LSTs in non-LOH segments via the \code{score_lst} function and subtract
+#' the extra noise induced by WGD events: nLST = LST - 7*W/2 where W is the number of WGD events.
+#' A sample is HRD positive (deficient in HR pathway) if nLST is >13. If nLST is >19 then the confidence is
+#' high. This score was linked to BRCA1/2-deficient tumors.
+#'
+#' @param segments A \code{GRanges} object containing the segments, their copy number and copy number types.
+#' @param n.wgd Number of whole-genome doubling events (0 if diploid).
+#' @param kit.coverage A \code{GRanges} object containing the regions covered on each chromosome arm.
+#'
+#' @return A named list with the number of nLSTs and the corresponding label ('Positive (high confidence)',
+#' 'Positive (low confidence)', 'Negative').
+#' @export
+#'
+#' @examples
+#' w <- score_estwgd(segs.chas_example, oncoscan_na33.cov)
+#' score_nlst(segs.chas_example, w['WGD'], oncoscan_na33.cov)
+score_nlst <- function(segments, n.wgd, kit.coverage){
+  lst.noLOH <- score_lst(segments[segments$cn.type != cntype.loh], kit.coverage)
+
+  nlst <- max(0, lst.noLOH - 3.5*as.numeric(n.wgd))
+  label <- ifelse(nlst>=20, 'Positive (high confidence)',
+                  ifelse(nlst>13, 'Positive (low confidence)', 'Negative'))
+  return(c(nLST=nlst, HRD=label))
+}
+
+
+#' Computes the total number of Mbp altered.
+#'
+#' @param segments A \code{GRanges} object containing the segments, their copy number and copy number types.
+#' @param kit.coverage A \code{GRanges} object containing the regions covered on each chromosome arm.
+#' @param loh.rm A boolean (TRUE by default) to indicate whether LOH segments should be excluded.
+#'
+#' @return A named list representing the Mbp altered in the sample and the total Mbp of the kit.
+#' @export
+#'
+#' @examples
+#' score_mbalt(segs.chas_example, oncoscan_na33.cov)
+#' score_mbalt(segs.chas_example, oncoscan_na33.cov, FALSE)
+score_mbalt <- function(segments, kit.coverage, loh.rm=TRUE){
+  # Compute the number Mbp present in the whole kit
+  mb.kit <- round(sum(width(kit.coverage)/10^6))
+
+  # Exclude (or not) the LOH segments
+  segs <- segments
+  if(loh.rm){
+    segs <- segments[segments$cn.type != cntype.loh]
+  }
+
+  if(length(segs)==0){
+    return(c(sample=0, kit=mb.kit))
+  }
+  else{
+    segs.w <- width(segs)/10^6 # Width of each segment in Mbp
+    mb.alt <- round(sum(segs.w))
+
+    return(c(sample=mb.alt, kit=mb.kit))
+  }
+}
