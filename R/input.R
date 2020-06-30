@@ -81,35 +81,37 @@ load_chas <- function(filename, kit.coverage){
     parm <- kit.coverage[seqnames(kit.coverage) == paste0(seg_chr, 'p')]
     qarm <- kit.coverage[seqnames(kit.coverage) == paste0(seg_chr, 'q')]
 
-    if(length(parm)==0 || seg_start > end(parm)){ # Then the segment is only in the q arm
-      seg <- GRanges(seqnames = factor(paste0(seg_chr, 'q'),
-                                       levels = levels(seqnames(kit.coverage))),
-                     ranges = IRanges(start = seg_start, end = seg_end),
-                     cn = seg_cn, cn.type = seg_cntype)
-      segments_list[[counter]] <- seg
-    }
-    else if (length(qarm)==0 || seg_end < start(qarm)){ # Then the segment is only in the p arm
-      seg <- GRanges(seqnames = factor(paste0(seg_chr, 'p'),
-                                       levels = levels(seqnames(kit.coverage))),
-                     ranges = IRanges(start = seg_start, end = seg_end),
-                     cn = seg_cn, cn.type = seg_cntype)
-      segments_list[[counter]] <- seg
-    }
-    else {
-      # Create a segment for each arm
-      seg <- GRanges(seqnames = factor(paste0(seg_chr, c('p','q')),
-                                       levels = levels(seqnames(kit.coverage))),
-                     ranges = IRanges(start = rep(seg_start, 2),
-                                      end = rep(seg_end, 2)))
+    if(length(parm)>0 || length(qarm)>0){
+      if(length(parm)==0 || seg_start > end(parm)){ # Then the segment is only in the q arm
+        seg <- GRanges(seqnames = factor(paste0(seg_chr, 'q'),
+                                         levels = levels(seqnames(kit.coverage))),
+                       ranges = IRanges(start = seg_start, end = seg_end),
+                       cn = seg_cn, cn.type = seg_cntype)
+        segments_list[[counter]] <- seg
+      }
+      else if (length(qarm)==0 || seg_end < start(qarm)){ # Then the segment is only in the p arm
+        seg <- GRanges(seqnames = factor(paste0(seg_chr, 'p'),
+                                         levels = levels(seqnames(kit.coverage))),
+                       ranges = IRanges(start = seg_start, end = seg_end),
+                       cn = seg_cn, cn.type = seg_cntype)
+        segments_list[[counter]] <- seg
+      }
+      else {
+        # Create a segment for each arm
+        seg <- GRanges(seqnames = factor(paste0(seg_chr, c('p','q')),
+                                         levels = levels(seqnames(kit.coverage))),
+                       ranges = IRanges(start = rep(seg_start, 2),
+                                        end = rep(seg_end, 2)))
 
-      # Get the segments overlapping with the arms
-      o <- IRanges::findOverlapPairs(c(parm, qarm), seg)
-      new_segs <- pintersect(o)
-      new_segs$cn <- rep(seg_cn, length(new_segs))
-      new_segs$cn.type <- rep(seg_cntype, length(new_segs))
-      new_segs$hit <- NULL
+        # Get the segments overlapping with the arms
+        o <- IRanges::findOverlapPairs(c(parm, qarm), seg)
+        new_segs <- pintersect(o)
+        new_segs$cn <- rep(seg_cn, length(new_segs))
+        new_segs$cn.type <- rep(seg_cntype, length(new_segs))
+        new_segs$hit <- NULL
 
-      segments_list[[counter]] <- new_segs
+        segments_list[[counter]] <- new_segs
+      }
     }
   }
 
