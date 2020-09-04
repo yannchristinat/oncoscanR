@@ -63,7 +63,7 @@ workflow_oncoscan.run <- function(chas.fn, gender){
   armlevel.gain <- armlevel.gain[!(names(armlevel.gain) %in% names(armlevel.amp))]
 
   # Get the number of nLST and TDplus
-  wgd <- score_estwgd(segs.clean, oncoscan_na33.cov) # Get the avg CN, including 21p
+  wgd <- score_estwgd(segs.clean, oncoscanR::oncoscan_na33.cov) # Get the avg CN, including 21p
   hrd <- score_nlst(segs.clean, wgd['WGD'], oncoscan.cov)
 
   n.td <- score_td(segs.clean)

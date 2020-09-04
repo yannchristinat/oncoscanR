@@ -87,6 +87,8 @@ test_that("Oncoscan workflow works - H19006249", {
 })
 
 test_that("Oncoscan workflow works - H19006250", {
+  skip_on_cran()
+
   sample <- 'H19006250'
   tests <- armlevel.test(
     system.file("testdata", samples[sample, 'chas.fn'], package = "oncoscanR"),
@@ -114,6 +116,6 @@ test_that("Oncoscan workflow returns the correct structure", {
   scores.nametest <- identical(sort(names(dat[['scores']])), c("avgCN", "HRD", "TDplus"))
   gender.test <- dat[['gender']] == 'M'
   file.test <- dat[['file']] == basename(segs.filename)
-
+  print(c(armlevel.nametest, scores.nametest, gender.test, file.test))
   expect_true(sum(c(armlevel.nametest, scores.nametest, gender.test, file.test))==4)
 })
