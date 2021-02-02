@@ -56,6 +56,12 @@ compressed package is and run `install.packages('oncoscanR_0.2.0.tar.gz', repos=
 The package requires the prior installation of the packages `GenomicRanges` (bioconductor), `magrittr`, `jsonlite` and
 `readr`.
 
+`if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("GenomicRanges")`
+
+`install.packages(c("magrittr", "jsonlite", "readr"))`
+
 ## Testing the installation
 Open R and type the following commands:
 - `library(oncoscanR)`
