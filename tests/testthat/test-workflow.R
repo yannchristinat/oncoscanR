@@ -117,5 +117,6 @@ test_that("Oncoscan workflow returns the correct structure", {
   gender.test <- dat[['gender']] == 'M'
   file.test <- dat[['file']] == basename(segs.filename)
   #print(c(armlevel.nametest, scores.nametest, gender.test, file.test))
+
   expect_true(sum(c(armlevel.nametest, scores.nametest, gender.test, file.test))==4)
 })

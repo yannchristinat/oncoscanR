@@ -165,7 +165,9 @@ score_loh <- function(segments, kit.coverage, armlevel.loh, armlevel.hetloss){
     chromnames <- unique(unlist(strsplit(as.character(seqnames(kit.coverage)), '[pq]')))
     arms_found.to_ban <- lapply(chromnames, function(chrom){
       arms <- paste0(chrom, c('p','q'))
+
       arms.covered <- intersect(arms, as.vector(seqnames(kit.coverage)))
+
       arms.found <- unique(intersect(arms.covered, armlevel.loh))
       if(length(arms.found) == length(arms.covered)){
         return(as.character(arms.covered))
@@ -180,7 +182,9 @@ score_loh <- function(segments, kit.coverage, armlevel.loh, armlevel.hetloss){
     chromnames <- unique(unlist(strsplit(as.character(seqnames(kit.coverage)), '[pq]')))
     arms_found.to_ban <- lapply(chromnames, function(chrom){
       arms <- paste0(chrom, c('p','q'))
+
       arms.covered <- intersect(arms, as.vector(seqnames(kit.coverage)))
+
       arms.found <- unique(intersect(arms.covered, armlevel.hetloss))
       if(length(arms.found) == length(arms.covered)){
         return(as.character(arms.covered))

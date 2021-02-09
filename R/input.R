@@ -432,11 +432,12 @@ adjust_loh <- function(segments){
         #new_loh$cn.type <- cntype.loh
         #new_loh$cn.subtype <- cntype.loh
 
+
         loh.toadd <- append(loh.toadd, new_loh)
         loh.todelete <- append(loh.todelete, loh)
       }
     }
-    #adj <- c(segs.loh[!(segs.loh %in% loh.todelete)], loh.toadd)
+
     adj <- union(setdiff(segs.loh, loh.todelete), loh.toadd)
     if(length(adj)>0){
       adj$cn <- NA
