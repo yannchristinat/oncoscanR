@@ -34,7 +34,7 @@ This score was linked to BRCA1/2-deficient tumors.
 
 ### Score nLST
 HRD score developed at HUG and based on the LST score by Popova et al. but normalized by an estimation of the number of
-whole-genome doubling events.
+whole-genome doubling events.Of note, copy-neutral LOH segments are removed before computation.
 
 `nLST = LST - 7*W/2` where `W` is the number of whole-genome doubling events
 
@@ -48,8 +48,8 @@ his second category. Nonetheless it is reported by the function but not by the s
 
 ## Installation
 There are two options to install the package: 
-1. Download the `oncoscanR_0.2.0.tar.gz` file (stable version). Then in R, set the working directory to where the
-compressed package is and run `install.packages('oncoscanR_0.2.0.tar.gz', repos=NULL, type='source')`.
+1. Download the `oncoscanR_1.0.0.tar.gz` file (stable version). Then in R, set the working directory to where the
+compressed package is and run `install.packages('oncoscanR_1.0.0.tar.gz', repos=NULL, type='source')`.
 2. In R, install the devtools package (`install.packages('devtools')`), load it (`library(devtools)`), then run
 `install_github('yannchristinat/oncoscanR')`.
 
@@ -71,6 +71,11 @@ Open R and type the following commands:
 If everything is setup fine, it should return a list with no arm-level alterations and a negative HRD score (nLST=1).
 
 ## Change log
+
+### What's new in v1.0
+- The nLST test has been clinically validated on 384 patients from the PAOLA-1 trial and the recommended threshold
+is now >=15.
+- The default value for arm-level alterations has been set to 90% as mentioned in the publication [Christinat et al., J Mol Diagn 2021].
 
 ### What's new in v0.2
 - Novel HRD score (nLST: number of LSTs, normalized by ploidy): `score_nlst`

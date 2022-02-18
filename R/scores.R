@@ -24,7 +24,7 @@
 #'
 #' @examples
 #' arms <- armlevel_alt(segs.chas_example, oncoscan_na33.cov, 0.9)
-armlevel_alt <- function(segments, kit.coverage, threshold = 0.8){
+armlevel_alt <- function(segments, kit.coverage, threshold = 0.9){
   is.cn_segment(segments, raise_error = TRUE)
 
   vals <- sapply(levels(seqnames(kit.coverage)), function(arm){
@@ -325,8 +325,7 @@ score_nlst <- function(segments, n.wgd, kit.coverage){
   lst.noLOH <- score_lst(segments[segments$cn.type != cntype.loh], kit.coverage)
 
   nlst <- max(0, lst.noLOH - 3.5*as.numeric(n.wgd))
-  label <- ifelse(nlst>=20, 'Positive (high confidence)',
-                  ifelse(nlst>13, 'Positive (low confidence)', 'Negative'))
+  label <- ifelse(nlst>=15, 'Positive', 'Negative')
   return(c(nLST=nlst, HRD=label))
 }
 
