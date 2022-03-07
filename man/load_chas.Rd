@@ -9,23 +9,29 @@ load_chas(filename, kit.coverage)
 \arguments{
 \item{filename}{Path to the ChAS file.}
 
-\item{kit.coverage}{A \code{GRanges} object containing the regions covered on each chromosome arm by the kit.}
+\item{kit.coverage}{A \code{GRanges} object containing the regions covered on
+each chromosome arm by the kit.}
 }
 \value{
-A \code{GRanges} object containing the segments, their copy number (field \code{cn}), their copy
-number types (field \code{cn.type}). \code{cn.type} contains either "Gain",
-"Loss" or "LOH".
-If the file contains twice the same segment or does not respect the format specifications, then an error is
-raised. NB. The chromosome name is in the format "1" and not "chr1" and will be transformed if needed.
+A \code{GRanges} object containing the segments, their copy number
+(field \code{cn}), their copy
+number types (field \code{cn.type}). \code{cn.type} contains either 'Gain',
+'Loss' or 'LOH'.
+If the file contains twice the same segment or does not respect the format
+specifications, then an error is
+raised. NB. The chromosome name is in the format '1' and not 'chr1' and will
+be transformed if needed.
 }
 \description{
 Load a ChAS text export file.
 }
 \details{
-The ChAS file is expected to have the following column names: "CN State" (number or empty), "Type" (expected
-value: "Gain", "Loss" or "LOH") and "Full Location" (in the format "chr:start-end").
+The ChAS file is expected to have the following column names:
+'CN State' (number or empty), 'Type' (expected value: 'Gain', 'Loss' or
+'LOH') and 'Full Location' (in the format 'chr:start-end').
 }
 \examples{
-segs.filename <- system.file("extdata", "chas_example.txt", package = "oncoscanR")
+segs.filename <- system.file('extdata', 'chas_example.txt',
+  package = 'oncoscanR')
 segs.chas_example <- load_chas(segs.filename, oncoscan_na33.cov)
 }

@@ -1,19 +1,16 @@
-# utils.R
-#
-# Functions that are too general to fit in any other R file.
-#
-# Author: Yann Christinat
-# Date: 24.9.2019
+# utils.R Functions that are too general to fit in any other R file.
+# Author: Yann Christinat Date: 24.9.2019
 
 
 #' Compare two CNV segments and test if equal
 #'
-#' @param x A \code{GRanges} object one segment, with optional fields \code{cn}, \code{cn.type} and
-#' \code{cn.subtype}
-#' @param y A \code{GRanges} object one segment, with optional fields \code{cn}, \code{cn.type} and
-#' \code{cn.subtype}
+#' @param x A \code{GRanges} object one segment, with optional fields \code{cn},
+#'  \code{cn.type} and \code{cn.subtype}
+#' @param y A \code{GRanges} object one segment, with optional fields \code{cn},
+#'  \code{cn.type} and \code{cn.subtype}
 #'
-#' @return A boolean. TRUE if the segments' chromosome/arm, start/end and CN tags match.
+#' @return A boolean. TRUE if the segments' chromosome/arm, start/end and CN
+#' tags match.
 #'
 #' @export
 #'
@@ -28,84 +25,88 @@
 #' s2 <- GRanges(seqnames = '1p', ranges = IRanges(start = 1, end = 10),
 #'               cn = 6, cn.type = cntype.gain, cn.subtype = cntype.weakamp)
 #' same_segments(s1,s2)
-same_segments <- function(x, y){
-  # Test the class of the parameters
-  x.class <- class(x)[1]
-  y.class <- class(y)[1]
-  if(x.class != y.class){
-    return(FALSE)
-  }
-  if(x.class != "GRanges"){
-    stop(paste("Function 'compare_segments' can only handle GRanges objects. Found:", x.class))
-  }
-
-  # Ensures that the GRanges contain only 1 segment each
-  if(length(x) != length(y) || length(x) != 1){
-    stop(paste("Function 'compare_segments' can only handle GRanges with only one segment. Found:",
-               length(x), length(y)))
-  }
-
-  # Replace any NA by NULL in cn, cn.type and cn.subtype
-  if (!is.null(x$cn) && is.na(x$cn)){
-    x$cn <- NULL
-  }
-  if (!is.null(x$cn.type) && is.na(x$cn.type)){
-    x$cn.type <- NULL
-  }
-  if (!is.null(x$cn.subtype) && is.na(x$cn.subtype)){
-    x$cn.subtype <- NULL
-  }
-
-  if (!is.null(y$cn) && is.na(y$cn)){
-    y$cn <- NULL
-  }
-  if (!is.null(y$cn.type) && is.na(y$cn.type)){
-    y$cn.type <- NULL
-  }
-  if (!is.null(y$cn.subtype) && is.na(y$cn.subtype)){
-    y$cn.subtype <- NULL
-  }
-
-
-  # Compare segment position and arm
-  if(as.character(seqnames(x)) != as.character(seqnames(y)) || start(x) != start(y) || end(x) != end(y)){
-    return(FALSE)
-  }
-  else { # Same segment:
-    # Test cn (if set)
-    if((is.null(x$cn) && !is.null(y$cn)) ||
-       (!is.null(x$cn) && is.null(y$cn))){ # Only one cn is null
-      return(FALSE)
-    }
-    else if(!is.null(x$cn) && !is.null(y$cn)){ # cn is set on both segments
-      if(x$cn != y$cn){
+same_segments <- function(x, y) {
+    # Test the class of the parameters
+    x.class <- class(x)[1]
+    y.class <- class(y)[1]
+    if (x.class != y.class) {
         return(FALSE)
-      }
+    }
+    if (x.class != "GRanges") {
+        stop(paste("Function 'compare_segments' can only handle GRanges objects. Found:",
+            x.class))
     }
 
-    # Test cn.type (if set)
-    if((is.null(x$cn.type) && !is.null(y$cn.type)) ||
-       (!is.null(x$cn.type) && is.null(y$cn.type))){ # Only one cn.type is null
-      return(FALSE)
-    }
-    else if(!is.null(x$cn.type) & !is.null(y$cn.type)){ # cn is set on both segments
-      if(x$cn.type != y$cn.type){
-        return(FALSE)
-      }
+    # Ensures that the GRanges contain only 1 segment each
+    if (length(x) != length(y) || length(x) != 1) {
+        stop(paste("Function 'compare_segments' can only handle GRanges with only one segment. Found:",
+            length(x), length(y)))
     }
 
-    # Test cn.subtype (if set)
-    if((is.null(x$cn.subtype) && !is.null(y$cn.subtype)) ||
-       (!is.null(x$cn.subtype) && is.null(y$cn.subtype))){ # Only one cn.subtype is null
-      return(FALSE)
+    # Replace any NA by NULL in cn, cn.type and cn.subtype
+    if (!is.null(x$cn) && is.na(x$cn)) {
+        x$cn <- NULL
     }
-    else if(!is.null(x$cn.subtype) && !is.null(y$cn.subtype)){ # cn is set on both segments
-      if(x$cn.subtype != y$cn.subtype){
+    if (!is.null(x$cn.type) && is.na(x$cn.type)) {
+        x$cn.type <- NULL
+    }
+    if (!is.null(x$cn.subtype) && is.na(x$cn.subtype)) {
+        x$cn.subtype <- NULL
+    }
+
+    if (!is.null(y$cn) && is.na(y$cn)) {
+        y$cn <- NULL
+    }
+    if (!is.null(y$cn.type) && is.na(y$cn.type)) {
+        y$cn.type <- NULL
+    }
+    if (!is.null(y$cn.subtype) && is.na(y$cn.subtype)) {
+        y$cn.subtype <- NULL
+    }
+
+
+    # Compare segment position and arm
+    if (as.character(seqnames(x)) != as.character(seqnames(y)) ||
+        start(x) != start(y) || end(x) != end(y)) {
         return(FALSE)
-      }
+    } else {
+        # Same segment: Test cn (if set)
+        if ((is.null(x$cn) && !is.null(y$cn)) ||
+            (!is.null(x$cn) && is.null(y$cn))) {
+            # Only one cn is null
+            return(FALSE)
+        } else if (!is.null(x$cn) && !is.null(y$cn)) {
+            # cn is set on both segments
+            if (x$cn != y$cn) {
+                return(FALSE)
+            }
+        }
+
+        # Test cn.type (if set)
+        if ((is.null(x$cn.type) && !is.null(y$cn.type)) ||
+            (!is.null(x$cn.type) && is.null(y$cn.type))) {
+            # Only one cn.type is null
+            return(FALSE)
+        } else if (!is.null(x$cn.type) & !is.null(y$cn.type)) {
+            # cn is set on both segments
+            if (x$cn.type != y$cn.type) {
+                return(FALSE)
+            }
+        }
+
+        # Test cn.subtype (if set)
+        if ((is.null(x$cn.subtype) && !is.null(y$cn.subtype)) ||
+            (!is.null(x$cn.subtype) && is.null(y$cn.subtype))) {
+            # Only one cn.subtype is null
+            return(FALSE)
+        } else if (!is.null(x$cn.subtype) && !is.null(y$cn.subtype)) {
+            # cn is set on both segments
+            if (x$cn.subtype != y$cn.subtype) {
+                return(FALSE)
+            }
+        }
     }
-  }
-  return(TRUE)
+    return(TRUE)
 }
 
 
@@ -114,7 +115,8 @@ same_segments <- function(x, y){
 #' @param obj Object to test
 #' @param raise_error Boolean. If TRUE then raises an error if the test fails.
 #'
-#' @return Boolean. TRUE if the object is of class \code{GRanges} with fields \code{cn} and \code{cn.type}.
+#' @return Boolean. TRUE if the object is of class \code{GRanges} with fields
+#' \code{cn} and \code{cn.type}.
 #' @export
 #'
 #' @examples
@@ -122,16 +124,17 @@ same_segments <- function(x, y){
 #' library(IRanges)
 #' s1 <- GRanges(seqnames = '1p', ranges = IRanges(start = 1, end = 10),
 #'               cn = 6, cn.type = cntype.gain, cn.subtype = cntype.weakamp)
-#' is.cn_segment(s1)
+#' is_cn_segment(s1)
 #' s2 <- GRanges(seqnames = '1p', ranges = IRanges(start = 1, end = 10),
 #'               cn = 6)
-#' is.cn_segment(s2, raise_error = FALSE)
-is.cn_segment <- function(obj, raise_error = TRUE){
-  test <- class(obj)[1] == 'GRanges' && (length(obj)==0 || (!is.null(obj$cn) && !is.null(obj$cn.type)))
-  if(!test && raise_error){
-    stop("The parameter has to be a CNV segment (GRanges object with 'cn' and 'cn.type' columns).")
-  }
-  return(test)
+#' is_cn_segment(s2, raise_error = FALSE)
+is_cn_segment <- function(obj, raise_error = TRUE) {
+    test <- class(obj)[1] == "GRanges" && (length(obj) == 0 || (!is.null(obj$cn) &&
+        !is.null(obj$cn.type)))
+    if (!test && raise_error) {
+        stop("The parameter has to be a CNV segment (GRanges object with 'cn' and 'cn.type' columns).")
+    }
+    return(test)
 }
 
 
@@ -142,20 +145,29 @@ is.cn_segment <- function(obj, raise_error = TRUE){
 #'
 #' @return TRUE if the two sets contain exactly the same CN segments
 #' @export
-same_segmentsets <- function(grA, grB){
-  if(length(grA) != length(grB)){
-    return(FALSE)
-  }
-
-  found <- 0
-  for(i in seq_along(grA)){
-    segA <- grA[i]
-    for(j in seq_along(grB)){
-      segB <- grB[j]
-      if(same_segments(segA, segB)){
-        found <- found+1
-      }
+#'
+#' @examples
+#' library(GenomicRanges)
+#' library(IRanges)
+#' s1 <- GRanges(seqnames = '1p', ranges = IRanges(start = 1, end = 10),
+#'               cn = 5, cn.type = cntype.gain, cn.subtype = cntype.weakamp)
+#' s2 <- GRanges(seqnames = '1p', ranges = IRanges(start = 1, end = 10),
+#'               cn = 6, cn.type = cntype.gain, cn.subtype = cntype.weakamp)
+#' same_segmentsets(s1,s2)
+same_segmentsets <- function(grA, grB) {
+    if (length(grA) != length(grB)) {
+        return(FALSE)
     }
-  }
-  return(found == length(grA))
+
+    found <- 0
+    for (i in seq_along(grA)) {
+        segA <- grA[i]
+        for (j in seq_along(grB)) {
+            segB <- grB[j]
+            if (same_segments(segA, segB)) {
+                found <- found + 1
+            }
+        }
+    }
+    return(found == length(grA))
 }

@@ -3,17 +3,17 @@
 \docType{data}
 \name{cntype.weakamp}
 \alias{cntype.weakamp}
-\title{copy number type "Weak amplification" (3 to 7 additional copies).}
+\title{copy number type 'Weak amplification' (3 to 7 additional copies).}
 \format{
 character
 }
 \source{
-\code{cntype.weakamp <- "Weak amplification"}
+\code{cntype.weakamp <- 'Weak amplification'}
 }
 \usage{
 cntype.weakamp
 }
 \description{
-copy number type "Weak amplification" (3 to 7 additional copies).
+copy number type 'Weak amplification' (3 to 7 additional copies).
 }
 \keyword{datasets}

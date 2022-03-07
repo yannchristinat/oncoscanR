@@ -3,19 +3,19 @@
 \docType{data}
 \name{cntype.homloss}
 \alias{cntype.homloss}
-\title{copy number type "Homozygous loss" (loss of the two copies or only one on sexual chromosomes if the
-subject is male).}
+\title{copy number type 'Homozygous loss' (loss of the two copies or only one on
+sexual chromosomes if the subject is male).}
 \format{
 character
 }
 \source{
-\code{cntype.homloss <- "Homozygous loss"}
+\code{cntype.homloss <- 'Homozygous loss'}
 }
 \usage{
 cntype.homloss
 }
 \description{
-copy number type "Homozygous loss" (loss of the two copies or only one on sexual chromosomes if the
-subject is male).
+copy number type 'Homozygous loss' (loss of the two copies or only one on
+sexual chromosomes if the subject is male).
 }
 \keyword{datasets}

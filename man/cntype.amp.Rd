@@ -3,17 +3,17 @@
 \docType{data}
 \name{cntype.amp}
 \alias{cntype.amp}
-\title{copy number type "Amplification" (3 additional copies or more).}
+\title{copy number type 'Amplification' (3 additional copies or more).}
 \format{
 character
 }
 \source{
-\code{cntype.amp <- "Amplification"}
+\code{cntype.amp <- 'Amplification'}
 }
 \usage{
 cntype.amp
 }
 \description{
-copy number type "Amplification" (3 additional copies or more).
+copy number type 'Amplification' (3 additional copies or more).
 }
 \keyword{datasets}

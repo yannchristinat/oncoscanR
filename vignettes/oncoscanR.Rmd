@@ -1,4 +1,21 @@
-# oncoscanR
+---
+title: "oncoscanR"
+author: "Yann Christinat"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{oncoscanR}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
 
 ## Description
 OncoscanR is an R package to handle Copy Number Variation analyses originating from the Oncoscan assay (Affymetrix). It
@@ -64,9 +81,11 @@ BiocManager::install("GenomicRanges")`
 
 ## Testing the installation
 Open R and type the following commands:
-- `library(oncoscanR)`
-- `segs.filename <- system.file("extdata", "chas_example.txt", package = "oncoscanR")`
-- `workflow_oncoscan.run(segs.filename, "M")`
+```
+library(oncoscanR)
+segs.filename <- system.file("extdata", "chas_example.txt", package = "oncoscanR")
+workflow_oncoscan.run(segs.filename, "M")
+```
 
 If everything is setup fine, it should return a list with no arm-level alterations and a negative HRD score (nLST=1).
 

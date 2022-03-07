@@ -3,19 +3,19 @@
 \docType{data}
 \name{cntype.gain}
 \alias{cntype.gain}
-\title{copy number type "Gain" (one or more additional copies).
+\title{copy number type 'Gain' (one or more additional copies).
 In some contextes can be defined as the gain of 1-2 extra copies but not more.}
 \format{
 character
 }
 \source{
-\code{cntype.gain <- "Gain"}
+\code{cntype.gain <- 'Gain'}
 }
 \usage{
 cntype.gain
 }
 \description{
-copy number type "Gain" (one or more additional copies).
+copy number type 'Gain' (one or more additional copies).
 In some contextes can be defined as the gain of 1-2 extra copies but not more.
 }
 \keyword{datasets}

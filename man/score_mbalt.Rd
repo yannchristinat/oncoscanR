@@ -7,14 +7,18 @@
 score_mbalt(segments, kit.coverage, loh.rm = TRUE)
 }
 \arguments{
-\item{segments}{A \code{GRanges} object containing the segments, their copy number and copy number types.}
+\item{segments}{A \code{GRanges} object containing the segments, their copy
+number and copy number types.}
 
-\item{kit.coverage}{A \code{GRanges} object containing the regions covered on each chromosome arm.}
+\item{kit.coverage}{A \code{GRanges} object containing the regions covered on
+each chromosome arm.}
 
-\item{loh.rm}{A boolean (TRUE by default) to indicate whether LOH segments should be excluded.}
+\item{loh.rm}{A boolean (TRUE by default) to indicate whether LOH segments
+should be excluded.}
 }
 \value{
-A named list representing the Mbp altered in the sample and the total Mbp of the kit.
+A named list representing the Mbp altered in the sample and the total
+ Mbp of the kit.
 }
 \description{
 Computes the total number of Mbp altered.

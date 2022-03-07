@@ -7,13 +7,16 @@
 score_loh(segments, kit.coverage, armlevel.loh, armlevel.hetloss)
 }
 \arguments{
-\item{segments}{A \code{GRanges} object containing the segments, their copy number and copy number types.}
+\item{segments}{A \code{GRanges} object containing the segments, their copy
+number and copy number types.}
 
-\item{kit.coverage}{A \code{GRanges} object containing the regions covered on each chromosome arm.}
+\item{kit.coverage}{A \code{GRanges} object containing the regions covered on
+each chromosome arm.}
 
 \item{armlevel.loh}{A list of arms with global/arm-level LOH alteration.}
 
-\item{armlevel.hetloss}{A list of arms with global/arm-level heterozygous losses.}
+\item{armlevel.hetloss}{A list of arms with global/arm-level heterozygous
+losses.}
 }
 \value{
 An integer representing the number of HRD-LOH regions.
@@ -22,12 +25,16 @@ An integer representing the number of HRD-LOH regions.
 Compute the number HR deficiency-associated LOH regions.
 }
 \details{
-Procedure based on the paper from Abkevich et al., Br J Cancer 2012 (PMID: 23047548). All LOH
-segments larger than 15Mb but excluding chromosome with a global LOH alteration (to compute with the
-\code{armlevel_alt} function on LOH segments only). This score was linked to BRCA1/2-deficient tumors.
-Note that the function will merge overlapping or neighbor LOH segments (at a distance of 1bp).
+Procedure based on the paper from Abkevich et al., Br J Cancer 2012
+(PMID: 23047548). All LOH segments larger than 15Mb but excluding chromosome
+with a global LOH alteration (to compute with the \code{armlevel_alt}
+function on LOH segments only). This score was linked to BRCA1/2-deficient
+tumors.
+Note that the function will merge overlapping or neighbor LOH segments (at a
+distance of 1bp).
 
-Of note the cn.subtype has to be defined first via the function \code{get_cn_subtype}.
+Of note the cn.subtype has to be defined first via the function
+\code{get_cn_subtype}.
 }
 \examples{
 segs.chas_example$cn.subtype <- get_cn_subtype(segs.chas_example, 'F')

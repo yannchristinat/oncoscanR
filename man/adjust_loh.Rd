@@ -7,18 +7,23 @@
 adjust_loh(segments)
 }
 \arguments{
-\item{segments}{A \code{GRanges} object containing the segments, their copy number and copy number types.}
+\item{segments}{A \code{GRanges} object containing the segments, their copy
+number and copy number types.}
 }
 \value{
-A \code{GRanges} object containing the cleaned segments, their copy number and copy number types.
+A \code{GRanges} object containing the cleaned segments, their copy
+number and copy number types.
 }
 \description{
 Trim LOH segments with respect to loss segments.
 }
 \details{
-LOH segments completely contained within (or equal to)  a copy loss segment are deleted.
-LOH segments partially overlapping (on one end only) with a copy loss segment are trimmed to
-remove the overlap. If a copy loss segment is completely contained within (but not equal to) a LOH
+LOH segments completely contained within (or equal to)  a copy loss
+segment are deleted.
+LOH segments partially overlapping (on one end only) with a copy loss segment
+ are trimmed to
+remove the overlap. If a copy loss segment is completely contained within
+(but not equal to) a LOH
 segment, then nothing is done; the overlap remains.
 }
 \examples{

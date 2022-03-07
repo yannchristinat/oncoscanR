@@ -3,17 +3,17 @@
 \docType{data}
 \name{cntype.hetloss}
 \alias{cntype.hetloss}
-\title{copy number type "Heterozygous loss" (loss of one of the two copies).}
+\title{copy number type 'Heterozygous loss' (loss of one of the two copies).}
 \format{
 character
 }
 \source{
-\code{cntype.hetloss <- "Heterozygous loss"}
+\code{cntype.hetloss <- 'Heterozygous loss'}
 }
 \usage{
 cntype.hetloss
 }
 \description{
-copy number type "Heterozygous loss" (loss of one of the two copies).
+copy number type 'Heterozygous loss' (loss of one of the two copies).
 }
 \keyword{datasets}

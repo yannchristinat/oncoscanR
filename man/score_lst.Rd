@@ -7,9 +7,11 @@
 score_lst(segments, kit.coverage)
 }
 \arguments{
-\item{segments}{A \code{GRanges} object containing the segments, their copy number and copy number types.}
+\item{segments}{A \code{GRanges} object containing the segments, their copy
+number and copy number types.}
 
-\item{kit.coverage}{A \code{GRanges} object containing the regions covered on each chromosome arm.}
+\item{kit.coverage}{A \code{GRanges} object containing the regions covered on
+each chromosome arm.}
 }
 \value{
 An integer representing the number of LSTs.
@@ -18,10 +20,12 @@ An integer representing the number of LSTs.
 Compute the number of Large-scale State Transitions (LSTs).
 }
 \details{
-Procedure based on the paper from Popova et al, Can. Res. 2012 (PMID: 22933060). First segments
-smaller than 3Mb are removed, then segments are smoothed with respect to copy number at a distance of 3Mb.
-The number of LSTs is the number of breakpoints (breakpoints closer than 3Mb are merged) that have a segment
-larger or equal to 10Mb on each side. This score was linked to BRCA1/2-deficient tumors.
+Procedure based on the paper from Popova et al, Can. Res. 2012
+(PMID: 22933060). First segments smaller than 3Mb are removed, then segments
+are smoothed with respect to copy number at a distance of 3Mb.
+The number of LSTs is the number of breakpoints (breakpoints closer than 3Mb
+are merged) that have a segment larger or equal to 10Mb on each side. This
+score was linked to BRCA1/2-deficient tumors.
 }
 \examples{
 score_lst(segs.chas_example, oncoscan_na33.cov)

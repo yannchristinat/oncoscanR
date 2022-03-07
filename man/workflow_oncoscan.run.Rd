@@ -28,6 +28,6 @@ TD+ scores. The amplification is defined as a CN subtype \code{cntype.weakamp} o
 amplified.
 }
 \examples{
-segs.filename <- system.file("extdata", "chas_example.txt", package = "oncoscanR")
-workflow_oncoscan.run(segs.filename, "M")
+segs.filename <- system.file('extdata', 'chas_example.txt', package = 'oncoscanR')
+workflow_oncoscan.run(segs.filename, 'M')
 }

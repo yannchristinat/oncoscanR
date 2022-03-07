@@ -3,17 +3,17 @@
 \docType{data}
 \name{cntype.loh}
 \alias{cntype.loh}
-\title{copy number type "LOH" (copy neutral loss of heterozygosity).}
+\title{copy number type 'LOH' (copy neutral loss of heterozygosity).}
 \format{
 character
 }
 \source{
-\code{cntype.loh <- "LOH"}
+\code{cntype.loh <- 'LOH'}
 }
 \usage{
 cntype.loh
 }
 \description{
-copy number type "LOH" (copy neutral loss of heterozygosity).
+copy number type 'LOH' (copy neutral loss of heterozygosity).
 }
 \keyword{datasets}

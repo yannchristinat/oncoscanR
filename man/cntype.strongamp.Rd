@@ -3,17 +3,17 @@
 \docType{data}
 \name{cntype.strongamp}
 \alias{cntype.strongamp}
-\title{copy number type "Strong amplification" (8 additional copies or more).}
+\title{copy number type 'Strong amplification' (8 additional copies or more).}
 \format{
 character
 }
 \source{
-\code{cntype.strongamp <- "Strong amplification"}
+\code{cntype.strongamp <- 'Strong amplification'}
 }
 \usage{
 cntype.strongamp
 }
 \description{
-copy number type "Strong amplification" (8 additional copies or more).
+copy number type 'Strong amplification' (8 additional copies or more).
 }
 \keyword{datasets}

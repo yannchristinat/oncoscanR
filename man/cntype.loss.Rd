@@ -3,17 +3,19 @@
 \docType{data}
 \name{cntype.loss}
 \alias{cntype.loss}
-\title{copy number type "Loss" (loss of one or more copies; depends on gender for the sexual chromosomes).}
+\title{copy number type 'Loss' (loss of one or more copies; depends on gender for
+the sexual chromosomes).}
 \format{
 character
 }
 \source{
-\code{cntype.loss <- "Loss"}
+\code{cntype.loss <- 'Loss'}
 }
 \usage{
 cntype.loss
 }
 \description{
-copy number type "Loss" (loss of one or more copies; depends on gender for the sexual chromosomes).
+copy number type 'Loss' (loss of one or more copies; depends on gender for
+the sexual chromosomes).
 }
 \keyword{datasets}

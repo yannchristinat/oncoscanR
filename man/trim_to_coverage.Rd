@@ -7,19 +7,22 @@
 trim_to_coverage(segments, kit.coverage)
 }
 \arguments{
-\item{segments}{A \code{GRanges} object containing the segments, their copy number and copy number types.}
+\item{segments}{A \code{GRanges} object containing the segments, their copy
+number and copy number types.}
 
-\item{kit.coverage}{A \code{GRanges} object containing the regions covered on each chromosome arm.}
+\item{kit.coverage}{A \code{GRanges} object containing the regions covered on
+each chromosome arm.}
 }
 \value{
-A \code{GRanges} object containing the cleaned segments, their copy number and copy number types.
+A \code{GRanges} object containing the cleaned segments, their copy
+number and copy number types.
 }
 \description{
 Trim segments with respect to the kit's coverage.
 }
 \details{
-All segments that are not entirely contained within the kit coverage will be trimmed to the coverage's
-limits.
+All segments that are not entirely contained within the kit coverage
+ will be trimmed to the coverage's limits.
 }
 \examples{
 segs.trimmed <- trim_to_coverage(segs.chas_example, oncoscan_na33.cov)
