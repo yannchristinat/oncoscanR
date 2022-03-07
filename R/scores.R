@@ -132,6 +132,8 @@ score_lst <- function(segments, kit.coverage){
 #' \code{armlevel_alt} function on LOH segments only). This score was linked to BRCA1/2-deficient tumors.
 #' Note that the function will merge overlapping or neighbor LOH segments (at a distance of 1bp).
 #'
+#' Of note the cn.subtype has to be defined first via the function \code{get_cn_subtype}.
+#'
 #' @param segments A \code{GRanges} object containing the segments, their copy number and copy number types.
 #' @param kit.coverage A \code{GRanges} object containing the regions covered on each chromosome arm.
 #' @param armlevel.loh A list of arms with global/arm-level LOH alteration.
@@ -141,6 +143,7 @@ score_lst <- function(segments, kit.coverage){
 #' @export
 #'
 #' @examples
+#' segs.chas_example$cn.subtype <- get_cn_subtype(segs.chas_example, 'F')
 #' armlevel.loh <- armlevel_alt(segs.chas_example[segs.chas_example$cn.type == cntype.loh],
 #'                              kit.coverage = oncoscan_na33.cov)
 #' armlevel.hetloss <- armlevel_alt(segs.chas_example[segs.chas_example$cn.subtype == cntype.hetloss],
@@ -361,4 +364,37 @@ score_mbalt <- function(segments, kit.coverage, loh.rm=TRUE){
 
     return(c(sample=mb.alt, kit=mb.kit))
   }
+}
+
+
+#' Compute the genomic LOH score.
+#'
+#' @details The percentage genomic LOH score is computed as described in the FoundationFocus CDx BRCA LOH assay;
+#' i.e. the percentage of bases covered by the Oncoscan that display a loss of heterozygosity independently
+#' of the number of copies, excluding chromosomal arms that have a global LOH (≥90% of arm length).
+#' To compute with the \code{armlevel_alt} function on LOH segments only).
+#' This score was linked to BRCA1/2-deficient tumors.
+#'
+#' Of note the cn.subtype has to be defined first via the function \code{get_cn_subtype}.
+#'
+#' @param segments A \code{GRanges} object containing the segments, their copy number and copy number types.
+#' @param armlevel.loh A list of arms with global/arm-level LOH alteration.
+#' @param armlevel.hetloss A list of arms with global/arm-level heterozygous loss.
+#' @param kit.coverage A \code{GRanges} object containing the regions covered on each chromosome arm.
+#'
+#' @return An integer representing the percentage of LOH bases.
+#' @export
+#'
+#' @examples
+#' segs.chas_example$cn.subtype <- get_cn_subtype(segs.chas_example, 'F')
+#' armlevel.loh <- armlevel_alt(segs.chas_example[segs.chas_example$cn.type == cntype.loh],
+#'                              kit.coverage = oncoscan_na33.cov)
+#' armlevel.hetloss <- armlevel_alt(segs.chas_example[segs.chas_example$cn.subtype == cntype.hetloss],
+#'                              kit.coverage = oncoscan_na33.cov)
+#' score_gloh(segs.chas_example, names(armlevel.loh), names(armlevel.hetloss), oncoscan_na33.cov)
+score_gloh <- function(segments, armlevel.loh, armlevel.hetloss, kit.coverage){
+  arms2discard <- c(names(armlevel.loh), names(armlevel.hetloss))
+  width.loh <- width(segments[segments$cn.subtype %in% c(cntype.hetloss, cntype.loh) &
+                                  !(seqnames(segments) %in% arms2discard)])
+  return(sum(width.loh)/sum(width(kit.coverage)))
 }

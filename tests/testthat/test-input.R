@@ -37,13 +37,14 @@ test_that("loading large ChAS file", {
 
 
 test_that("loading ChAS annotation file works", {
-  filename <- system.file("extdata", "OncoScan.na33.r1.annot.csv.zip",
+  filename <- system.file("extdata", "OncoScan.na33.r1.annot.csv.chr20.zip",
                                package = "oncoscanR")
   cov <- get_oncoscan_coverage_from_probes(filename)
 
   found <- 0
-  for(i in seq_along(oncoscan_na33.cov)){
-    segA <- oncoscan_na33.cov[i]
+  chr20 <- oncoscan_na33.cov[seqnames(oncoscan_na33.cov) %in% c('20p','20q')]
+  for(i in seq_along(chr20)){
+    segA <- chr20[i]
     for(j in seq_along(cov)){
       segB <- cov[j]
       if(same_segments(segA, segB)){
@@ -52,7 +53,7 @@ test_that("loading ChAS annotation file works", {
     }
   }
 
-  expect_true(length(cov) == 44 & found == 44)
+  expect_true(length(cov) == 2 & found == 2)
 })
 
 test_that("Loading ChAS with missing 'Full Location' column fails",{

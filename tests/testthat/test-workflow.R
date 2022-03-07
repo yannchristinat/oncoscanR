@@ -1,111 +1,55 @@
-test_that("Oncoscan workflow works - H18015654", {
+test_that("Oncoscan workflow works - LST", {
   skip_on_cran()
 
-  sample <- 'H18015654'
-  tests <- armlevel.test(
-    system.file("testdata", samples[sample, 'chas.fn'], package = "oncoscanR"),
-    samples[sample, 'gender'],
-    system.file("testdata", samples[sample, 'armlevel.fn'], package = "oncoscanR"))
+  chas.fn <- system.file("testdata", "LST_gene_list_full_location.txt", package = "oncoscanR")
+  armlevel.fn <- system.file("testdata", "LST_gene_list_full_location.armlevel_scna.csv", package = "oncoscanR")
+
+  # Run standard workflow from package
+  dat <- workflow_oncoscan.run(chas.fn, 'F')
+
+  tests <- armlevel.test(dat[['armlevel']], armlevel.fn)
   expect_true(sum(tests)==4)
+
+  scores <- dat[['scores']]
+  expect_true(scores['HRD'] == "Positive, nLST=22.5")
+  expect_true(scores['avgCN'] == '2.64')
+  expect_true(scores['TDplus'] == '131')
 })
 
-test_that("Oncoscan workflow works - H19005015", {
+test_that("Oncoscan workflow works - triploide", {
   skip_on_cran()
 
-  sample <- 'H19005015'
-  tests <- armlevel.test(
-    system.file("testdata", samples[sample, 'chas.fn'], package = "oncoscanR"),
-    samples[sample, 'gender'],
-    system.file("testdata", samples[sample, 'armlevel.fn'], package = "oncoscanR"))
+  chas.fn <- system.file("testdata", "triploide_gene_list_full_location.txt", package = "oncoscanR")
+  armlevel.fn <- system.file("testdata", "triploide_gene_list_full_location.armlevel_scna.csv", package = "oncoscanR")
+
+  # Run standard workflow from package
+  dat <- workflow_oncoscan.run(chas.fn, 'F')
+
+  tests <- armlevel.test(dat[['armlevel']], armlevel.fn)
   expect_true(sum(tests)==4)
+
+  scores <- dat[['scores']]
+  expect_true(scores['HRD'] == "Negative, nLST=0")
+  expect_true(scores['avgCN'] == '3.24')
+  expect_true(scores['TDplus'] == '18')
 })
 
-test_that("Oncoscan workflow works - H19005036", {
+test_that("Oncoscan workflow works - TDplus", {
   skip_on_cran()
 
-  sample <- 'H19005036'
-  tests <- armlevel.test(
-    system.file("testdata", samples[sample, 'chas.fn'], package = "oncoscanR"),
-    samples[sample, 'gender'],
-    system.file("testdata", samples[sample, 'armlevel.fn'], package = "oncoscanR"))
+  chas.fn <- system.file("testdata", "TDplus_gene_list_full_location.txt", package = "oncoscanR")
+  armlevel.fn <- system.file("testdata", "TDplus_gene_list_full_location.armlevel_scna.csv", package = "oncoscanR")
+
+  # Run standard workflow from package
+  dat <- workflow_oncoscan.run(chas.fn, 'F')
+
+  tests <- armlevel.test(dat[['armlevel']], armlevel.fn)
   expect_true(sum(tests)==4)
-})
 
-test_that("Oncoscan workflow works - H19005761", {
-  skip_on_cran()
-
-  sample <- 'H19005761'
-  tests <- armlevel.test(
-    system.file("testdata", samples[sample, 'chas.fn'], package = "oncoscanR"),
-    samples[sample, 'gender'],
-    system.file("testdata", samples[sample, 'armlevel.fn'], package = "oncoscanR"))
-  expect_true(sum(tests)==4)
-})
-
-test_that("Oncoscan workflow works - H19005930", {
-  skip_on_cran()
-
-  sample <- 'H19005930'
-  tests <- armlevel.test(
-    system.file("testdata", samples[sample, 'chas.fn'], package = "oncoscanR"),
-    samples[sample, 'gender'],
-    system.file("testdata", samples[sample, 'armlevel.fn'], package = "oncoscanR"))
-  expect_true(sum(tests)==4)
-})
-
-test_that("Oncoscan workflow works - H19005931", {
-  skip_on_cran()
-
-  sample <- 'H19005931'
-  tests <- armlevel.test(
-    system.file("testdata", samples[sample, 'chas.fn'], package = "oncoscanR"),
-    samples[sample, 'gender'],
-    system.file("testdata", samples[sample, 'armlevel.fn'], package = "oncoscanR"))
-  expect_true(sum(tests)==4)
-})
-
-test_that("Oncoscan workflow works - H19006144", {
-  skip_on_cran()
-
-  sample <- 'H19006144'
-  tests <- armlevel.test(
-    system.file("testdata", samples[sample, 'chas.fn'], package = "oncoscanR"),
-    samples[sample, 'gender'],
-    system.file("testdata", samples[sample, 'armlevel.fn'], package = "oncoscanR"))
-  expect_true(sum(tests)==4)
-})
-
-test_that("Oncoscan workflow works - H19006249", {
-  skip_on_cran()
-
-  sample <- 'H19006249'
-  tests <- armlevel.test(
-    system.file("testdata", samples[sample, 'chas.fn'], package = "oncoscanR"),
-    samples[sample, 'gender'],
-    system.file("testdata", samples[sample, 'armlevel.fn'], package = "oncoscanR"))
-  expect_true(sum(tests)==4)
-})
-
-test_that("Oncoscan workflow works - H19006250", {
-  skip_on_cran()
-
-  sample <- 'H19006250'
-  tests <- armlevel.test(
-    system.file("testdata", samples[sample, 'chas.fn'], package = "oncoscanR"),
-    samples[sample, 'gender'],
-    system.file("testdata", samples[sample, 'armlevel.fn'], package = "oncoscanR"))
-  expect_true(sum(tests)==4)
-})
-
-test_that("Oncoscan workflow works - H19006593", {
-  skip_on_cran()
-
-  sample <- 'H19006593'
-  tests <- armlevel.test(
-    system.file("testdata", samples[sample, 'chas.fn'], package = "oncoscanR"),
-    samples[sample, 'gender'],
-    system.file("testdata", samples[sample, 'armlevel.fn'], package = "oncoscanR"))
-  expect_true(sum(tests)==4)
+  scores <- dat[['scores']]
+  expect_true(scores['HRD'] == "Negative, nLST=10.5")
+  expect_true(scores['avgCN'] == '3.21')
+  expect_true(scores['TDplus'] == '94')
 })
 
 test_that("Oncoscan workflow returns the correct structure", {

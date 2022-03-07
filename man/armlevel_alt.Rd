@@ -4,7 +4,7 @@
 \alias{armlevel_alt}
 \title{Get all globally-altered chromosome arms.}
 \usage{
-armlevel_alt(segments, kit.coverage, threshold = 0.8)
+armlevel_alt(segments, kit.coverage, threshold = 0.9)
 }
 \arguments{
 \item{segments}{A \code{GRanges} object containing the segments.}

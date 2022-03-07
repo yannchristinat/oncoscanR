@@ -105,5 +105,5 @@ utils::globalVariables(c("cntype.gain",
                          "cntype.loss",
                          "cntype.homloss",
                          "cntype.hetloss",
-                         "oncoscan_na33",
+                         "oncoscan_na33.cov",
                          "segs.chas_example"))

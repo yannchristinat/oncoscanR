@@ -176,11 +176,11 @@ load_bed <- function(filename, gender){
 #'   - "Physical Position": genomic position of the SNP
 #'   - "Cytoband": cytoband name (e.g. 3q22.1)
 #'
-#' @param filename Path to the ChAS annotation file (either compressed or not). Defaults to the Oncoscan na33.r1
-#' file present in the package.
+#' @param filename Path to the ChAS annotation file (either compressed or not). For instance
+#' "OncoScan.na33.r1.annot.csv.zip"
 #'
-#' @return A \code{GRanges} object containing the regions covered on each chromosome arm. If the file does
-#' not respect the format specifications, then an error is raised.
+#' @return A \code{GRanges} object containing the regions covered on each chromosome arm. If the
+#' file does not respect the format specifications, then an error is raised.
 #'
 #' @export
 #'
@@ -189,10 +189,9 @@ load_bed <- function(filename, gender){
 #' @importFrom readr read_csv cols_only col_character col_integer
 #'
 #' @examples
-#' oncoscan_na33.cov <- get_oncoscan_coverage_from_probes()
-get_oncoscan_coverage_from_probes <- function(filename = system.file("extdata",
-                                                                     "OncoScan.na33.r1.annot.csv.zip",
-                                                                     package = "oncoscanR")){
+#' oncoscan_na33.covhead <- get_oncoscan_coverage_from_probes(
+#'        system.file("extdata", "OncoScan.na33.r1.annot.csv.chr20.zip", package = "oncoscanR"))
+get_oncoscan_coverage_from_probes <- function(filename){
   # Read the annotation file
   dat <- read_csv(filename, comment = "#", col_names = TRUE,
                col_types = cols_only(Chromosome = col_character(),
@@ -442,7 +441,9 @@ adjust_loh <- function(segments){
     if(length(adj)>0){
       adj$cn <- NA
       adj$cn.type <- cntype.loh
-      adj$cn.subtype <- cntype.loh
+      if(!is.null(segments$cn.subtype)){
+        adj$cn.subtype <- cntype.loh
+      }
     }
 
     return(adj)

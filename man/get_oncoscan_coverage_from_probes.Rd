@@ -4,18 +4,15 @@
 \alias{get_oncoscan_coverage_from_probes}
 \title{Load the oncoscan annotation file and infer the covered regions from it.}
 \usage{
-get_oncoscan_coverage_from_probes(
-  filename = system.file("extdata", "OncoScan.na33.r1.annot.csv.zip", package =
-    "oncoscanR")
-)
+get_oncoscan_coverage_from_probes(filename)
 }
 \arguments{
-\item{filename}{Path to the ChAS annotation file (either compressed or not). Defaults to the Oncoscan na33.r1
-file present in the package.}
+\item{filename}{Path to the ChAS annotation file (either compressed or not). For instance
+"OncoScan.na33.r1.annot.csv.zip"}
 }
 \value{
-A \code{GRanges} object containing the regions covered on each chromosome arm. If the file does
-not respect the format specifications, then an error is raised.
+A \code{GRanges} object containing the regions covered on each chromosome arm. If the
+file does not respect the format specifications, then an error is raised.
 }
 \description{
 Load the oncoscan annotation file and infer the covered regions from it.
@@ -27,5 +24,6 @@ Expects the following columns from the annotation file (as the first line of non
   - "Cytoband": cytoband name (e.g. 3q22.1)
 }
 \examples{
-oncoscan_na33.cov <- get_oncoscan_coverage_from_probes()
+oncoscan_na33.covhead <- get_oncoscan_coverage_from_probes(
+       system.file("extdata", "OncoScan.na33.r1.annot.csv.chr20.zip", package = "oncoscanR"))
 }

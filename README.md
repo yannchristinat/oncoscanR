@@ -70,20 +70,6 @@ Open R and type the following commands:
 
 If everything is setup fine, it should return a list with no arm-level alterations and a negative HRD score (nLST=1).
 
-## Change log
-
-### What's new in v1.0
-- The nLST test has been clinically validated on 384 patients from the PAOLA-1 trial and the recommended threshold
-is now >=15.
-- The default value for arm-level alterations has been set to 90% as mentioned in the publication [Christinat et al., J Mol Diagn 2021].
-
-### What's new in v0.2
-- Novel HRD score (nLST: number of LSTs, normalized by ploidy): `score_nlst`
-- Change in Oncoscan workflow to use the nLST score and thresholds.
-- New function to compute the number of Mb altered (with or without LOH): `score_mbalt`
-- New function to compute the average copy number: `score_avgcn`
-- New function to estimate the number of whole-genome duplication events (based on the average copy number and the
-thresholds defined by Carter et al.): `score_estwgd`
 
 ## Usage
 The main workflow can be launched either in R via the `workflow_oncoscan.run(chas.fn, gender)` function or via the

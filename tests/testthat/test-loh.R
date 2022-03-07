@@ -79,3 +79,22 @@ test_that("LOH works - empty segments", {
   expect_equal(n, 0)
 })
 
+test_that("gLOH works - real case", {
+  oncoscan.cov <- oncoscanR::oncoscan_na33.cov[seqnames(oncoscanR::oncoscan_na33.cov) != '21p']
+
+  chas.fn <- system.file("testdata", "LST_gene_list_full_location.txt", package = "oncoscanR")
+  segments <- load_chas(chas.fn, oncoscan.cov)
+  segments$cn.subtype <- get_cn_subtype(segments, 'F')
+  segs.clean <- trim_to_coverage(segments, oncoscan.cov) %>%
+    adjust_loh() %>%
+    prune_by_size()
+
+  armlevel.loh <- segs.clean[segs.clean$cn.type == cntype.loh] %>%
+    armlevel_alt(kit.coverage = oncoscan.cov)
+  armlevel.hetloss <- segs.clean[segs.clean$cn.subtype == cntype.hetloss] %>%
+    armlevel_alt(kit.coverage = oncoscan.cov)
+
+  p <- score_gloh(segs.clean, names(armlevel.loh), names(armlevel.hetloss), oncoscan.cov)
+  expect_equal(round(p, 4), 0.5024)
+})
+

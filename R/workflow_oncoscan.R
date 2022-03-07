@@ -7,7 +7,7 @@
 
 #' Run the standard workflow for Oncoscan ChAS files.
 #'
-#' @details Identifies the globally altered arms (\>=80\% of arm altered), computes the HRD and
+#' @details Identifies the globally altered arms (\>=90\% of arm altered), computes the HRD and
 #' TD+ scores. The amplification is defined as a CN subtype \code{cntype.weakamp} or
 #' \code{cntype.strongamp}. An arm is gained if of CN type \code{cntype.gain} unless the arm is
 #' amplified.

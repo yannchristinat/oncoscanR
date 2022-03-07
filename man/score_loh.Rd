@@ -26,8 +26,11 @@ Procedure based on the paper from Abkevich et al., Br J Cancer 2012 (PMID: 23047
 segments larger than 15Mb but excluding chromosome with a global LOH alteration (to compute with the
 \code{armlevel_alt} function on LOH segments only). This score was linked to BRCA1/2-deficient tumors.
 Note that the function will merge overlapping or neighbor LOH segments (at a distance of 1bp).
+
+Of note the cn.subtype has to be defined first via the function \code{get_cn_subtype}.
 }
 \examples{
+segs.chas_example$cn.subtype <- get_cn_subtype(segs.chas_example, 'F')
 armlevel.loh <- armlevel_alt(segs.chas_example[segs.chas_example$cn.type == cntype.loh],
                              kit.coverage = oncoscan_na33.cov)
 armlevel.hetloss <- armlevel_alt(segs.chas_example[segs.chas_example$cn.subtype == cntype.hetloss],
