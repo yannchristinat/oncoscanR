@@ -439,7 +439,8 @@ score_mbalt <- function(segments, kit.coverage, loh.rm = TRUE) {
 #' score_gloh(segs.chas_example, names(armlevel.loh), names(armlevel.hetloss), oncoscan_na33.cov)
 score_gloh <- function(segments, armlevel.loh, armlevel.hetloss, kit.coverage) {
     arms2discard <- c(names(armlevel.loh), names(armlevel.hetloss))
-    width.loh <- width(segments[segments$cn.subtype %in% c(cntype.hetloss, cntype.loh) &
-        !(seqnames(segments) %in% arms2discard)])
+    sel <- segments$cn.subtype %in% c(cntype.hetloss, cntype.loh) &
+        !(as.vector(seqnames(segments)) %in% arms2discard)
+    width.loh <- IRanges::width(segments[sel])
     return(sum(width.loh)/sum(width(kit.coverage)))
 }

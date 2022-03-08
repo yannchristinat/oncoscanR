@@ -42,7 +42,7 @@ test_that("loading ChAS annotation file works", {
   cov <- get_oncoscan_coverage_from_probes(filename)
 
   found <- 0
-  chr20 <- oncoscan_na33.cov[seqnames(oncoscan_na33.cov) %in% c('20p','20q')]
+  chr20 <- oncoscan_na33.cov[as.vector(seqnames(oncoscan_na33.cov)) %in% c('20p','20q')]
   for(i in seq_along(chr20)){
     segA <- chr20[i]
     for(j in seq_along(cov)){
