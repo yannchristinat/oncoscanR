@@ -73,15 +73,17 @@ compressed package is and run `install.packages('oncoscanR_1.0.0.tar.gz', repos=
 The package requires the prior installation of the packages `GenomicRanges` (bioconductor), `magrittr`, `jsonlite` and
 `readr`.
 
-`if (!requireNamespace("BiocManager", quietly = TRUE))
+```{r eval=FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
-BiocManager::install("GenomicRanges")`
+BiocManager::install("GenomicRanges")
 
-`install.packages(c("magrittr", "jsonlite", "readr"))`
+install.packages(c("magrittr", "jsonlite", "readr"))
+```
 
 ## Testing the installation
 Open R and type the following commands:
-```
+```{r}
 library(oncoscanR)
 segs.filename <- system.file("extdata", "chas_example.txt", package = "oncoscanR")
 workflow_oncoscan.run(segs.filename, "M")
@@ -100,7 +102,8 @@ Usage: `Rscript path_to_oncoscanR_package/bin/oncoscan-workflow.R CHAS_FILE GEND
 
 The script will output a JSON string into the terminal with all the computed information. :
 
-`{
+`
+{
   "armlevel": {
     "AMP": [],
     "LOSS": ["17p", "2q", "4p"],
@@ -114,7 +117,8 @@ The script will output a JSON string into the terminal with all the computed inf
   },
   "gender": "F",
   "file": "H19001012_gene_list_full_location.txt"
-}`
+}
+`
 
 Please read the manual for a description of all available R functions.
 
