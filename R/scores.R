@@ -213,7 +213,7 @@ score_loh <- function(segments, kit.coverage, armlevel.loh, armlevel.hetloss) {
         arms.to_ban <- append(arms.to_ban, do.call("c", arms_found.to_ban))
     }
     # Get LOH segments larger than 15Mb and not in 'arms.to_ban'
-    segs.loh <- segments[segments$cn.subtype %in% c(cntype.loh, cntype.hetloss) &
+    segs.loh <- segments[segments$cn.subtype %in% c(oncoscanR::cntype.loh, oncoscanR::cntype.hetloss) &
         !(as.vector(seqnames(segments)) %in% arms.to_ban)]
     segs.merged <- merge_segments(segs.loh, 1/1000)
     segs.loh_15m <- segs.merged[width(segs.merged) > 15 * 10^6]
@@ -253,7 +253,7 @@ score_td <- function(segments) {
         stop("Segments are missing the field 'cn.subtype'.")
     }
 
-    segs.gain <- segments[segments$cn.subtype == cntype.gain]
+    segs.gain <- segments[segments$cn.subtype == oncoscanR::cntype.gain]
     segs.width <- width(segs.gain)
     segs.tdplus <- segs.gain[segs.width > 1 * 10^6 & segs.width <= 10 * 10^6]
     segs.td <- segs.gain[segs.width <= 1 * 10^6]
@@ -289,7 +289,7 @@ score_avgcn <- function(segments, kit.coverage) {
 
     # Select segments on autosomes and with non-copy neutral alterations
     segs <- segments[as.vector(seqnames(segments)) %in% autosomes & segments$cn.type %in%
-        c(cntype.gain, cntype.loss)]
+        c(oncoscanR::cntype.gain, oncoscanR::cntype.loss)]
     if (length(segs) == 0) {
         return(2)
     }
@@ -361,7 +361,7 @@ score_estwgd <- function(segments, kit.coverage) {
 #' w <- score_estwgd(segs.chas_example, oncoscan_na33.cov)
 #' score_nlst(segs.chas_example, w['WGD'], oncoscan_na33.cov)
 score_nlst <- function(segments, n.wgd, kit.coverage) {
-    lst.noLOH <- score_lst(segments[segments$cn.type != cntype.loh], kit.coverage)
+    lst.noLOH <- score_lst(segments[segments$cn.type != oncoscanR::cntype.loh], kit.coverage)
 
     nlst <- max(0, lst.noLOH - 3.5 * as.numeric(n.wgd))
     label <- ifelse(nlst >= 15, "Positive", "Negative")
@@ -392,7 +392,7 @@ score_mbalt <- function(segments, kit.coverage, loh.rm = TRUE) {
     # Exclude (or not) the LOH segments
     segs <- segments
     if (loh.rm) {
-        segs <- segments[segments$cn.type != cntype.loh]
+        segs <- segments[segments$cn.type != oncoscanR::cntype.loh]
     }
 
     if (length(segs) == 0) {
@@ -439,7 +439,7 @@ score_mbalt <- function(segments, kit.coverage, loh.rm = TRUE) {
 #' score_gloh(segs.chas_example, names(armlevel.loh), names(armlevel.hetloss), oncoscan_na33.cov)
 score_gloh <- function(segments, armlevel.loh, armlevel.hetloss, kit.coverage) {
     arms2discard <- c(names(armlevel.loh), names(armlevel.hetloss))
-    sel <- segments$cn.subtype %in% c(cntype.hetloss, cntype.loh) &
+    sel <- segments$cn.subtype %in% c(oncoscanR::cntype.hetloss, oncoscanR::cntype.loh) &
         !(as.vector(seqnames(segments)) %in% arms2discard)
     width.loh <- IRanges::width(segments[sel])
     return(sum(width.loh)/sum(width(kit.coverage)))

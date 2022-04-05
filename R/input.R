@@ -73,9 +73,11 @@ load_chas <- function(filename, kit.coverage) {
         seg_cntype <- oncoscan_table$Type[i]
 
         # Test if copy number type is correct
-        if (!(seg_cntype %in% c(cntype.gain, cntype.loss, cntype.loh))) {
-            stop(paste("The column \"Type\" should contain only the following values:",
-                c(cntype.gain, cntype.loss, cntype.loh), "whereas", seg_cntype, "was found!"))
+        if (!(seg_cntype %in% c(oncoscanR::cntype.gain, oncoscanR::cntype.loss, oncoscanR::cntype.loh))) {
+            msg <- paste("The column \"Type\" should contain only the following values:",
+                         c(oncoscanR::cntype.gain, oncoscanR::cntype.loss, oncoscanR::cntype.loh),
+                         "whereas", seg_cntype, "was found!")
+            stop(msg)
         }
 
         # Get the arms
@@ -86,23 +88,22 @@ load_chas <- function(filename, kit.coverage) {
             if (length(parm) == 0 || seg_start > end(parm)) {
                 # Then the segment is only in the q arm
                 seg <- GRanges(seqnames = factor(paste0(seg_chr, "q"),
-                  levels = levels(seqnames(kit.coverage))),
-                  ranges = IRanges(start = seg_start, end = seg_end), cn = seg_cn,
-                  cn.type = seg_cntype)
+                    levels = levels(seqnames(kit.coverage))),
+                    ranges = IRanges(start = seg_start, end = seg_end), cn = seg_cn,
+                    cn.type = seg_cntype)
                 segments_list[[counter]] <- seg
             } else if (length(qarm) == 0 || seg_end < start(qarm)) {
                 # Then the segment is only in the p arm
                 seg <- GRanges(seqnames = factor(paste0(seg_chr, "p"),
-                  levels = levels(seqnames(kit.coverage))),
-                  ranges = IRanges(start = seg_start, end = seg_end), cn = seg_cn,
-                  cn.type = seg_cntype)
+                    levels = levels(seqnames(kit.coverage))),
+                    ranges = IRanges(start = seg_start, end = seg_end), cn = seg_cn,
+                    cn.type = seg_cntype)
                 segments_list[[counter]] <- seg
             } else {
                 # Create a segment for each arm
                 seg <- GRanges(seqnames = factor(paste0(seg_chr, c("p", "q")),
-                  levels = levels(seqnames(kit.coverage))),
-                  ranges = IRanges(start = rep(seg_start, 2), end = rep(seg_end,
-                    2)))
+                    levels = levels(seqnames(kit.coverage))),
+                    ranges = IRanges(start = rep(seg_start, 2), end = rep(seg_end, 2)))
 
                 # Get the segments overlapping with the arms
                 o <- IRanges::findOverlapPairs(c(parm, qarm), seg)
@@ -127,10 +128,12 @@ load_chas <- function(filename, kit.coverage) {
                 segB <- arm_segs[i]
                 if (start(segA) == start(segB) & end(segA) == end(segB) &
                     segA$cn.type == segB$cn.type) {
-                  if (segA$cn.type == cntype.loh) {
-                    stop(paste("The file", filename, "contains duplicated entries."))
+                  if (segA$cn.type == oncoscanR::cntype.loh) {
+                      msg <- paste("The file", filename, "contains duplicated entries.")
+                      stop(msg)
                   } else if (segA$cn == segB$cn) {
-                    stop(paste("The file", filename, "contains duplicated entries."))
+                      msg <- paste("The file", filename, "contains duplicated entries.")
+                      stop(msg)
                   }
                 }
             }
@@ -269,18 +272,18 @@ get_cn_subtype <- function(segments, gender) {
             return(NA)
         }
         if (seg$cn.type == "LOH") {
-            return(cntype.loh)
+            return(oncoscanR::cntype.loh)
         }
         s <- NA
         if (length(intersect(seqnames(seg), c(sexchroms, paste0("chr", sexchroms)))) >
             0 & gender == "M") {
-            s <- ifelse(seg$cn < 1, cntype.homloss, ifelse(seg$cn > 1, ifelse(seg$cn >
-                3, ifelse(seg$cn > 8, cntype.strongamp, cntype.weakamp), cntype.gain),
+            s <- ifelse(seg$cn < 1, oncoscanR::cntype.homloss, ifelse(seg$cn > 1, ifelse(seg$cn >
+                3, ifelse(seg$cn > 8, oncoscanR::cntype.strongamp, oncoscanR::cntype.weakamp), oncoscanR::cntype.gain),
                 NA))
         } else {
-            s <- ifelse(seg$cn < 2, ifelse(seg$cn < 1, cntype.homloss, cntype.hetloss),
-                ifelse(seg$cn > 2, ifelse(seg$cn > 4, ifelse(seg$cn > 9, cntype.strongamp,
-                  cntype.weakamp), cntype.gain), NA))
+            s <- ifelse(seg$cn < 2, ifelse(seg$cn < 1, oncoscanR::cntype.homloss, oncoscanR::cntype.hetloss),
+                ifelse(seg$cn > 2, ifelse(seg$cn > 4, ifelse(seg$cn > 9, oncoscanR::cntype.strongamp,
+                                                             oncoscanR::cntype.weakamp), oncoscanR::cntype.gain), NA))
         }
         return(s)
     })
@@ -425,9 +428,9 @@ adjust_loh <- function(segments) {
     loh.adj <- lapply(unique(seqnames(segments)), function(arm) {
         # Detect overlaps between LOH and Loss and trim the LOH segment if
         # necessary
-        segs.loh <- segments[segments$cn.type == cntype.loh & seqnames(segments) ==
+        segs.loh <- segments[segments$cn.type == oncoscanR::cntype.loh & seqnames(segments) ==
             arm]
-        segs.loss <- segments[segments$cn.type == cntype.loss & seqnames(segments) ==
+        segs.loss <- segments[segments$cn.type == oncoscanR::cntype.loss & seqnames(segments) ==
             arm]
         op <- IRanges::findOverlapPairs(segs.loh, segs.loss)
 
@@ -456,16 +459,16 @@ adjust_loh <- function(segments) {
         adj <- union(setdiff(segs.loh, loh.todelete), loh.toadd)
         if (length(adj) > 0) {
             adj$cn <- NA
-            adj$cn.type <- cntype.loh
+            adj$cn.type <- oncoscanR::cntype.loh
             if (!is.null(segments$cn.subtype)) {
-                adj$cn.subtype <- cntype.loh
+                adj$cn.subtype <- oncoscanR::cntype.loh
             }
         }
 
         return(adj)
     })
 
-    return(c(segments[segments$cn.type != cntype.loh], do.call("c", unlist(loh.adj))))
+    return(c(segments[segments$cn.type != oncoscanR::cntype.loh], do.call("c", unlist(loh.adj))))
 }
 
 

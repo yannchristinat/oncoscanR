@@ -133,3 +133,11 @@ inactivation.", T. Popova et al., Cancer Res volume 72(21), november 2012.
 cancer.", V. Abkevich et al., Br J Cancer. 2012 Nov 6;107(10).
 5. "Absolute quantification of somatic DNA alterations in human cancer", S. Carter et al., Nat Biotech, 2012 volume
 30(5).
+
+
+## Session info
+Here is the output of `sessionInfo()` on the system on which this document was compiled:
+
+```{r}
+sessionInfo()
+```

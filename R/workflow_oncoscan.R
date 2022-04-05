@@ -50,28 +50,33 @@ workflow_oncoscan.run <- function(chas.fn, gender) {
     # Split segments by type: Loss, LOH, gain or amplification and get the
     # arm-level alterations.  Note that the segments with copy gains include
     # all amplified segments.
-    armlevel.loss <- segs.clean[segs.clean$cn.type == cntype.loss] %>%
+    armlevel.loss <- segs.clean[segs.clean$cn.type == oncoscanR::cntype.loss] %>%
         armlevel_alt(kit.coverage = oncoscan.cov)
-    armlevel.loh <- segs.clean[segs.clean$cn.type == cntype.loh] %>%
+    armlevel.loh <- segs.clean[segs.clean$cn.type == oncoscanR::cntype.loh] %>%
         armlevel_alt(kit.coverage = oncoscan.cov)
-    armlevel.gain <- segs.clean[segs.clean$cn.type == cntype.gain] %>%
+    armlevel.gain <- segs.clean[segs.clean$cn.type == oncoscanR::cntype.gain] %>%
         armlevel_alt(kit.coverage = oncoscan.cov)
-    armlevel.amp <- segs.clean[segs.clean$cn.subtype %in% c(cntype.strongamp, cntype.weakamp)] %>%
+    armlevel.amp <- segs.clean[segs.clean$cn.subtype %in% c(oncoscanR::cntype.strongamp, oncoscanR::cntype.weakamp)] %>%
         armlevel_alt(kit.coverage = oncoscan.cov)
 
     # Remove amplified segments from armlevel.gain
     armlevel.gain <- armlevel.gain[!(names(armlevel.gain) %in% names(armlevel.amp))]
 
     # Get the number of nLST and TDplus
-    wgd <- score_estwgd(segs.clean, oncoscanR::oncoscan_na33.cov)  # Get the avg CN, including 21p
+    wgd <- score_estwgd(segs.clean, oncoscan.cov)  # Get the avg CN, including 21p
     hrd <- score_nlst(segs.clean, wgd["WGD"], oncoscan.cov)
 
     n.td <- score_td(segs.clean)
 
+    mbalt <- score_mbalt(segs.clean, oncoscan.cov, loh.rm=TRUE)
+
+    hrd.label <- hrd["HRD"]
+    if(mbalt['sample']/mbalt['kit'] < 0.01) hrd.label <- paste(hrd["HRD"], "(no tumor?)")
+
     # Get the alterations into a single list and print it in a JSON format.
     armlevel_alt.list <- list(AMP = sort(names(armlevel.amp)), LOSS = sort(names(armlevel.loss)),
         LOH = sort(names(armlevel.loh)), GAIN = sort(names(armlevel.gain)))
-    scores.list <- list(HRD = paste0(hrd["HRD"], ", nLST=", hrd["nLST"]), TDplus = n.td$TDplus,
+    scores.list <- list(HRD = paste0(hrd.label, ", nLST=", hrd["nLST"]), TDplus = n.td$TDplus,
         avgCN = substr(as.character(wgd["avgCN"]), 1, 4))
 
     return(list(armlevel = armlevel_alt.list, scores = scores.list, gender = gender,

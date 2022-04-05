@@ -87,6 +87,6 @@
 "segs.chas_example"
 
 # Set the objects as global variables otherwise R CMD CHECK complains
-utils::globalVariables(c("cntype.gain", "cntype.amp", "cntype.strongamp",
-    "cntype.weakamp", "cntype.loh", "cntype.loss", "cntype.homloss",
-    "cntype.hetloss", "oncoscan_na33.cov", "segs.chas_example"))
+#utils::globalVariables(c("cntype.gain", "cntype.amp", "cntype.strongamp",
+#    "cntype.weakamp", "cntype.loh", "cntype.loss", "cntype.homloss",
+#    "cntype.hetloss", "oncoscan_na33.cov", "segs.chas_example"))

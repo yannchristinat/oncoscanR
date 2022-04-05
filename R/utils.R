@@ -27,20 +27,15 @@
 #' same_segments(s1,s2)
 same_segments <- function(x, y) {
     # Test the class of the parameters
-    x.class <- class(x)[1]
-    y.class <- class(y)[1]
-    if (x.class != y.class) {
-        return(FALSE)
-    }
-    if (x.class != "GRanges") {
-        stop(paste("Function 'compare_segments' can only handle GRanges objects. Found:",
-            x.class))
+    if (!is(x, "GRanges") || !is(y, "GRanges")) {
+        stop("Function 'compare_segments' can only handle GRanges objects.")
     }
 
     # Ensures that the GRanges contain only 1 segment each
     if (length(x) != length(y) || length(x) != 1) {
-        stop(paste("Function 'compare_segments' can only handle GRanges with only one segment. Found:",
-            length(x), length(y)))
+        msg <- paste("Function 'compare_segments' can only handle GRanges with only one segment. Found:",
+                     length(x), length(y))
+        stop(msg)
     }
 
     # Replace any NA by NULL in cn, cn.type and cn.subtype
@@ -129,7 +124,7 @@ same_segments <- function(x, y) {
 #'               cn = 6)
 #' is_cn_segment(s2, raise_error = FALSE)
 is_cn_segment <- function(obj, raise_error = TRUE) {
-    test <- class(obj)[1] == "GRanges" && (length(obj) == 0 || (!is.null(obj$cn) &&
+    test <- is(obj, "GRanges") && (length(obj) == 0 || (!is.null(obj$cn) &&
         !is.null(obj$cn.type)))
     if (!test && raise_error) {
         stop("The parameter has to be a CNV segment (GRanges object with 'cn' and 'cn.type' columns).")

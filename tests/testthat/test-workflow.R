@@ -64,3 +64,20 @@ test_that("Oncoscan workflow returns the correct structure", {
 
   expect_true(sum(c(armlevel.nametest, scores.nametest, gender.test, file.test))==4)
 })
+
+test_that("Oncoscan workflow works with an empty file", {
+  segs.filename <- system.file("testdata", "chas_example-empty.txt", package = "oncoscanR")
+  armlevel.fn <- system.file("testdata", "chas_example-empty.armlevel_scna.csv", package = "oncoscanR")
+
+  expect_warning(dat <- workflow_oncoscan.run(segs.filename, 'M'))
+
+  # Test arm-level detection
+  tests <- armlevel.test(dat[['armlevel']], armlevel.fn)
+  expect_true(sum(tests)==4)
+
+  # Test scores
+  scores <- dat[['scores']]
+  expect_true(scores['HRD'] == "Negative (no tumor?), nLST=0")
+  expect_true(scores['avgCN'] == '2')
+  expect_true(scores['TDplus'] == '0')
+})

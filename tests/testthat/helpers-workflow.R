@@ -1,6 +1,6 @@
 armlevel.test <- function(dat.armlevel, armlevel.fn){
   # Get ground truth
-  dat.true <- read.csv(armlevel.fn, header = TRUE, row.names = 1, stringsAsFactors = FALSE)
+  dat.true <- read.csv(armlevel.fn, header = TRUE, row.names = 1, stringsAsFactors = FALSE, colClasses = 'character')
 
   #Check AMP, GAIN, LOSS and LOH
   amp.test <- identical(sort(dat.armlevel[['AMP']]), sort(unlist(strsplit(dat.true['AMPL','Arms'], ','))))
