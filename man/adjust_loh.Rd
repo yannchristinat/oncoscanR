@@ -21,10 +21,7 @@ Trim LOH segments with respect to loss segments.
 LOH segments completely contained within (or equal to)  a copy loss
 segment are deleted.
 LOH segments partially overlapping (on one end only) with a copy loss segment
- are trimmed to
-remove the overlap. If a copy loss segment is completely contained within
-(but not equal to) a LOH
-segment, then nothing is done; the overlap remains.
+ are trimmed to remove the overlap or split into several segments.
 }
 \examples{
 segs.adj <- adjust_loh(segs.chas_example)

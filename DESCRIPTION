@@ -23,9 +23,9 @@ Imports:
     readr,
   	S4Vectors,
   	magrittr
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Depends:
-    R (>= 3.5),
+    R (>= 4.1),
     IRanges (>= 2.6.1),
     GenomicRanges (>= 1.24.3)
 Suggests: 
