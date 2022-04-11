@@ -13,7 +13,7 @@ Description: The software uses the copy number segments from a text file and
 License: MIT + file LICENSE
 Date: 2020-06-24
 Encoding: UTF-8
-LazyData: false
+LazyData: true
 VignetteBuilder: knitr
 biocViews:
     CopyNumberVariation,
@@ -25,7 +25,7 @@ Imports:
   	magrittr
 RoxygenNote: 7.1.2
 Depends:
-    R (>= 4.1),
+    R (>= 3.6),
     IRanges (>= 2.6.1),
     GenomicRanges (>= 1.24.3)
 Suggests: 

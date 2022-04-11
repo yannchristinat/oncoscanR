@@ -148,44 +148,61 @@ test_that("Merging works with min threshold (1)", {
   expect_true(same_segmentsets(segs.clean, expected_segs))
 })
 
+#' Tests the following scenario (symbol + indicate that the LOH region should be trimmed)
+#' LOH  ++++----
+#' Loss ----
+#' 
+#' LOH  ----++++
+#' Loss     ----
+#' 
+#' LOH  ----++++----
+#' Loss     ----
+#' 
+#' LOH      ++++
+#' Loss ------------
+#' 
+#' LOH      ----
+#' Loss ----
+#' 
+#' LOH  ----
+#' Loss     ----
+#' 
+#' LOH  ++++
+#' Loss --------
+#' 
+#' LOH      ++++
+#' Loss --------
+#' 
+#' LOH  ++++    ++++
+#' Loss ------------
+#' 
+#' LOH  ++++----++++
+#' Loss ----    ----
+#' 
 test_that("LOH are trimmed with respect to Loss", {
-  segs <- GRanges(seqnames = factor(rep('1p',12), levels = c('1p', '1q', 'Xp')),
-                  ranges = IRanges(start = c (1,  1, 61, 51,  91,  81, 121, 131, 151, 161, 191, 181),
-                                   end =   c(10, 20, 70, 70, 100, 110, 150, 140, 160, 170, 200, 190)),
-                  cn = c(0,NA,1,NA,1,NA,1,NA,1,NA,1,NA),
-                  cn.type = c(cntype.loss, cntype.loh,
-                              cntype.loss, cntype.loh,
-                              cntype.loss, cntype.loh,
-                              cntype.loss, cntype.loh,
-                              cntype.loss, cntype.loh,
-                              cntype.loss, cntype.loh),
-                  cn.subtype = c(cntype.homloss, cntype.loh,
-                                 cntype.hetloss, cntype.loh,
-                                 cntype.hetloss, cntype.loh,
-                                 cntype.hetloss, cntype.loh,
-                                 cntype.hetloss, cntype.loh,
-                                 cntype.hetloss, cntype.loh))
-
+  segs_loh <- GRanges(seqnames = factor(rep('1p',11), levels = c('1p', '1q', 'Xp')),
+                  ranges = IRanges(start = c( 1, 51,  81, 131, 171, 191, 221, 261, 281, 301, 321),
+                                   end =   c(20, 70, 110, 140, 180, 200, 230, 270, 290, 310, 350)),
+                  cn = rep(NA, 11),
+                  cn.type = rep(cntype.loh, 11),
+                  cn.subtype = rep(cntype.loh, 11))
+  segs_loss <- GRanges(seqnames = factor(rep('1p',11), levels = c('1p', '1q', 'Xp')),
+                      ranges = IRanges(start = c( 1, 61,  91, 121, 161, 201, 221, 251, 281, 321, 341),
+                                       end =   c(10, 70, 100, 150, 170, 210, 240, 270, 310, 330, 350)),
+                      cn = c(rep(0, 3), rep(1, 3), rep(1.5, 5)),
+                      cn.type = rep(cntype.loss, 11),
+                      cn.subtype = c(rep(cntype.homloss, 3), rep(cntype.hetloss, 8)))
+  segs <- c(segs_loh, segs_loss)
   segs.clean <- adjust_loh(segs)
 
-  expected_segs <- GRanges(seqnames = factor(rep('1p',11), levels = c('1p', '1q', 'Xp')),
-                           ranges = IRanges(start = c (1,  11, 61, 51,  91,  81, 121, 151, 161, 191, 181),
-                                            end =   c(10, 20, 70, 60, 100, 110, 150, 160, 170, 200, 190)),
-                           cn = c(0,NA,1,NA,1,NA,1,1,NA,1,NA),
-                           cn.type = c(cntype.loss, cntype.loh,
-                                       cntype.loss, cntype.loh,
-                                       cntype.loss, cntype.loh,
-                                       cntype.loss,
-                                       cntype.loss, cntype.loh,
-                                       cntype.loss, cntype.loh),
-                           cn.subtype = c(cntype.homloss, cntype.loh,
-                                          cntype.hetloss, cntype.loh,
-                                          cntype.hetloss, cntype.loh,
-                                          cntype.hetloss,
-                                          cntype.hetloss, cntype.loh,
-                                          cntype.hetloss, cntype.loh))
+  expected_lohsegs <- GRanges(seqnames = factor(rep('1p',7), levels = c('1p', '1q', 'Xp')),
+                           ranges = IRanges(start = c(11, 51, 81, 101, 171, 191, 331),
+                                            end =   c(20, 60, 90, 110, 180, 200, 340)),
+                           cn = rep(NA, 7),
+                           cn.type = rep(cntype.loh, 7),
+                           cn.subtype = rep(cntype.loh, 7))
 
-  expect_true(same_segmentsets(segs.clean, expected_segs))
+  expect_true(same_segmentsets(segs.clean, c(expected_lohsegs, segs_loss)))
 })
 
 

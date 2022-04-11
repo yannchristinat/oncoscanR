@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Yann Christinat" />
+
+<meta name="date" content="2022-04-08" />
+
+<title>oncoscanR</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">oncoscanR</h1>
+<h4 class="author">Yann Christinat</h4>
+<h4 class="date">2022-04-08</h4>
+
+
+
+<div id="description" class="section level2">
+<h2>Description</h2>
+<p>OncoscanR is an R package to handle Copy Number Variation analyses
+originating from the Oncoscan assay (Affymetrix). It allows computation
+of different homologous recombination deficiency (HRD) scores and the
+tandem duplication plus score (TDplus) to identify CDK12-mutated tumors
+[Popova et al., Cancer Res 2016]. The package also allows for
+identification of arm-level alterations (e.g. gain of chromosome arm
+1p).</p>
+<p><strong>IMPORTANT</strong>: The package expects as input the text
+exported file from ChAS (Chromosome Analysis Suite; the Affymetrix
+software to identify CNV segments from the Oncoscan Assay). The package
+assumes that all segments given in the file are correct and true. The
+ChAS text file has to contain the columns <code>Type</code>,
+<code>CN State</code> and <code>Full Location</code> (to setup in ChAS).
+Any text file that complies with this structure should work equally
+well.</p>
+<p>Note that the Oncoscan does not cover the p arms of chromosome 13,
+14, 15 and 22. The coverage on the p arm of chromosome 21 is only
+partial and is not included in the standard Oncoscan workflow (function
+<code>workflow_oncoscan.run</code> or script
+<code>bin/oncoscan-workflow.R</code>).</p>
+<div id="computation-of-arm-level-alteration" class="section level3">
+<h3>Computation of arm-level alteration</h3>
+<p>An arm is declared globally altered if more than 80% of its bases are
+altered with a similar CNV type (amplifications [3 extra copies or
+more], gains [1-2 extra copies], losses or copy-neutral losses of
+heterozygozity [LOH]). For instance, “gain of 3p” indicates that there
+is more than 80% of arm with 3 copies but less than 80% with 5
+(otherwise it would be an amplification). Prior to computation, segments
+of same copy number and at a distance &lt;300Kbp (Oncoscan resolution
+genome-wide) are merged. The remaining segments are filtered to a
+minimum size of 300Kbp.</p>
+</div>
+<div id="score-lst" class="section level3">
+<h3>Score LST</h3>
+<p>Procedure based on the paper from Popova et al, Can. Res. 2012 (PMID:
+22933060). First segments smaller than 3Mb are removed, then segments
+are smoothed with respect to copy number at a distance of 3Mb. The
+number of LSTs is the number of breakpoints (breakpoints closer than 3Mb
+are merged) that have a segment larger or equal to 10Mb on each side.
+This score was linked to BRCA1/2-deficient tumors.</p>
+</div>
+<div id="score-loh" class="section level3">
+<h3>Score LOH</h3>
+<p>Procedure based on the paper from Abkevich et al., Br J Cancer 2012
+(PMID: 23047548). Number of LOH segments larger than 15Mb but excluding
+segments on chromosomes with a global LOH alteration. This score was
+linked to BRCA1/2-deficient tumors.</p>
+</div>
+<div id="score-nlst" class="section level3">
+<h3>Score nLST</h3>
+<p>HRD score developed at HUG and based on the LST score by Popova et
+al. but normalized by an estimation of the number of whole-genome
+doubling events.Of note, copy-neutral LOH segments are removed before
+computation.</p>
+<p><code>nLST = LST - 7*W/2</code> where <code>W</code> is the number of
+whole-genome doubling events</p>
+</div>
+<div id="score-tdplus" class="section level3">
+<h3>Score TDplus</h3>
+<p>Procedure based on the paper from Popova et al., Cancer Res 2016
+(PMID: 26787835). The TDplus score is defined as the number of regions
+larger than 1Mb but smaller or equal to 10Mb with a gain of one or two
+copies. This score was linked to CDK12-deficient tumors. They also
+identified as second category of tandem duplication whose size is
+smaller or equal than 1Mb and around 300Kb but could not link it to a
+phenotype. Note that due to its resolution the Oncoscan assaywill most
+likely miss t his second category. Nonetheless it is reported by the
+function but not by the standard workflow.</p>
+</div>
+</div>
+<div id="installation" class="section level2">
+<h2>Installation</h2>
+<p>There are two options to install the package: 1. Download the
+<code>oncoscanR_1.0.0.tar.gz</code> file (stable version). Then in R,
+set the working directory to where the compressed package is and run
+<code>install.packages(&#39;oncoscanR_1.0.0.tar.gz&#39;, repos=NULL, type=&#39;source&#39;)</code>.
+2. In R, install the devtools package
+(<code>install.packages(&#39;devtools&#39;)</code>), load it
+(<code>library(devtools)</code>), then run
+<code>install_github(&#39;yannchristinat/oncoscanR&#39;)</code>.</p>
+<p>The package requires the prior installation of the packages
+<code>GenomicRanges</code> (bioconductor), <code>magrittr</code>,
+<code>jsonlite</code> and <code>readr</code>.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">&quot;BiocManager&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">install.packages</span>(<span class="st">&quot;BiocManager&quot;</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>BiocManager<span class="sc">::</span><span class="fu">install</span>(<span class="st">&quot;GenomicRanges&quot;</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">c</span>(<span class="st">&quot;magrittr&quot;</span>, <span class="st">&quot;jsonlite&quot;</span>, <span class="st">&quot;readr&quot;</span>))</span></code></pre></div>
+</div>
+<div id="testing-the-installation" class="section level2">
+<h2>Testing the installation</h2>
+<p>Open R and type the following commands:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(oncoscanR)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>segs.filename <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;chas_example.txt&quot;</span>, <span class="at">package =</span> <span class="st">&quot;oncoscanR&quot;</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">workflow_oncoscan.run</span>(segs.filename, <span class="st">&quot;M&quot;</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $armlevel</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $armlevel$AMP</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; character(0)</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $armlevel$LOSS</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; character(0)</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $armlevel$LOH</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; character(0)</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $armlevel$GAIN</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; character(0)</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $scores</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $scores$HRD</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Negative, nLST=1&quot;</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $scores$TDplus</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $scores$avgCN</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;2.10&quot;</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $gender</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;M&quot;</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $file</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;chas_example.txt&quot;</span></span></code></pre></div>
+<p>If everything is setup fine, it should return a list with no
+arm-level alterations and a negative HRD score (nLST=1).</p>
+</div>
+<div id="usage" class="section level2">
+<h2>Usage</h2>
+<p>The main workflow can be launched either in R via the
+<code>workflow_oncoscan.run(chas.fn, gender)</code> function or via the
+script <code>bin/run_oncoscan_workflow.R</code>:</p>
+<p>Usage:
+<code>Rscript path_to_oncoscanR_package/bin/oncoscan-workflow.R CHAS_FILE GENDER</code>
+- <code>CHAS_FILE</code>: Path to the text export file from ChAS or a
+compatible text file. - <code>GENDER</code>: Gender of the sample (used
+to handle sex chromosomes). Has to be M (male) or F (female).</p>
+<p>The script will output a JSON string into the terminal with all the
+computed information. :</p>
+<p><code>{   &quot;armlevel&quot;: {     &quot;AMP&quot;: [],     &quot;LOSS&quot;: [&quot;17p&quot;, &quot;2q&quot;, &quot;4p&quot;],     &quot;LOH&quot;: [&quot;14q&quot;, &quot;5q&quot;, &quot;8p&quot;, &quot;8q&quot;],     &quot;GAIN&quot;: [19p&quot;, &quot;19q&quot;, &quot;1q&quot;, &quot;20p&quot;, &quot;20q&quot;, &quot;3q&quot;, &quot;5p&quot;, &quot;6p&quot;, &quot;9p&quot;, &quot;9q&quot;, &quot;Xp&quot;, &quot;Xq&quot;]   },   &quot;scores&quot;: {     &quot;HRD&quot;: &quot;Negative, nLST=12&quot;,     &quot;TDplus&quot;: 22,     &quot;avgCN&quot;: &quot;2.43&quot;   },   &quot;gender&quot;: &quot;F&quot;,   &quot;file&quot;: &quot;H19001012_gene_list_full_location.txt&quot; }</code></p>
+<p>Please read the manual for a description of all available R
+functions.</p>
+</div>
+<div id="references" class="section level2">
+<h2>References</h2>
+<ol style="list-style-type: decimal">
+<li>“Homologous Recombination Deficiency (HRD) Score Predicts Response
+to Platinum-Containing Neoadjuvant Chemotherapy in Patients with
+Triple-Negative Breast Cancer.”, M. Telli et al., Clin Cancer Res volume
+22(15), august 2016.</li>
+<li>“Ovarian Cancers Harboring Inactivating Mutations in CDK12 Display a
+Distinct Genomic Instability Pattern Characterized by Large Tandem
+Duplications.”, T. Popova et al., Cancer Res volume 76(7), april
+2016.</li>
+<li>“Ploidy and large-scale genomic instability consistently identify
+basal-like breast carcinomas with BRCA1/2 inactivation.”, T. Popova et
+al., Cancer Res volume 72(21), november 2012.</li>
+<li>“Patterns of genomic loss of heterozygosity predict homologous
+recombination repair defects in epithelial ovarian cancer.”, V. Abkevich
+et al., Br J Cancer. 2012 Nov 6;107(10).</li>
+<li>“Absolute quantification of somatic DNA alterations in human
+cancer”, S. Carter et al., Nat Biotech, 2012 volume 30(5).</li>
+</ol>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

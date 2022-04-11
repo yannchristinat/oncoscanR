@@ -95,6 +95,6 @@ test_that("gLOH works - real case", {
     armlevel_alt(kit.coverage = oncoscan.cov)
 
   p <- score_gloh(segs.clean, names(armlevel.loh), names(armlevel.hetloss), oncoscan.cov)
-  expect_equal(round(p, 4), 0.5024)
+  expect_equal(round(p, 4), 0.4997)
 })
 
