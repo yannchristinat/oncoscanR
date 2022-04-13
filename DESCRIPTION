@@ -14,7 +14,7 @@ License: MIT + file LICENSE
 Date: 2020-06-24
 Encoding: UTF-8
 LazyData: true
-VignetteBuilder: knitr
+VignetteBuilder: knitr, rmarkdown
 biocViews:
     CopyNumberVariation,
     Microarray,

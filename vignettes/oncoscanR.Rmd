@@ -53,7 +53,9 @@ This score was linked to BRCA1/2-deficient tumors.
 HRD score developed at HUG and based on the LST score by Popova et al. but normalized by an estimation of the number of
 whole-genome doubling events.Of note, copy-neutral LOH segments are removed before computation.
 
-`nLST = LST - 7*W/2` where `W` is the number of whole-genome doubling events
+`nLST = LST - 7*W/2` where `W` is the number of whole-genome doubling events.
+
+The score is positive if there are at least 15 nLST.
 
 ### Score TDplus
 Procedure based on the paper from Popova et al., Cancer Res 2016 (PMID: 26787835). The TDplus

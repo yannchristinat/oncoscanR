@@ -17,7 +17,7 @@ each chromosome arm.}
 }
 \value{
 A named list with the number of nLSTs and the corresponding label
-('Positive (high confidence)', 'Positive (low confidence)', 'Negative').
+('Positive', 'Negative').
 }
 \description{
 Compute the number of LSTs, normalized by the number of WGD events.
@@ -26,9 +26,8 @@ Compute the number of LSTs, normalized by the number of WGD events.
 Compute the number of LSTs in non-LOH segments via the
 \code{score_lst} function and subtract the extra noise induced by WGD events:
  nLST = LST - 7*W/2 where W is the number of WGD events.
-A sample is HRD positive (deficient in HR pathway) if nLST is >13. If nLST is
- >19 then the confidence is high. This score was linked to BRCA1/2-deficient
- tumors.
+A sample is HRD positive (deficient in HR pathway) if nLST is >=15. 
+This score was linked to BRCA1/2-deficient tumors.
 }
 \examples{
 w <- score_estwgd(segs.chas_example, oncoscan_na33.cov)
