@@ -94,7 +94,11 @@ test_that("gLOH works - real case", {
   armlevel.hetloss <- segs.clean[segs.clean$cn.subtype == cntype.hetloss] %>%
     armlevel_alt(kit.coverage = oncoscan.cov)
 
+  sel.segs <- segs.clean$cn.subtype %in% c(oncoscanR::cntype.hetloss, oncoscanR::cntype.loh)
+  sel.arms <- !as.vector(seqnames(segs.clean)) %in% c(names(armlevel.loh), names(armlevel.hetloss))
+  expected_p <- sum( width(segs.clean[sel.segs & sel.arms]))/sum(width(oncoscan.cov))
+  
   p <- score_gloh(segs.clean, names(armlevel.loh), names(armlevel.hetloss), oncoscan.cov)
-  expect_equal(round(p, 4), 0.4997)
+  expect_equal(p, expected_p)
 })
 
