@@ -343,9 +343,8 @@ score_estwgd <- function(segments, kit.coverage) {
 #' @details Compute the number of LSTs in non-LOH segments via the
 #' \code{score_lst} function and subtract the extra noise induced by WGD events:
 #'  nLST = LST - 7*W/2 where W is the number of WGD events.
-#' A sample is HRD positive (deficient in HR pathway) if nLST is >13. If nLST is
-#'  >19 then the confidence is high. This score was linked to BRCA1/2-deficient
-#'  tumors.
+#' A sample is HRD positive (deficient in HR pathway) if nLST is >=15. 
+#' This score was linked to BRCA1/2-deficient tumors.
 #'
 #' @param segments A \code{GRanges} object containing the segments, their copy
 #' number and copy number types.
@@ -354,7 +353,7 @@ score_estwgd <- function(segments, kit.coverage) {
 #'  each chromosome arm.
 #'
 #' @return A named list with the number of nLSTs and the corresponding label
-#' ('Positive (high confidence)', 'Positive (low confidence)', 'Negative').
+#' ('Positive', 'Negative').
 #' @export
 #'
 #' @examples

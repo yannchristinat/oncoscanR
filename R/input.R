@@ -399,10 +399,7 @@ merge_segments <- function(segments, kit.resolution = 300) {
 #' @details LOH segments completely contained within (or equal to)  a copy loss
 #' segment are deleted.
 #' LOH segments partially overlapping (on one end only) with a copy loss segment
-#'  are trimmed to
-#' remove the overlap. If a copy loss segment is completely contained within
-#' (but not equal to) a LOH
-#' segment, then nothing is done; the overlap remains.
+#'  are trimmed to remove the overlap or split into several segments.
 #'
 #' @param segments A \code{GRanges} object containing the segments, their copy
 #' number and copy number types.
@@ -424,51 +421,75 @@ adjust_loh <- function(segments) {
         return(segments)
     }
 
-    # Apply on each arm...
+   
+    # Apply on each arm
     loh.adj <- lapply(unique(seqnames(segments)), function(arm) {
-        # Detect overlaps between LOH and Loss and trim the LOH segment if
-        # necessary
-        segs.loh <- segments[segments$cn.type == oncoscanR::cntype.loh & seqnames(segments) ==
+        segs.loh <- segments[segments$cn.type == cntype.loh & seqnames(segments) ==
             arm]
-        segs.loss <- segments[segments$cn.type == oncoscanR::cntype.loss & seqnames(segments) ==
+        
+        if(length(segs.loh)==0) {
+            return(GRanges())
+        }
+        segs.loss <- segments[segments$cn.type == cntype.loss & seqnames(segments) ==
             arm]
-        op <- IRanges::findOverlapPairs(segs.loh, segs.loss)
-
-        loh.todelete <- GRanges()
-        loh.toadd <- GRanges()
-
-        for (i in seq_along(op)) {
-            loh <- S4Vectors::first(op[i])
-            loss <- S4Vectors::second(op[i])
-            if (loh %within% loss) {
-                # If the LOH is completely within the loss, then delete LOH
-                # segment
-                loh.todelete <- append(loh.todelete, loh)
-            } else if (!(start(loh) < start(loss) && end(loh) > end(loss))) {
-                # If the LOH is not larger than the loss on both ends, then
-                new_loh <- setdiff(loh, loss)
-                # new_loh$cn <- NA new_loh$cn.type <- cntype.loh
-                # new_loh$cn.subtype <- cntype.loh
-
-
-                loh.toadd <- append(loh.toadd, new_loh)
-                loh.todelete <- append(loh.todelete, loh)
+        
+        pos.all <- sort(unique(c(start(segs.loh), end(segs.loh), start(segs.loss), end(segs.loss))))
+        dt <- data.frame(row.names = pos.all, 
+                         loss=factor(rep('nd', length(pos.all)), levels=c('nd','start','end')), 
+                         loh=factor(rep('nd', length(pos.all)), levels=c('nd','start','end')))
+        dt[as.character(start(segs.loh)), 'loh'] <- 'start'
+        dt[as.character(end(segs.loh)), 'loh'] <- 'end'
+        dt[as.character(start(segs.loss)), 'loss'] <- 'start'
+        dt[as.character(end(segs.loss)), 'loss'] <- 'end'
+        
+        in.loh <- FALSE
+        in.loss <- FALSE
+        lohseg.start <- NULL
+        
+        loh.toadd <- IRanges()
+        for (i in 1:dim(dt)[1]){
+            # Update status whether we are in a loss
+            in.loss <- ifelse(dt[i, 'loss']=='start', TRUE, ifelse(dt[i, 'loss']=='end', FALSE, in.loss))
+            
+            # Update status whether we are in a LOH
+            in.loh <- ifelse(dt[i, 'loh']=='start', TRUE, ifelse(dt[i, 'loh']=='end', FALSE, in.loh))
+            
+            
+            if (in.loh & !in.loss){
+                # Start of a LOH segment
+                lohseg.start <- ifelse(dt[i, 'loss']=='end', 
+                                       as.numeric(rownames(dt)[i])+1,
+                                       as.numeric(rownames(dt)[i]))
+            }
+            else if ( (dt[i, 'loh']=='nd' && dt[i, 'loss']=='start' && in.loh) ||
+                      (dt[i, 'loh']=='end' && dt[i, 'loss']=='start') ||
+                      (dt[i, 'loh']=='end' && dt[i, 'loss']=='nd' && !in.loss)) {
+                # End of a LOH segment
+                lohseg.end <- ifelse(dt[i, 'loss']=='start', 
+                                     as.numeric(rownames(dt)[i])-1,
+                                     as.numeric(rownames(dt)[i]))
+                
+                # Add segment
+                loh.toadd <- append(loh.toadd, IRanges(start=lohseg.start, end=lohseg.end))
             }
         }
-
-        adj <- union(setdiff(segs.loh, loh.todelete), loh.toadd)
-        if (length(adj) > 0) {
-            adj$cn <- NA
-            adj$cn.type <- oncoscanR::cntype.loh
-            if (!is.null(segments$cn.subtype)) {
-                adj$cn.subtype <- oncoscanR::cntype.loh
-            }
+        
+        if(length(loh.toadd)==0){
+            return(GRanges())
         }
-
-        return(adj)
+        else {
+            return(GRanges(seqnames = rep(arm, length(loh.toadd)), ranges=loh.toadd))
+        }
     })
-
-    return(c(segments[segments$cn.type != oncoscanR::cntype.loh], do.call("c", unlist(loh.adj))))
+    
+    new.loh <- do.call("c", unlist(loh.adj))
+    new.loh$cn <- as.numeric(NA)
+    new.loh$cn.type <- as.character(cntype.loh)
+    if(!is.null(segments$cn.subtype)){
+        new.loh$cn.subtype <- as.character(cntype.loh)
+    }
+    
+    return(c(segments[segments$cn.type != cntype.loh], new.loh))
 }
 
 
