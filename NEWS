@@ -1,17 +1,18 @@
 ### What's new in v1.0
-- The nLST test has been clinically validated on 384 patients from the PAOLA-1 
+- The nLST test has been clinically validated on 384 patients from the PAOLA-1
 trial and the recommended threshold
 is now >=15.
-- The default value for arm-level alterations has been set to 90% as mentioned 
+- The default value for arm-level alterations has been set to 90% as mentioned
 in the publication [Christinat et al., J Mol Diagn 2021; PMID: 34454110].
 - The genomic LOH score (percent of LOH bases) has been added; `score_gloh`.
-- Package released on Bioconductor
+- Adds a flag "low tumor?" if the percentage of altered bases is less than 1%.
+- Package to be released on Bioconductor
 
 ### What's new in v0.2
 - Novel HRD score (nLST: number of LSTs, normalized by ploidy): `score_nlst`
 - Change in Oncoscan workflow to use the nLST score and thresholds.
-- New function to compute the number of Mb altered (with or without LOH): 
+- New function to compute the number of Mb altered (with or without LOH):
 `score_mbalt`
 - New function to compute the average copy number: `score_avgcn`
-- New function to estimate the number of whole-genome duplication events (based 
+- New function to estimate the number of whole-genome duplication events (based
 on the average copy number and the thresholds defined by Carter et al.): `score_estwgd`

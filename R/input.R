@@ -421,43 +421,43 @@ adjust_loh <- function(segments) {
         return(segments)
     }
 
-   
+
     # Apply on each arm
     loh.adj <- lapply(unique(seqnames(segments)), function(arm) {
-        segs.loh <- segments[segments$cn.type == cntype.loh & seqnames(segments) ==
+        segs.loh <- segments[segments$cn.type == oncoscanR::cntype.loh & seqnames(segments) ==
             arm]
-        
+
         if(length(segs.loh)==0) {
             return(GRanges())
         }
-        segs.loss <- segments[segments$cn.type == cntype.loss & seqnames(segments) ==
+        segs.loss <- segments[segments$cn.type == oncoscanR::cntype.loss & seqnames(segments) ==
             arm]
-        
+
         pos.all <- sort(unique(c(start(segs.loh), end(segs.loh), start(segs.loss), end(segs.loss))))
-        dt <- data.frame(row.names = pos.all, 
-                         loss=factor(rep('nd', length(pos.all)), levels=c('nd','start','end')), 
+        dt <- data.frame(row.names = pos.all,
+                         loss=factor(rep('nd', length(pos.all)), levels=c('nd','start','end')),
                          loh=factor(rep('nd', length(pos.all)), levels=c('nd','start','end')))
         dt[as.character(start(segs.loh)), 'loh'] <- 'start'
         dt[as.character(end(segs.loh)), 'loh'] <- 'end'
         dt[as.character(start(segs.loss)), 'loss'] <- 'start'
         dt[as.character(end(segs.loss)), 'loss'] <- 'end'
-        
+
         in.loh <- FALSE
         in.loss <- FALSE
         lohseg.start <- NULL
-        
+
         loh.toadd <- IRanges()
         for (i in 1:dim(dt)[1]){
             # Update status whether we are in a loss
             in.loss <- ifelse(dt[i, 'loss']=='start', TRUE, ifelse(dt[i, 'loss']=='end', FALSE, in.loss))
-            
+
             # Update status whether we are in a LOH
             in.loh <- ifelse(dt[i, 'loh']=='start', TRUE, ifelse(dt[i, 'loh']=='end', FALSE, in.loh))
-            
-            
+
+
             if (in.loh & !in.loss){
                 # Start of a LOH segment
-                lohseg.start <- ifelse(dt[i, 'loss']=='end', 
+                lohseg.start <- ifelse(dt[i, 'loss']=='end',
                                        as.numeric(rownames(dt)[i])+1,
                                        as.numeric(rownames(dt)[i]))
             }
@@ -465,15 +465,15 @@ adjust_loh <- function(segments) {
                       (dt[i, 'loh']=='end' && dt[i, 'loss']=='start') ||
                       (dt[i, 'loh']=='end' && dt[i, 'loss']=='nd' && !in.loss)) {
                 # End of a LOH segment
-                lohseg.end <- ifelse(dt[i, 'loss']=='start', 
+                lohseg.end <- ifelse(dt[i, 'loss']=='start',
                                      as.numeric(rownames(dt)[i])-1,
                                      as.numeric(rownames(dt)[i]))
-                
+
                 # Add segment
                 loh.toadd <- append(loh.toadd, IRanges(start=lohseg.start, end=lohseg.end))
             }
         }
-        
+
         if(length(loh.toadd)==0){
             return(GRanges())
         }
@@ -481,15 +481,15 @@ adjust_loh <- function(segments) {
             return(GRanges(seqnames = rep(arm, length(loh.toadd)), ranges=loh.toadd))
         }
     })
-    
+
     new.loh <- do.call("c", unlist(loh.adj))
     new.loh$cn <- as.numeric(NA)
-    new.loh$cn.type <- as.character(cntype.loh)
+    new.loh$cn.type <- as.character(oncoscanR::cntype.loh)
     if(!is.null(segments$cn.subtype)){
-        new.loh$cn.subtype <- as.character(cntype.loh)
+        new.loh$cn.subtype <- as.character(oncoscanR::cntype.loh)
     }
-    
-    return(c(segments[segments$cn.type != cntype.loh], new.loh))
+
+    return(c(segments[segments$cn.type != oncoscanR::cntype.loh], new.loh))
 }
 
 
