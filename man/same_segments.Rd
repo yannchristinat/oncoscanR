@@ -7,14 +7,15 @@
 same_segments(x, y)
 }
 \arguments{
-\item{x}{A \code{GRanges} object one segment, with optional fields \code{cn}, \code{cn.type} and
-\code{cn.subtype}}
+\item{x}{A \code{GRanges} object one segment, with optional fields \code{cn},
+\code{cn.type} and \code{cn.subtype}}
 
-\item{y}{A \code{GRanges} object one segment, with optional fields \code{cn}, \code{cn.type} and
-\code{cn.subtype}}
+\item{y}{A \code{GRanges} object one segment, with optional fields \code{cn},
+\code{cn.type} and \code{cn.subtype}}
 }
 \value{
-A boolean. TRUE if the segments' chromosome/arm, start/end and CN tags match.
+A boolean. TRUE if the segments' chromosome/arm, start/end and CN
+tags match.
 }
 \description{
 Compare two CNV segments and test if equal

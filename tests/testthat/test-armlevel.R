@@ -12,7 +12,7 @@ test_that("Arm-level alteration detection works - basic", {
                   cn.type = c(cntype.loss, cntype.loss, cntype.loh, cntype.gain,
                               cntype.gain, cntype.gain, cntype.loss, cntype.loss,
                               cntype.loh, cntype.gain))
-  arms <- armlevel_alt(segs, cov)
+  arms <- armlevel_alt(segs, cov, threshold = 0.8)
   expected <- c('2p'=0.9, '4p'=0.8, '5p'=1, '6p'=0.9)
   expect_equal(arms, expected)
 })

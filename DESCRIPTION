@@ -1,25 +1,38 @@
 Package: oncoscanR
 Type: Package
 Title: Meta-analyses of CNV segments
-Version: 0.2.1
-Authors@R: person("Yann", "Christinat", email = "yann.christinat@hcuge.ch", role = c("aut", "cre"))
-Description: Taking copy number segments as input (either ChAS export file or ChAS-like text file), 
-    identify chromosome arms that are globally altered and computes various scores.
+Version: 0.99.0
+Authors@R: person("Yann", "Christinat", email = "yann.christinat@hcuge.ch", 
+                  role = c("aut", "cre"))
+Description: The software uses the copy number segments from a text file and 
+    identifies all chromosome arms that are globally altered and computes various 
+    genome-wide scores. The following HRD scores (characteristic of BRCA-mutated cancers) 
+    are included: LST, HR-LOH, nLST and gLOH. the package is made for the 
+    ThermoFisher Oncoscan assay analyzed with their Chromosome Alteration Suite 
+    (ChAS) but can be adapted to any input.
 License: MIT + file LICENSE
 Date: 2020-06-24
-URL: https://github.com/yannchristinat/oncoscanR
 Encoding: UTF-8
 LazyData: true
+VignetteBuilder: knitr
 biocViews:
+    CopyNumberVariation,
+    Microarray,
+    Software
 Imports:
     readr,
   	S4Vectors,
   	magrittr
-RoxygenNote: 7.1.1
-Depends: 
-    R (>= 3.3.0),
+RoxygenNote: 7.1.2
+Depends:
+    R (>= 3.6),
     IRanges (>= 2.6.1),
     GenomicRanges (>= 1.24.3)
 Suggests: 
     testthat (>= 2.1.0),
-    jsonlite
+    jsonlite,
+    knitr,
+    rmarkdown
+URL: https://github.com/yannchristinat/oncoscanR
+BugReports:
+    https://github.com/yannchristinat/oncoscanR/issues

@@ -7,13 +7,16 @@
 prune_by_size(segments, threshold = 300)
 }
 \arguments{
-\item{segments}{A \code{GRanges} object containing the segments, their copy number and copy number types.}
+\item{segments}{A \code{GRanges} object containing the segments, their copy
+number and copy number types.}
 
-\item{threshold}{Number indicating the minimum segment size to be kept (in kilobases).
+\item{threshold}{Number indicating the minimum segment size to be kept (in
+kilobases).
 Defaults to the Oncoscan assay resolution outside of cancer genes: 300Kb.}
 }
 \value{
-A \code{GRanges} object containing the cleaned segments, their copy number and copy number types.
+A \code{GRanges} object containing the cleaned segments, their copy
+number and copy number types.
 }
 \description{
 Remove segments smaller than the kit resolution.

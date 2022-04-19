@@ -4,25 +4,28 @@
 \alias{armlevel_alt}
 \title{Get all globally-altered chromosome arms.}
 \usage{
-armlevel_alt(segments, kit.coverage, threshold = 0.8)
+armlevel_alt(segments, kit.coverage, threshold = 0.9)
 }
 \arguments{
 \item{segments}{A \code{GRanges} object containing the segments.}
 
-\item{kit.coverage}{A \code{GRanges} object containing the regions covered on each chromosome arm.}
+\item{kit.coverage}{A \code{GRanges} object containing the regions covered on
+each chromosome arm.}
 
-\item{threshold}{The minimum percentage of the arm to be considered as globally altered. Defaults
-to 80\%.}
+\item{threshold}{The minimum percentage of the arm to be considered as
+globally altered. Defaults to 80\%.}
 }
 \value{
-A list of globally-altered chromosome arms with the percentage of arm altered.
+A list of globally-altered chromosome arms with the percentage of arm
+ altered.
 }
 \description{
 Get all globally-altered chromosome arms.
 }
 \details{
-By default uses the sum of all alterations and set the arm as globally altered if \>80\% of the arm
-is altered. Does not account for alteration type and copy number.
+By default uses the sum of all alterations and set the arm as
+globally altered if \>80\% of the arm is altered. Does not account for
+alteration type and copy number.
 Will run the function \code{trim_to_coverage} on the segments.
 }
 \examples{

@@ -1,14 +1,6 @@
-# Get ChAS files to test
-samples <- read.table(system.file("testdata", "validation_samples.txt", package = "oncoscanR"),
-                      header=TRUE, row.names = 1)
-
-armlevel.test <- function(chas.fn, gender, armlevel.fn){
+armlevel.test <- function(dat.armlevel, armlevel.fn){
   # Get ground truth
-  dat.true <- read.csv(armlevel.fn, header = TRUE, row.names = 1, stringsAsFactors = FALSE)
-
-  # Run standard workflow from package
-  dat <- workflow_oncoscan.run(chas.fn, gender)
-  dat.armlevel <- dat[['armlevel']]
+  dat.true <- read.csv(armlevel.fn, header = TRUE, row.names = 1, stringsAsFactors = FALSE, colClasses = 'character')
 
   #Check AMP, GAIN, LOSS and LOH
   amp.test <- identical(sort(dat.armlevel[['AMP']]), sort(unlist(strsplit(dat.true['AMPL','Arms'], ','))))

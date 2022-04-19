@@ -22,12 +22,12 @@ file = path of the ChAS file as given by the parameter)}
 Run the standard workflow for Oncoscan ChAS files.
 }
 \details{
-Identifies the globally altered arms (\>=80\% of arm altered), computes the HRD and
+Identifies the globally altered arms (\>=90\% of arm altered), computes the HRD and
 TD+ scores. The amplification is defined as a CN subtype \code{cntype.weakamp} or
 \code{cntype.strongamp}. An arm is gained if of CN type \code{cntype.gain} unless the arm is
 amplified.
 }
 \examples{
-segs.filename <- system.file("extdata", "chas_example.txt", package = "oncoscanR")
-workflow_oncoscan.run(segs.filename, "M")
+segs.filename <- system.file('extdata', 'chas_example.txt', package = 'oncoscanR')
+workflow_oncoscan.run(segs.filename, 'M')
 }

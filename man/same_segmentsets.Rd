@@ -17,3 +17,12 @@ TRUE if the two sets contain exactly the same CN segments
 \description{
 Small function to test if two sets have the same CN segments
 }
+\examples{
+library(GenomicRanges)
+library(IRanges)
+s1 <- GRanges(seqnames = '1p', ranges = IRanges(start = 1, end = 10),
+              cn = 5, cn.type = cntype.gain, cn.subtype = cntype.weakamp)
+s2 <- GRanges(seqnames = '1p', ranges = IRanges(start = 1, end = 10),
+              cn = 6, cn.type = cntype.gain, cn.subtype = cntype.weakamp)
+same_segmentsets(s1,s2)
+}

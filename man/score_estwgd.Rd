@@ -7,22 +7,27 @@
 score_estwgd(segments, kit.coverage)
 }
 \arguments{
-\item{segments}{A \code{GRanges} object containing the segments, their copy number and copy number types.}
+\item{segments}{A \code{GRanges} object containing the segments, their copy
+number and copy number types.}
 
-\item{kit.coverage}{A \code{GRanges} object containing the regions covered on each chromosome arm.}
+\item{kit.coverage}{A \code{GRanges} object containing the regions covered on
+each chromosome arm.}
 }
 \value{
-A named list with two values: WGD (whole-genome doubling events) and avgCN (the average copy
-number). WGD values are 0 for no WGD event, 1 for one WGD event, 2 for several WGD events.
+A named list with two values: WGD (whole-genome doubling events) and
+avgCN (the average copy number). WGD values are 0 for no WGD event, 1 for one
+ WGD event, 2 for several WGD events.
 }
 \description{
 Estimates the number of whole-genome doubling events (WGD).
 }
 \details{
-Based on the publication from Carter et al. (Nature Biotechnology 2012; PubMed ID: 22544022).
-On a pan-cancer cohort, they observed that tumors that underwent one whole-genome doubling event had a
-ploidy (average copy number) between 2.2 and 3.4. This function relies on the function \code{score_avgcn}
-to compute the ploidy.
+Based on the publication from Carter et al. (Nature Biotechnology
+2012; PubMed ID: 22544022).
+On a pan-cancer cohort, they observed that tumors that underwent one
+whole-genome doubling event had a ploidy (average copy number) between 2.2
+and 3.4. This function relies on the function \code{score_avgcn} to compute
+the ploidy.
 }
 \examples{
 score_estwgd(segs.chas_example, oncoscan_na33.cov)

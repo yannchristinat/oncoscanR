@@ -7,9 +7,11 @@
 score_avgcn(segments, kit.coverage)
 }
 \arguments{
-\item{segments}{A \code{GRanges} object containing the segments, their copy number and copy number types.}
+\item{segments}{A \code{GRanges} object containing the segments, their copy
+number and copy number types.}
 
-\item{kit.coverage}{A \code{GRanges} object containing the regions covered on each chromosome arm.}
+\item{kit.coverage}{A \code{GRanges} object containing the regions covered on
+each chromosome arm.}
 }
 \value{
 A decimal value
@@ -18,9 +20,9 @@ A decimal value
 Compute the average copy number variation across the genome.
 }
 \details{
-Compute the weighted average (by segment length) of the copy number variation. LOH segments and
-sexual chromosomes are excluded. Copy number variation is rounded to the next level (1.67 -> 1 but 2.33
--> 3).
+Compute the weighted average (by segment length) of the copy number
+variation. LOH segments and sexual chromosomes are excluded. Copy number
+variation is rounded to the next level (1.67 -> 1 but 2.33 -> 3).
 }
 \examples{
 score_avgcn(segs.chas_example, oncoscan_na33.cov)
