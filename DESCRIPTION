@@ -1,7 +1,7 @@
 Package: oncoscanR
 Type: Package
 Title: Meta-analyses of CNV segments
-Version: 1.0.0
+Version: 0.99.0
 Authors@R: person("Yann", "Christinat", email = "yann.christinat@hcuge.ch", 
                   role = c("aut", "cre"))
 Description: The software uses the copy number segments from a text file and 
