@@ -16,65 +16,6 @@
 "oncoscan_na33.cov"
 
 
-#' copy number type 'LOH' (copy neutral loss of heterozygosity).
-#'
-#' @source \code{cntype.loh <- 'LOH'}
-#' @format character
-"cntype.loh"
-
-
-#' copy number type 'Gain' (one or more additional copies).
-#' In some contextes can be defined as the gain of 1-2 extra copies but not more.
-#'
-#' @source \code{cntype.gain <- 'Gain'}
-#' @format character
-"cntype.gain"
-
-
-#' copy number type 'Loss' (loss of one or more copies; depends on gender for
-#' the sexual chromosomes).
-#'
-#' @source \code{cntype.loss <- 'Loss'}
-#' @format character
-"cntype.loss"
-
-
-#' copy number type 'Heterozygous loss' (loss of one of the two copies).
-#'
-#' @source \code{cntype.hetloss <- 'Heterozygous loss'}
-#' @format character
-"cntype.hetloss"
-
-
-#' copy number type 'Homozygous loss' (loss of the two copies or only one on
-#' sexual chromosomes if the subject is male).
-#'
-#' @source \code{cntype.homloss <- 'Homozygous loss'}
-#' @format character
-"cntype.homloss"
-
-
-#' copy number type 'Amplification' (3 additional copies or more).
-#'
-#' @source \code{cntype.amp <- 'Amplification'}
-#' @format character
-"cntype.amp"
-
-
-#' copy number type 'Weak amplification' (3 to 7 additional copies).
-#'
-#' @source \code{cntype.weakamp <- 'Weak amplification'}
-#' @format character
-"cntype.weakamp"
-
-
-#' copy number type 'Strong amplification' (8 additional copies or more).
-#'
-#' @source \code{cntype.strongamp <- 'Strong amplification'}
-#' @format character
-"cntype.strongamp"
-
-
 #' Expected segments from loading the ChAS file 'chas_example.txt'.
 #'
 #' @source
