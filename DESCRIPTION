@@ -22,7 +22,8 @@ biocViews:
 Imports:
     readr,
   	S4Vectors,
-  	magrittr
+  	magrittr,
+  	methods
 RoxygenNote: 7.1.2
 Depends:
     R (>= 3.6),
