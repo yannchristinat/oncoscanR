@@ -269,6 +269,7 @@ get_cn_subtype <- function(segments, gender) {
 
     subtypes <- lapply(seq_along(segments), function(i) {
         seg <- segments[i]
+        # If segment is on sexual chromosome, check that the gender is M or F.
         if (length(intersect(seqnames(seg), c(sexchroms, paste0("chr", sexchroms)))) >
             0 & !(gender %in% c("M", "F"))) {
             return(NA)
