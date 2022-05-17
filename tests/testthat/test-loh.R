@@ -11,7 +11,7 @@ test_that("HR-LOH score works - simple cases", {
                               cntype.gain, cntype.loss, cntype.loh, cntype.gain),
                   cn.subtype = c(cntype.loh, cntype.loh, cntype.loh, cntype.loh,
                                  cntype.gain, cntype.hetloss, cntype.loh, cntype.strongamp))
-  n <- score_loh(segs, cov, c('2p', '2q'), c())
+  n <- score_loh(segs, c('2p', '2q'), c(), cov)
   expect_equal(n, 3)
 })
 
@@ -28,7 +28,7 @@ test_that("HR-LOH score works - chrom with LOH and hetloss", {
                               cntype.gain, cntype.loss, cntype.loh, cntype.gain),
                   cn.subtype = c(cntype.loh, cntype.loh, cntype.loh, cntype.loh,
                                  cntype.gain, cntype.hetloss, cntype.loh, cntype.strongamp))
-  n <- score_loh(segs, cov, c('2p'), c('2q'))
+  n <- score_loh(segs, c('2p'), c('2q'), cov)
   expect_equal(n, 4)
 })
 
@@ -46,7 +46,7 @@ test_that("HR-LOH score works - overlapping loh", {
                               cntype.gain, cntype.loss, cntype.loh, cntype.gain),
                   cn.subtype = c(cntype.loh, cntype.loh, cntype.loh, cntype.loh,
                                  cntype.gain, cntype.hetloss, cntype.loh, cntype.strongamp))
-  n <- score_loh(segs, cov, c(), c())
+  n <- score_loh(segs, c(), c(), cov)
   expect_equal(n, 4)
 })
 
@@ -65,7 +65,7 @@ test_that("LOH works - real case", {
   armlevel.hetloss <- segs.clean[segs.clean$cn.subtype == cntype.hetloss] %>%
     armlevel_alt(kit.coverage = oncoscan.cov)
 
-  n <- score_loh(segs.clean, oncoscan.cov, names(armlevel.loh), names(armlevel.hetloss))
+  n <- score_loh(segs.clean, names(armlevel.loh), names(armlevel.hetloss), oncoscan.cov)
   expect_equal(n, 25) #Verified by hand in ChAS
 })
 
@@ -75,7 +75,7 @@ test_that("LOH works - empty segments", {
                                   end = c(100,100,200,200)))
   segs <- GRanges(seqnames = factor(c(), levels = paste0(1:4, 'p')),
                   ranges = IRanges())
-  n <- score_loh(segs, cov, c(), c())
+  n <- score_loh(segs, c(), c(), cov)
   expect_equal(n, 0)
 })
 
@@ -97,7 +97,7 @@ test_that("gLOH works - real case", {
   sel.segs <- segs.clean$cn.subtype %in% c(oncoscanR::cntype.hetloss, oncoscanR::cntype.loh)
   sel.arms <- !as.vector(seqnames(segs.clean)) %in% c(names(armlevel.loh), names(armlevel.hetloss))
   expected_p <- sum( width(segs.clean[sel.segs & sel.arms]))/sum(width(oncoscan.cov))
-  
+
   p <- score_gloh(segs.clean, names(armlevel.loh), names(armlevel.hetloss), oncoscan.cov)
   expect_equal(p, expected_p)
 })

@@ -4,15 +4,15 @@
 \alias{score_gloh}
 \title{Compute the genomic LOH score.}
 \usage{
-score_gloh(segments, armlevel.loh, armlevel.hetloss, kit.coverage)
+score_gloh(segments, arms.loh, arms.hetloss, kit.coverage)
 }
 \arguments{
 \item{segments}{A \code{GRanges} object containing the segments, their copy
 number and copy number types.}
 
-\item{armlevel.loh}{A list of arms with global/arm-level LOH alteration.}
+\item{arms.loh}{A list of arms with global/arm-level LOH alteration.}
 
-\item{armlevel.hetloss}{A list of arms with global/arm-level heterozygous
+\item{arms.hetloss}{A list of arms with global/arm-level heterozygous
 loss.}
 
 \item{kit.coverage}{A \code{GRanges} object containing the regions covered on

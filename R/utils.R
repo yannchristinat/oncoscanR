@@ -16,6 +16,7 @@
 #'
 #' @importFrom GenomicRanges seqnames GRanges
 #' @importFrom IRanges start end
+#' @importFrom methods is
 #'
 #' @examples
 #' library(GenomicRanges)
@@ -113,6 +114,8 @@ same_segments <- function(x, y) {
 #' @return Boolean. TRUE if the object is of class \code{GRanges} with fields
 #' \code{cn} and \code{cn.type}.
 #' @export
+#'
+#' @importFrom methods is
 #'
 #' @examples
 #' library(GenomicRanges)
