@@ -1,7 +1,7 @@
 Package: oncoscanR
 Type: Package
 Title: Meta-analyses of CNV segments
-Version: 1.0.0
+Version: 0.99.0
 Authors@R: person("Yann", "Christinat", email = "yann.christinat@hcuge.ch", 
                   role = c("aut", "cre"))
 Description: The software uses the copy number segments from a text file and 
@@ -13,7 +13,6 @@ Description: The software uses the copy number segments from a text file and
 License: MIT + file LICENSE
 Date: 2020-06-24
 Encoding: UTF-8
-LazyData: true
 VignetteBuilder: knitr
 biocViews:
     CopyNumberVariation,
@@ -22,7 +21,8 @@ biocViews:
 Imports:
     readr,
   	S4Vectors,
-  	magrittr
+  	magrittr,
+  	methods
 RoxygenNote: 7.1.2
 Depends:
     R (>= 3.6),
@@ -36,3 +36,4 @@ Suggests:
 URL: https://github.com/yannchristinat/oncoscanR
 BugReports:
     https://github.com/yannchristinat/oncoscanR/issues
+LazyData: true

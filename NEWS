@@ -5,7 +5,7 @@ is now >=15.
 - The default value for arm-level alterations has been set to 90% as mentioned
 in the publication [Christinat et al., J Mol Diagn 2021; PMID: 34454110].
 - The genomic LOH score (percent of LOH bases) has been added; `score_gloh`.
-- Adds a flag "low tumor?" if the percentage of altered bases is less than 1%.
+- Adds a flag "no tumor?" if the percentage of altered bases is less than 1%.
 - Package to be released on Bioconductor
 
 ### What's new in v0.2

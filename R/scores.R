@@ -26,7 +26,7 @@
 armlevel_alt <- function(segments, kit.coverage, threshold = 0.9) {
     is_cn_segment(segments, raise_error = TRUE)
 
-    vals <- sapply(levels(seqnames(kit.coverage)), function(arm) {
+    vals <- vapply(levels(seqnames(kit.coverage)), function(arm) {
         if (!(arm %in% as.vector(seqnames(segments)))) {
             return(0)
         }
@@ -50,8 +50,7 @@ armlevel_alt <- function(segments, kit.coverage, threshold = 0.9) {
         segslen <- sum(width(segs.flat))
 
         return(segslen/armlen)
-    })
-
+    }, c(0), USE.NAMES = TRUE)
     return(vals[vals >= threshold])
 }
 
@@ -172,12 +171,12 @@ score_loh <- function(segments, kit.coverage, arms.loh, arms.hetloss) {
     if (is.null(segments$cn.subtype)) {
         stop("Segments are missing the field 'cn.subtype'.")
     }
-  
+
     # Test if any arms in arms.loh or arms.loss is not in kit.coverage
     if(length(c(arms.loh, arms.hetloss)) > 0){
         unknown.arms <- setdiff(c(arms.loh, arms.hetloss), seqnames(kit.coverage))
         if (length(unknown.arms)>0) {
-            msg <- paste('Some arms were not found in the kit:', 
+            msg <- paste('Some arms were not found in the kit:',
                          paste(as.character(unknown.arms), collapse = TRUE))
             stop(msg)
         }
@@ -353,7 +352,8 @@ score_estwgd <- function(segments, kit.coverage) {
 #' @details Compute the number of LSTs in non-LOH segments via the
 #' \code{score_lst} function and subtract the extra noise induced by WGD events:
 #'  nLST = LST - 7*W/2 where W is the number of WGD events.
-#' A sample is HRD positive (deficient in HR pathway) if nLST is >=15. 
+#' A sample is HRD positive (deficient in HR pathway) if nLST is greater or equal
+#' to the threshold (15 by default).
 #' This score was linked to BRCA1/2-deficient tumors.
 #'
 #' @param segments A \code{GRanges} object containing the segments, their copy
@@ -361,6 +361,7 @@ score_estwgd <- function(segments, kit.coverage) {
 #' @param n.wgd Number of whole-genome doubling events (0 if diploid).
 #' @param kit.coverage A \code{GRanges} object containing the regions covered on
 #'  each chromosome arm.
+#' @param threshold A number above which the test is returned positive (>=).
 #'
 #' @return A named list with the number of nLSTs and the corresponding label
 #' ('Positive', 'Negative').
@@ -369,11 +370,11 @@ score_estwgd <- function(segments, kit.coverage) {
 #' @examples
 #' w <- score_estwgd(segs.chas_example, oncoscan_na33.cov)
 #' score_nlst(segs.chas_example, w['WGD'], oncoscan_na33.cov)
-score_nlst <- function(segments, n.wgd, kit.coverage) {
+score_nlst <- function(segments, n.wgd, kit.coverage, threshold=15) {
     lst.noLOH <- score_lst(segments[segments$cn.type != oncoscanR::cntype.loh], kit.coverage)
 
     nlst <- max(0, lst.noLOH - 3.5 * as.numeric(n.wgd))
-    label <- ifelse(nlst >= 15, "Positive", "Negative")
+    label <- ifelse(nlst >= threshold, "Positive", "Negative")
     return(c(nLST = nlst, HRD = label))
 }
 
@@ -407,7 +408,7 @@ score_mbalt <- function(segments, kit.coverage, loh.rm = TRUE) {
     if (length(segs) == 0) {
         return(c(sample = 0, kit = mb.kit))
     } else {
-        segs.w <- width(segs)/10^6  # Width of each segment in Mbp
+        segs.w <- width(reduce(segs))/10^6  # Width of each segment in Mbp
         mb.alt <- round(sum(segs.w))
 
         return(c(sample = mb.alt, kit = mb.kit))
@@ -451,12 +452,12 @@ score_gloh <- function(segments, arms.loh, arms.hetloss, kit.coverage) {
     if(length(c(arms.loh, arms.hetloss)) > 0){
         unknown.arms <- setdiff(c(arms.loh, arms.hetloss), seqnames(kit.coverage))
         if (length(unknown.arms)>0) {
-          msg <- paste('Some arms were not found in the kit:', 
+          msg <- paste('Some arms were not found in the kit:',
                        paste(as.character(unknown.arms), collapse = TRUE))
           stop(msg)
         }
     }
-  
+
     arms2discard <- c(arms.loh, arms.hetloss)
     sel <- segments$cn.subtype %in% c(oncoscanR::cntype.hetloss, oncoscanR::cntype.loh) &
         !(as.vector(seqnames(segments)) %in% arms2discard)

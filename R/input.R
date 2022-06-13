@@ -7,6 +7,8 @@
 #' @details The ChAS file is expected to have the following column names:
 #' 'CN State' (number or empty), 'Type' (expected value: 'Gain', 'Loss' or
 #' 'LOH') and 'Full Location' (in the format 'chr:start-end').
+#' 
+#' The segments are attributed to each chromosome arm and split if necessary.
 #'
 #' @param filename Path to the ChAS file.
 #' @param kit.coverage A \code{GRanges} object containing the regions covered on
@@ -267,6 +269,7 @@ get_cn_subtype <- function(segments, gender) {
 
     subtypes <- lapply(seq_along(segments), function(i) {
         seg <- segments[i]
+        # If segment is on sexual chromosome, check that the gender is M or F.
         if (length(intersect(seqnames(seg), c(sexchroms, paste0("chr", sexchroms)))) >
             0 & !(gender %in% c("M", "F"))) {
             return(NA)
@@ -447,7 +450,7 @@ adjust_loh <- function(segments) {
         lohseg.start <- NULL
 
         loh.toadd <- IRanges()
-        for (i in 1:dim(dt)[1]){
+        for (i in seq(dim(dt)[1])){
             # Update status whether we are in a loss
             in.loss <- ifelse(dt[i, 'loss']=='start', TRUE, ifelse(dt[i, 'loss']=='end', FALSE, in.loss))
 
