@@ -1,9 +1,9 @@
 # oncoscanR
 author: Yann Christinat
 
-date: 06 may 2022
+date: 13 june 2022
 
-version: 1.0.0
+version: 1.0.1
 
 ## Description
 OncoscanR is an R package to handle Copy Number Variation analyses originating from the Oncoscan assay (Affymetrix). It

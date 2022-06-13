@@ -1,7 +1,7 @@
 Package: oncoscanR
 Type: Package
 Title: Meta-analyses of CNV segments
-Version: 0.99.0
+Version: 1.0.1
 Authors@R: person("Yann", "Christinat", email = "yann.christinat@hcuge.ch", 
                   role = c("aut", "cre"))
 Description: The software uses the copy number segments from a text file and 
@@ -25,7 +25,7 @@ Imports:
   	methods
 RoxygenNote: 7.1.2
 Depends:
-    R (>= 3.6),
+    R (>= 3.5),
     IRanges (>= 2.6.1),
     GenomicRanges (>= 1.24.3)
 Suggests: 
