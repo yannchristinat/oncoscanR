@@ -19,18 +19,14 @@ test_that("loading ChAS file works", {
 
 
 test_that("loading ChAS file with duplicated rows fails", {
-  segs.filename <- system.file("testdata", "chas_example-withDuplicates.txt",
-                               package = "oncoscanR")
+  segs.filename <- "../testdata/chas_example-withDuplicates.txt"
   expect_error(load_chas(segs.filename, kit.coverage = oncoscan_na33.cov),
               'contains duplicated entries.')
 })
 
 
 test_that("loading large ChAS file", {
-  skip_on_cran()
-
-  segs.filename <- system.file("testdata", "LST_gene_list_full_location.txt",
-                               package = "oncoscanR")
+  segs.filename <- "../testdata/LST_gene_list_full_location.txt"
   segs <- load_chas(segs.filename, kit.coverage = oncoscan_na33.cov)
   expect_true(length(segs)>100) # Mostly testing that it does not fail nor return zero segments
 })
@@ -57,15 +53,13 @@ test_that("loading ChAS annotation file works", {
 })
 
 test_that("Loading ChAS with missing 'Full Location' column fails",{
-  segs.filename <- system.file("testdata", "chas_example-noFullLocation.txt",
-                               package = "oncoscanR")
+  segs.filename <- "../testdata/chas_example-noFullLocation.txt"
   expect_error(suppressWarnings(load_chas(segs.filename, kit.coverage = oncoscan_na33.cov)),
                'Parsing ChAS file failed')
 })
 
 test_that("loading ChAS with 'chr' name scheme works", {
-  segs.filename <- system.file("testdata", "chas_example-withChr.txt",
-                               package = "oncoscanR")
+  segs.filename <- "../testdata/chas_example-withChr.txt"
   segs <- load_chas(segs.filename, kit.coverage = oncoscan_na33.cov)
 
   found <- 0
@@ -83,8 +77,7 @@ test_that("loading ChAS with 'chr' name scheme works", {
 })
 
 test_that("Loading ChAS with empty file works",{
-  segs.filename <- system.file("testdata", "chas_example-empty.txt",
-                               package = "oncoscanR")
+  segs.filename <- "../testdata/chas_example-empty.txt"
   expect_warning(segs <- load_chas(segs.filename, kit.coverage = oncoscan_na33.cov),
                  'No segments loaded')
   expect_equal(length(segs), 0)

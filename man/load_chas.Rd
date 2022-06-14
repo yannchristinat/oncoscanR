@@ -15,7 +15,7 @@ each chromosome arm by the kit.}
 \value{
 A \code{GRanges} object containing the segments, their copy number
 (field \code{cn}), their copy
-number types (field \code{cn.type}). \code{cn.type} contains either 'Gain',
+number types (field \code{cntype}). \code{cntype} contains either 'Gain',
 'Loss' or 'LOH'.
 If the file contains twice the same segment or does not respect the format
 specifications, then an error is

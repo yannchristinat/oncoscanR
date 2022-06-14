@@ -24,78 +24,60 @@ test_that("Compare segments works - diff start, no cn info", {
 
 test_that("Compare segments works - same segment, same cn", {
   s1 <- GRanges(seqnames = '1p', ranges = IRanges(start = 1, end = 10),
-                cn = 5, cn.type = cntype.gain, cn.subtype = cntype.weakamp)
+                cn = 5, cn.type = "Gain")
   s2 <- GRanges(seqnames = '1p', ranges = IRanges(start = 1, end = 10),
-                cn = 5, cn.type = cntype.gain, cn.subtype = cntype.weakamp)
+                cn = 5, cn.type = "Gain")
   expect_true(same_segments(s1,s2))
 })
 
 test_that("Compare segments works - same segment, diff cn", {
   s1 <- GRanges(seqnames = '1p', ranges = IRanges(start = 1, end = 10),
-                cn = 5, cn.type = cntype.gain, cn.subtype = cntype.weakamp)
+                cn = 5, cn.type = "Gain")
   s2 <- GRanges(seqnames = '1p', ranges = IRanges(start = 1, end = 10),
-                cn = 6, cn.type = cntype.gain, cn.subtype = cntype.weakamp)
+                cn = 6, cn.type = "Gain")
   expect_false(same_segments(s1,s2))
 })
 
 test_that("Compare segments works - same segment, NA cn", {
   s1 <- GRanges(seqnames = '1p', ranges = IRanges(start = 1, end = 10),
-                cn = 5, cn.type = cntype.gain, cn.subtype = cntype.weakamp)
+                cn = 5, cn.type = "Gain")
   s2 <- GRanges(seqnames = '1p', ranges = IRanges(start = 1, end = 10),
-                cn = NA, cn.type = cntype.gain, cn.subtype = cntype.weakamp)
+                cn = NA, cn.type = "Gain")
   expect_false(same_segments(s1,s2))
 })
 
 test_that("Compare segments works - same segment, diff cn.type", {
   s1 <- GRanges(seqnames = '1p', ranges = IRanges(start = 1, end = 10),
-                cn = 5, cn.type = cntype.gain, cn.subtype = cntype.weakamp)
+                cn = 5, cn.type = "Gain")
   s2 <- GRanges(seqnames = '1p', ranges = IRanges(start = 1, end = 10),
-                cn = 5, cn.type = cntype.weakamp, cn.subtype = cntype.weakamp)
-  expect_false(same_segments(s1,s2))
-})
-
-test_that("Compare segments works - same segment, diff cn.subtype", {
-  s1 <- GRanges(seqnames = '1p', ranges = IRanges(start = 1, end = 10),
-                cn = 5, cn.type = cntype.gain, cn.subtype = cntype.gain)
-  s2 <- GRanges(seqnames = '1p', ranges = IRanges(start = 1, end = 10),
-                cn = 5, cn.type = cntype.gain, cn.subtype = cntype.weakamp)
+                cn = 5, cn.type = "Amplification")
   expect_false(same_segments(s1,s2))
 })
 
 test_that("Compare segments works - same segment, null cn", {
   s1 <- GRanges(seqnames = '1p', ranges = IRanges(start = 1, end = 10),
-                cn = 5, cn.type = cntype.gain, cn.subtype = cntype.gain)
+                cn = 5, cn.type = "Gain")
   s2 <- GRanges(seqnames = '1p', ranges = IRanges(start = 1, end = 10),
-                cn.type = cntype.gain, cn.subtype = cntype.weakamp)
+                cn.type = "Gain")
   expect_false(same_segments(s1,s2))
 })
 
 test_that("Compare segments works - same segment, null cn.type", {
   s1 <- GRanges(seqnames = '1p', ranges = IRanges(start = 1, end = 10),
-                cn = 5, cn.type = cntype.gain, cn.subtype = cntype.gain)
+                cn = 5, cn.type = "Gain")
   s2 <- GRanges(seqnames = '1p', ranges = IRanges(start = 1, end = 10),
-                cn = 5, cn.subtype = cntype.weakamp)
+                cn = 5)
   expect_false(same_segments(s1,s2))
 })
 
-test_that("Compare segments works - same segment, null cn.subtype", {
-  s1 <- GRanges(seqnames = '1p', ranges = IRanges(start = 1, end = 10),
-                cn = 5, cn.type = cntype.gain, cn.subtype = cntype.gain)
-  s2 <- GRanges(seqnames = '1p', ranges = IRanges(start = 1, end = 10),
-                cn = 5, cn.type = cntype.gain)
-  expect_false(same_segments(s1,s2))
-})
-
-test_that("Same set works - same segments/cn/type/subtypes", {
+test_that("Same set works - same segments/cn/cntype", {
   segs <- GRanges(seqnames = factor(c(rep('1p',3), rep('1q',3)),
                                     levels = c('1p', '1q', 'Xp')),
                   ranges = IRanges(start = c(1, 50, 130, 170, 250, 50),
                                    end = c(50, 130, 170, 250, 300, 250)),
                   cn = c(0,1,NA,3,5,10),
-                  cn.type = c(cntype.loss, cntype.loss, cntype.loh, cntype.gain,
-                              cntype.gain, cntype.gain),
-                  cn.subtype = c(cntype.homloss, cntype.hetloss, cntype.loh, cntype.gain,
-                                 cntype.weakamp, cntype.strongamp))
+                  cn.type = c("Loss", "Loss", "LOH", "Gain",
+                              "Gain", "Gain"))
   expect_true(same_segmentsets(segs, segs))
 })
 
@@ -105,19 +87,15 @@ test_that("Same set works - different arm", {
                     ranges = IRanges(start = c(1, 50, 130, 170, 250, 50),
                                      end = c(50, 130, 170, 250, 300, 250)),
                     cn = c(0,1,NA,3,5,10),
-                    cn.type = c(cntype.loss, cntype.loss, cntype.loh, cntype.gain,
-                                cntype.gain, cntype.gain),
-                    cn.subtype = c(cntype.homloss, cntype.hetloss, cntype.loh, cntype.gain,
-                                   cntype.weakamp, cntype.strongamp))
+                    cn.type = c("Loss", "Loss", "LOH", "Gain",
+                                "Gain", "Gain"))
   segs.b <- GRanges(seqnames = factor(c(rep('1q',3), rep('1q',3)),
                                       levels = c('1p', '1q', 'Xp')),
                     ranges = IRanges(start = c(1, 50, 130, 170, 250, 50),
                                      end = c(50, 130, 170, 250, 300, 250)),
                     cn = c(0,1,NA,3,5,10),
-                    cn.type = c(cntype.loss, cntype.loss, cntype.loh, cntype.gain,
-                                cntype.gain, cntype.gain),
-                    cn.subtype = c(cntype.homloss, cntype.hetloss, cntype.loh, cntype.gain,
-                                   cntype.weakamp, cntype.strongamp))
+                    cn.type = c("Loss", "Loss", "LOH", "Gain",
+                                "Gain", "Gain"))
   expect_false(same_segmentsets(segs.a, segs.b))
 })
 
@@ -127,19 +105,15 @@ test_that("Same set works - different position", {
                     ranges = IRanges(start = c(1, 50, 130, 170, 250, 50),
                                      end = c(50, 130, 170, 250, 300, 250)),
                     cn = c(0,1,NA,3,5,10),
-                    cn.type = c(cntype.loss, cntype.loss, cntype.loh, cntype.gain,
-                                cntype.gain, cntype.gain),
-                    cn.subtype = c(cntype.homloss, cntype.hetloss, cntype.loh, cntype.gain,
-                                   cntype.weakamp, cntype.strongamp))
+                    cn.type = c("Loss", "Loss", "LOH", "Gain",
+                                "Gain", "Gain"))
   segs.b <- GRanges(seqnames = factor(c(rep('1p',3), rep('1q',3)),
                                       levels = c('1p', '1q', 'Xp')),
                     ranges = IRanges(start = c(1, 50, 130, 170, 250, 50),
                                      end = c(51, 130, 170, 250, 300, 250)),
                     cn = c(0,1,NA,3,5,10),
-                    cn.type = c(cntype.loss, cntype.loss, cntype.loh, cntype.gain,
-                                cntype.gain, cntype.gain),
-                    cn.subtype = c(cntype.homloss, cntype.hetloss, cntype.loh, cntype.gain,
-                                   cntype.weakamp, cntype.strongamp))
+                    cn.type = c("Loss", "Loss", "LOH", "Gain",
+                                "Gain", "Gain"))
   expect_false(same_segmentsets(segs.a, segs.b))
 })
 
@@ -149,19 +123,15 @@ test_that("Same set works - one segment missing", {
                     ranges = IRanges(start = c(1, 50, 130, 170, 250, 50),
                                      end = c(50, 130, 170, 250, 300, 250)),
                     cn = c(0,1,NA,3,5,10),
-                    cn.type = c(cntype.loss, cntype.loss, cntype.loh, cntype.gain,
-                                cntype.gain, cntype.gain),
-                    cn.subtype = c(cntype.homloss, cntype.hetloss, cntype.loh, cntype.gain,
-                                   cntype.weakamp, cntype.strongamp))
+                    cn.type = c("Loss", "Loss", "LOH", "Gain",
+                                "Gain", "Gain"))
   segs.b <- GRanges(seqnames = factor(c(rep('1p',2), rep('1q',3)),
                                       levels = c('1p', '1q', 'Xp')),
                     ranges = IRanges(start = c(50, 130, 170, 250, 50),
                                      end = c(130, 170, 250, 300, 250)),
                     cn = c(1,NA,3,5,10),
-                    cn.type = c(cntype.loss, cntype.loh, cntype.gain,
-                                cntype.gain, cntype.gain),
-                    cn.subtype = c(cntype.hetloss, cntype.loh, cntype.gain,
-                                   cntype.weakamp, cntype.strongamp))
+                    cn.type = c("Loss", "LOH", "Gain",
+                                "Gain", "Gain"))
   expect_false(same_segmentsets(segs.a, segs.b))
 })
 
@@ -171,19 +141,15 @@ test_that("Same set works - different copy number", {
                     ranges = IRanges(start = c(1, 50, 130, 170, 250, 50),
                                      end = c(50, 130, 170, 250, 300, 250)),
                     cn = c(0,1,NA,3,5,10),
-                    cn.type = c(cntype.loss, cntype.loss, cntype.loh, cntype.gain,
-                                cntype.gain, cntype.gain),
-                    cn.subtype = c(cntype.homloss, cntype.hetloss, cntype.loh, cntype.gain,
-                                   cntype.weakamp, cntype.strongamp))
+                    cn.type = c("Loss", "Loss", "LOH", "Gain",
+                                "Gain", "Gain"))
   segs.b <- GRanges(seqnames = factor(c(rep('1p',3), rep('1q',3)),
                                       levels = c('1p', '1q', 'Xp')),
                     ranges = IRanges(start = c(1, 50, 130, 170, 250, 50),
                                      end = c(50, 130, 170, 250, 300, 250)),
                     cn = c(NA,1,NA,3,5,10),
-                    cn.type = c(cntype.loh, cntype.loss, cntype.loh, cntype.gain,
-                                cntype.gain, cntype.gain),
-                    cn.subtype = c(cntype.homloss, cntype.hetloss, cntype.loh, cntype.gain,
-                                   cntype.weakamp, cntype.strongamp))
+                    cn.type = c("LOH", "Loss", "LOH", "Gain",
+                                "Gain", "Gain"))
   expect_false(same_segmentsets(segs.a, segs.b))
 })
 
@@ -193,58 +159,14 @@ test_that("Same set works - different cntype", {
                     ranges = IRanges(start = c(1, 50, 130, 170, 250, 50),
                                      end = c(50, 130, 170, 250, 300, 250)),
                     cn = c(0,1,NA,3,5,10),
-                    cn.type = c(cntype.loss, cntype.loss, cntype.loh, cntype.gain,
-                                cntype.gain, cntype.gain),
-                    cn.subtype = c(cntype.homloss, cntype.hetloss, cntype.loh, cntype.gain,
-                                   cntype.weakamp, cntype.strongamp))
+                    cn.type = c("Loss", "Loss", "LOH", "Gain",
+                                "Gain", "Gain"))
   segs.b <- GRanges(seqnames = factor(c(rep('1p',3), rep('1q',3)),
                                       levels = c('1p', '1q', 'Xp')),
                     ranges = IRanges(start = c(1, 50, 130, 170, 250, 50),
                                      end = c(50, 130, 170, 250, 300, 250)),
                     cn = c(0,1,NA,3,5,10),
-                    cn.type = c(cntype.loh, cntype.loss, cntype.loh, cntype.gain,
-                                cntype.gain, cntype.gain),
-                    cn.subtype = c(cntype.homloss, cntype.hetloss, cntype.loh, cntype.gain,
-                                   cntype.weakamp, cntype.strongamp))
+                    cn.type = c("LOH", "Loss", "LOH", "Gain",
+                                "Gain", "Gain"))
   expect_false(same_segmentsets(segs.a, segs.b))
-})
-
-test_that("Same set works - different cn subtype", {
-  segs.a <- GRanges(seqnames = factor(c(rep('1p',3), rep('1q',3)),
-                                      levels = c('1p', '1q', 'Xp')),
-                    ranges = IRanges(start = c(1, 50, 130, 170, 250, 50),
-                                     end = c(50, 130, 170, 250, 300, 250)),
-                    cn = c(0,1,NA,3,5,10),
-                    cn.type = c(cntype.loss, cntype.loss, cntype.loh, cntype.gain,
-                                cntype.gain, cntype.gain),
-                    cn.subtype = c(cntype.homloss, cntype.hetloss, cntype.loh, cntype.gain,
-                                   cntype.weakamp, cntype.strongamp))
-  segs.b <- GRanges(seqnames = factor(c(rep('1p',3), rep('1q',3)),
-                                      levels = c('1p', '1q', 'Xp')),
-                    ranges = IRanges(start = c(1, 50, 130, 170, 250, 50),
-                                     end = c(50, 130, 170, 250, 300, 250)),
-                    cn = c(0,1,NA,3,5,10),
-                    cn.type = c(cntype.loss, cntype.loss, cntype.loh, cntype.gain,
-                                cntype.gain, cntype.gain),
-                    cn.subtype = c(cntype.loss, cntype.hetloss, cntype.loh, cntype.gain,
-                                   cntype.weakamp, cntype.strongamp))
-  expect_false(same_segmentsets(segs.a, segs.b))
-})
-
-test_that("Same set works - no subtype", {
-  segs.a <- GRanges(seqnames = factor(c(rep('1p',3), rep('1q',3)),
-                                      levels = c('1p', '1q', 'Xp')),
-                    ranges = IRanges(start = c(1, 50, 130, 170, 250, 50),
-                                     end = c(50, 130, 170, 250, 300, 250)),
-                    cn = c(0,1,NA,3,5,10),
-                    cn.type = c(cntype.loss, cntype.loss, cntype.loh, cntype.gain,
-                                cntype.gain, cntype.gain))
-  segs.b <- GRanges(seqnames = factor(c(rep('1p',3), rep('1q',3)),
-                                      levels = c('1p', '1q', 'Xp')),
-                    ranges = IRanges(start = c(1, 50, 130, 170, 250, 50),
-                                     end = c(50, 130, 170, 250, 300, 250)),
-                    cn = c(0,1,NA,3,5,10),
-                    cn.type = c(cntype.loss, cntype.loss, cntype.loh, cntype.gain,
-                                cntype.gain, cntype.gain))
-  expect_true(same_segmentsets(segs.a, segs.b))
 })

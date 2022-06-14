@@ -2,8 +2,9 @@ Package: oncoscanR
 Type: Package
 Title: Meta-analyses of CNV segments
 Version: 0.99.0
-Authors@R: person("Yann", "Christinat", email = "yann.christinat@hcuge.ch", 
-                  role = c("aut", "cre"))
+Authors@R: c(person("Yann", "Christinat", email = "yann.christinat@hcuge.ch", 
+                  role = c("aut", "cre")),
+             person("Geneva University Hospitals", role=c("aut", "cph")))
 Description: The software uses the copy number segments from a text file and 
     identifies all chromosome arms that are globally altered and computes various 
     genome-wide scores. The following HRD scores (characteristic of BRCA-mutated cancers) 
@@ -11,7 +12,7 @@ Description: The software uses the copy number segments from a text file and
     ThermoFisher Oncoscan assay analyzed with their Chromosome Alteration Suite 
     (ChAS) but can be adapted to any input.
 License: MIT + file LICENSE
-Date: 2020-06-24
+Date: 2022-06-14
 Encoding: UTF-8
 LazyData: true
 VignetteBuilder: knitr
@@ -22,15 +23,15 @@ biocViews:
 Imports:
     readr,
   	S4Vectors,
-  	magrittr,
   	methods
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.0
 Depends:
-    R (>= 3.6),
-    IRanges (>= 2.6.1),
-    GenomicRanges (>= 1.24.3)
+    R (>= 4.2),
+    IRanges (>= 2.30.0),
+    GenomicRanges (>= 1.48.0),
+    magrittr
 Suggests: 
-    testthat (>= 2.1.0),
+    testthat (>= 3.1.4),
     jsonlite,
     knitr,
     rmarkdown

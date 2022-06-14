@@ -6,10 +6,8 @@ test_that("LST works - simple cases", {
                   ranges = IRanges(start = c(30, 50, 70,  90, 25,  50)*10^6 + 1,
                                    end =   c(50, 70, 90, 100, 75, 100)*10^6),
                   cn = c(NA, 3, 1, 0, NA, 14),
-                  cn.type = c(cntype.loh, cntype.gain, cntype.loss, cntype.loss,
-                              cntype.loh, cntype.gain),
-                  cn.subtype = c(cntype.loh, cntype.gain, cntype.hetloss, cntype.homloss,
-                                 cntype.loh, cntype.strongamp))
+                  cn.type = c("LOH", "Gain", "Loss", "Loss",
+                              "LOH", "Gain"))
   n.1p <- score_lst(segs[seqnames(segs) == '1p'], cov)
   n.2p <- score_lst(segs[seqnames(segs) == '2p'], cov)
   n <- score_lst(segs, cov)
@@ -24,8 +22,7 @@ test_that("LST works - case 1", {
                   ranges = IRanges(start = c(20,  30)*10^6 + 1,
                                    end =   c(22, 100)*10^6),
                   cn = c(3, 3),
-                  cn.type = c(cntype.gain, cntype.gain),
-                  cn.subtype = c(cntype.gain, cntype.gain))
+                  cn.type = c("Gain", "Gain"))
   n <- score_lst(segs, cov)
   expect_equal(n, 1)
 })
@@ -38,8 +35,7 @@ test_that("LST works - case 2", {
                   ranges = IRanges(start = c(0,  20,  24)*10^6 + 1,
                                    end =   c(20, 22, 100)*10^6),
                   cn = c(1, 3, 3),
-                  cn.type = c(cntype.loss, cntype.gain, cntype.gain),
-                  cn.subtype = c(cntype.hetloss, cntype.gain, cntype.gain))
+                  cn.type = c("Loss", "Gain", "Gain"))
   n <- score_lst(segs, cov)
   expect_equal(n, 0)
 })
@@ -52,8 +48,7 @@ test_that("LST works - case 3", {
                   ranges = IRanges(start = c(20,  31)*10^6 + 1,
                                    end =   c(29, 100)*10^6),
                   cn = c(3, 7),
-                  cn.type = c(cntype.gain, cntype.gain),
-                  cn.subtype = c(cntype.gain, cntype.weakamp))
+                  cn.type = c("Gain", "Gain"))
   n <- score_lst(segs, cov)
   expect_equal(n, 2)
 })
@@ -66,8 +61,7 @@ test_that("LST works - case 4", {
                   ranges = IRanges(start = c(43,  50)*10^6 + 1,
                                    end =   c(57, 100)*10^6),
                   cn = c(NA, 7),
-                  cn.type = c(cntype.loh, cntype.gain),
-                  cn.subtype = c(cntype.loh, cntype.weakamp))
+                  cn.type = c("LOH", "Gain"))
   n <- score_lst(segs, cov)
   expect_equal(n, 0)
 })
@@ -80,8 +74,7 @@ test_that("LST works - case 5", {
                   ranges = IRanges(start = c(31, 61)*10^6 + 1,
                                    end =   c(80, 100)*10^6),
                   cn = c(3, 7),
-                  cn.type = c(cntype.gain, cntype.gain),
-                  cn.subtype = c(cntype.gain, cntype.weakamp))
+                  cn.type = c("Gain", "Gain"))
   n <- score_lst(segs, cov)
   expect_equal(n, 3)
 })
@@ -89,9 +82,9 @@ test_that("LST works - case 5", {
 test_that("LST works - real case", {
   oncoscan.cov <- oncoscanR::oncoscan_na33.cov[seqnames(oncoscanR::oncoscan_na33.cov) != '21p']
 
-  chas.fn <- system.file("testdata", "LST_gene_list_full_location.txt", package = "oncoscanR")
+  chas.fn <- "../testdata/LST_gene_list_full_location.txt"
   segments <- load_chas(chas.fn, oncoscan.cov)
-  segments$cn.subtype <- get_cn_subtype(segments, 'F')
+
   segs.clean <- trim_to_coverage(segments, oncoscan.cov) %>%
     adjust_loh() %>%
     merge_segments() %>%

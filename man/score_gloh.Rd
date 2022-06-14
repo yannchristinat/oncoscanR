@@ -32,15 +32,11 @@ number of copies, excluding chromosomal arms that have a global LOH (>=90% of
 arm length).
 To compute with the \code{armlevel_alt} function on LOH segments only).
 This score was linked to BRCA1/2-deficient tumors.
-
-Of note the cn.subtype has to be defined first via the function
-\code{get_cn_subtype}.
 }
 \examples{
-segs.chas_example$cn.subtype <- get_cn_subtype(segs.chas_example, 'F')
-armlevel.loh <- armlevel_alt(segs.chas_example[segs.chas_example$cn.type == cntype.loh],
+armlevel.loh <- armlevel_alt(get_loh_segments(segs.chas_example),
                              kit.coverage = oncoscan_na33.cov)
-armlevel.hetloss <- armlevel_alt(segs.chas_example[segs.chas_example$cn.subtype == cntype.hetloss],
+armlevel.hetloss <- armlevel_alt(get_hetloss_segments(segs.chas_example),
                              kit.coverage = oncoscan_na33.cov)
 score_gloh(segs.chas_example, names(armlevel.loh), names(armlevel.hetloss), oncoscan_na33.cov)
 }

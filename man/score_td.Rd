@@ -20,8 +20,8 @@ Compute the number of large tandem duplication (TDplus).
 \details{
 Procedure based on the paper from Popova et al., Cancer Res 2016
 (PMID: 26787835). The TDplus score is defined as the number of regions larger
- than 1Mb but smaller or equal to 10Mb with a gain of one or two copies
- (\code{cntype.gain} in the field \code{cn.subtype}). This score was linked
+ than 1Mb but smaller or equal to 10Mb with a gain of one or two copies. This
+ score was linked
  to CDK12-deficient tumors. They also identified as second category of tandem
   duplication whose size is smaller or equal than 1Mb and around 300Kb but
   could not link it to a phenotype. Note that due to its resolution the

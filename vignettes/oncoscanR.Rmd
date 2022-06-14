@@ -55,7 +55,7 @@ Open R and type the following commands:
 ```{r}
 library(oncoscanR)
 segs.filename <- system.file("extdata", "chas_example.txt", package = "oncoscanR")
-res <- workflow_oncoscan.run(segs.filename, "M")
+res <- workflow_oncoscan.run(segs.filename)
 ```
 
 If everything is setup fine, `res` should contain a list with no arm-level alterations and a negative HRD score (nLST=1).
@@ -77,7 +77,6 @@ library(magrittr)
 # Load the ChAS file and assign subtypes.
 chas.fn <- system.file("extdata", "chas_example.txt", package = "oncoscanR")
 segments <- load_chas(chas.fn, oncoscan_na33.cov)
-segments$cn.subtype <- get_cn_subtype(segments, 'F')
 
 # Clean the segments: restricted to Oncoscan coverage, LOH not overlapping
 # with copy loss segments, smooth&merge segments within 300kb and prune
@@ -98,10 +97,11 @@ resolution genome-wide) are merged. The remaining segments are filtered to a min
 For instance if we want to get all arms that have a global LOH alteration, we run:
 ```{r}
 oncoscan.cov <- oncoscan_na33.cov[seqnames(oncoscan_na33.cov) != "21p"]
-chas.fn <- system.file("testdata", "triploide_gene_list_full_location.txt", package = "oncoscanR")
+chas.fn <- system.file("testdata", "triploide_gene_list_full_location.txt", 
+                       package = "oncoscanR")
 segments <- load_chas(chas.fn, oncoscan.cov)
-armlevel.loh <- segments[segments$cn.type == cntype.loh] %>%
-        armlevel_alt(kit.coverage = oncoscan.cov)
+armlevel.loh <- get_loh_segments(segments) %>% 
+    armlevel_alt(kit.coverage = oncoscan.cov)
 ```
 
 The variable `amrlevel.loh`is a named vector containing the arms that have percentage of base with LOH above the 
@@ -109,9 +109,10 @@ threshold (90%). To obtain the percentage of LOH bases in all arms, one could se
 
 ```{r}
 oncoscan.cov <- oncoscan_na33.cov[seqnames(oncoscan_na33.cov) != "21p"]
-chas.fn <- system.file("testdata", "triploide_gene_list_full_location.txt", package = "oncoscanR")
+chas.fn <- system.file("testdata", "triploide_gene_list_full_location.txt", 
+                       package = "oncoscanR")
 segments <- load_chas(chas.fn, oncoscan.cov)
-armlevel.loh <- segments[segments$cn.type == cntype.loh] %>%
+armlevel.loh <- get_loh_segments(segments) %>%
         armlevel_alt(kit.coverage = oncoscan.cov, threshold = 0)
 ```
 
@@ -158,9 +159,6 @@ oncoscan.cov <- oncoscanR::oncoscan_na33.cov[seqnames(oncoscanR::oncoscan_na33.c
 chas.fn <- system.file("testdata", "LST_gene_list_full_location.txt", package = "oncoscanR")
 segments <- load_chas(chas.fn, oncoscan.cov)
 
-# Get CN subtype (hetero-/homo-zygous loss, amplification vs gain, etc.)
-segments$cn.subtype <- get_cn_subtype(segments, 'F')
-
 # Clean the segments: restricted to Oncoscan coverage, LOH not overlapping
 # with copy loss segments, smooth&merge segments within 300kb and prune
 # segments smaller than 300kb.
@@ -171,9 +169,9 @@ segs.clean <- trim_to_coverage(segments, oncoscan.cov) %>%
 
 # Then we need to compute the arm-level alteration for loss and LOH since many scores discard
 # arms that are globally altered.
-arms.loss <- names(segs.clean[segs.clean$cn.type == oncoscanR::cntype.loss] %>%
+arms.loss <- names(get_loss_segments(segs.clean) %>%
         armlevel_alt(kit.coverage = oncoscan.cov))
-arms.loh <- names(segs.clean[segs.clean$cn.type == oncoscanR::cntype.loh] %>%
+arms.loh <- names(get_loh_segments(segs.clean) %>%
         armlevel_alt(kit.coverage = oncoscan.cov))
 
 # Get the number of LST
@@ -205,9 +203,6 @@ this second category. Nonetheless it is reported by the function but not by the 
 # Load data
 chas.fn <- system.file("testdata", "TDplus_gene_list_full_location.txt", package = "oncoscanR")
 segments <- load_chas(chas.fn, oncoscan_na33.cov)
-
-# Get CN subtype (hetero-/homo-zygous loss, amplification vs gain, etc.)
-segments$cn.subtype <- get_cn_subtype(segments, 'M')
 
 # Clean the segments: restricted to Oncoscan coverage, LOH not overlapping
 # with copy loss segments, smooth&merge segments within 300kb and prune

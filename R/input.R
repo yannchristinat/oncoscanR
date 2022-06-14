@@ -14,7 +14,7 @@
 #'
 #' @return A \code{GRanges} object containing the segments, their copy number
 #' (field \code{cn}), their copy
-#' number types (field \code{cn.type}). \code{cn.type} contains either 'Gain',
+#' number types (field \code{cntype}). \code{cntype} contains either 'Gain',
 #' 'Loss' or 'LOH'.
 #' If the file contains twice the same segment or does not respect the format
 #' specifications, then an error is
@@ -23,15 +23,19 @@
 #'
 #' @export
 #'
-#' @importFrom readr read_tsv cols_only col_number col_character
+#' @import readr
 #' @import GenomicRanges
 #' @import IRanges
+#' @importFrom methods is
 #'
 #' @examples
 #' segs.filename <- system.file('extdata', 'chas_example.txt',
 #'   package = 'oncoscanR')
 #' segs.chas_example <- load_chas(segs.filename, oncoscan_na33.cov)
 load_chas <- function(filename, kit.coverage) {
+    # Entry check on arguments
+    stopifnot(is(kit.coverage, "GRanges"))
+
     # Reads in the ChAS file
     oncoscan_table <- read_tsv(filename, comment = "#", col_names = TRUE,
         col_types = cols_only(`CN State` = col_number(),
@@ -73,10 +77,9 @@ load_chas <- function(filename, kit.coverage) {
         seg_cntype <- oncoscan_table$Type[i]
 
         # Test if copy number type is correct
-        if (!(seg_cntype %in% c(oncoscanR::cntype.gain, oncoscanR::cntype.loss, oncoscanR::cntype.loh))) {
+        if (!(seg_cntype %in% cntypes)) {
             msg <- paste("The column \"Type\" should contain only the following values:",
-                         c(oncoscanR::cntype.gain, oncoscanR::cntype.loss, oncoscanR::cntype.loh),
-                         "whereas", seg_cntype, "was found!")
+                         cntypes, "whereas", seg_cntype, "was found!")
             stop(msg)
         }
 
@@ -126,9 +129,10 @@ load_chas <- function(filename, kit.coverage) {
             for (i in 2:length(arm_segs)) {
                 segA <- arm_segs[i - 1]
                 segB <- arm_segs[i]
-                if (start(segA) == start(segB) & end(segA) == end(segB) &
+                if (IRanges::start(segA) == IRanges::start(segB) &
+                    IRanges::end(segA) == IRanges::end(segB) &
                     segA$cn.type == segB$cn.type) {
-                  if (segA$cn.type == oncoscanR::cntype.loh) {
+                  if (segA$cn.type == cntypes$LOH) {
                       msg <- paste("The file", filename, "contains duplicated entries.")
                       stop(msg)
                   } else if (segA$cn == segB$cn) {
@@ -145,38 +149,6 @@ load_chas <- function(filename, kit.coverage) {
     }
 
     return(segs)
-}
-
-
-#' Load a CNV file in a BED-like format.
-#'
-#' @details The file is expected to contain the following columns: chromosome
-#' name, segment start, segment end,
-#' copy number. An fifth column with the copy number type is optional and if
-#' present should contain the values
-#' 'Gain', 'Loss' or 'LOH'.
-#' If the gender is not specified, then the segments on the sexual chromosomes
-#' (X and Y) are dropped as the
-#' copy number type cannot be determined for those.
-#'
-#' @param filename Path to the CNV file.
-#' @param gender Character to indicate whether the sample is male ('M') or
-#' female ('F').
-#'
-#' @return A \code{GRanges} object containing the segments, their copy number
-#' and copy number types. If the
-#' file contains twice the same segment or does not respect the format
-#' specifications, then an error is raised.
-#'
-#' @export
-#'
-#' @examples
-#' segs.filename <- system.file('extdata', 'cnv_example.bed',
-#'   package = 'oncoscanR')
-#' segs.cnv_example <- load_bed(segs.filename, 'F')
-load_bed <- function(filename, gender) {
-    warning("Not yet implemented! Please request it if needed.")
-    return(NULL)
 }
 
 
@@ -199,7 +171,7 @@ load_bed <- function(filename, gender) {
 #'
 #' @import GenomicRanges
 #' @import IRanges
-#' @importFrom readr read_csv cols_only col_character col_integer
+#' @import readr
 #'
 #' @examples
 #' oncoscan_na33.covhead <- get_oncoscan_coverage_from_probes(
@@ -231,63 +203,89 @@ get_oncoscan_coverage_from_probes <- function(filename) {
 }
 
 
-#' Get the detailed copy number types.
-#'
-#' @details The copy number subtypes are defined as follow:
-#'   - 'Gain': 1-2 extra copies
-#'   - 'Weak amplification': 3-7 extra copies
-#'   - 'Strong amplification': 8 or more extra copies
-#'   - 'Heterozygote loss': Loss of one copy out of two
-#'   - 'Homozygote loss': Loss of all copies
-#'   - 'LOH': copy-neutral loss of one parental allele
+#' Return all segments of type LOH, independently of the copy number.
 #'
 #' @param segments A \code{GRanges} object containing the segments, their copy
-#' number (field \code{cn}) and their copy number types (field \code{cn.type}).
-#' The \code{cn.type} is expected to be either 'Gain', 'Loss' or 'LOH'.
-#' @param gender Character to indicate whether the sample is male ('M') or
-#' female ('F'). If \code{NULL} then the field \code{cn.type} is set to
-#' \code{NA} for the chromosomes X and Y.
+#' number and copy number types.
 #'
-#' @return A list of copy number types (one for each segment). Raises an error
-#' if the \code{cn.type}, \code{cn} and gender are not compatible.
-#'
-#' @import GenomicRanges
-#'
+#' @return A \code{GRanges} object containing the selected segments, their copy
+#' number and copy number types.
 #' @export
 #'
 #' @examples
-#' subtypes <- get_cn_subtype(segs.chas_example, 'F')
-get_cn_subtype <- function(segments, gender) {
+#' segs.loh <- get_loh_segments(segs.chas_example)
+get_loh_segments <- function(segments){
     is_cn_segment(segments, raise_error = TRUE)
 
-    if (!(gender %in% c("M", "F"))) {
-        message("Unspecified gender. Cannot assign subtypes on sexual chromosomes.")
-    }
-    sexchroms <- c("Xp", "Xq", "Yp", "Yq")
+    return(segments[segments$cn.type == cntypes$LOH])
+}
 
-    subtypes <- lapply(seq_along(segments), function(i) {
-        seg <- segments[i]
-        if (length(intersect(seqnames(seg), c(sexchroms, paste0("chr", sexchroms)))) >
-            0 & !(gender %in% c("M", "F"))) {
-            return(NA)
-        }
-        if (seg$cn.type == "LOH") {
-            return(oncoscanR::cntype.loh)
-        }
-        s <- NA
-        if (length(intersect(seqnames(seg), c(sexchroms, paste0("chr", sexchroms)))) >
-            0 & gender == "M") {
-            s <- ifelse(seg$cn < 1, oncoscanR::cntype.homloss, ifelse(seg$cn > 1, ifelse(seg$cn >
-                3, ifelse(seg$cn > 8, oncoscanR::cntype.strongamp, oncoscanR::cntype.weakamp), oncoscanR::cntype.gain),
-                NA))
-        } else {
-            s <- ifelse(seg$cn < 2, ifelse(seg$cn < 1, oncoscanR::cntype.homloss, oncoscanR::cntype.hetloss),
-                ifelse(seg$cn > 2, ifelse(seg$cn > 4, ifelse(seg$cn > 9, oncoscanR::cntype.strongamp,
-                                                             oncoscanR::cntype.weakamp), oncoscanR::cntype.gain), NA))
-        }
-        return(s)
-    })
-    return(subtypes)
+#' Return all segments with loss of 1 or 2 copies.
+#'
+#' @param segments A \code{GRanges} object containing the segments, their copy
+#' number and copy number types.
+#'
+#' @return A \code{GRanges} object containing the selected segments, their copy
+#' number and copy number types.
+#' @export
+#'
+#' @examples
+#' segs.loh <- get_loh_segments(segs.chas_example)
+get_loss_segments <- function(segments){
+    is_cn_segment(segments, raise_error = TRUE)
+
+    return(segments[segments$cn.type == cntypes$Loss])
+}
+
+#' Return all segments with heterozygous loss.
+#'
+#' @param segments A \code{GRanges} object containing the segments, their copy
+#' number and copy number types.
+#'
+#' @return A \code{GRanges} object containing the selected segments, their copy
+#' number and copy number types.
+#' @export
+#'
+#' @examples
+#' segs.hetloss <- get_hetloss_segments(segs.chas_example)
+get_hetloss_segments <- function(segments){
+    is_cn_segment(segments, raise_error = TRUE)
+
+    return(segments[segments$cn.type == cntypes$Loss & segments$cn>0])
+}
+
+#' Return all segments with gain of copies.
+#'
+#' @param segments A \code{GRanges} object containing the segments, their copy
+#' number and copy number types.
+#'
+#' @return A \code{GRanges} object containing the selected segments, their copy
+#' number and copy number types.
+#' @export
+#'
+#' @examples
+#' segs.gain <- get_gain_segments(segs.chas_example)
+get_gain_segments <- function(segments){
+    is_cn_segment(segments, raise_error = TRUE)
+
+    return(segments[segments$cn.type == cntypes$Gain])
+}
+
+#' Return all segments with an amplification (5 or more copies).
+#'
+#' @param segments A \code{GRanges} object containing the segments, their copy
+#' number and copy number types.
+#'
+#' @return A \code{GRanges} object containing the selected segments, their copy
+#' number and copy number types.
+#' @export
+#'
+#' @examples
+#' segs.amp <- get_amp_segments(segs.chas_example)
+get_amp_segments <- function(segments){
+    is_cn_segment(segments, raise_error = TRUE)
+
+    return(segments[segments$cn.type == cntypes$Gain & segments$cn>=5])
 }
 
 
@@ -409,8 +407,8 @@ merge_segments <- function(segments, kit.resolution = 300) {
 #' @export
 #'
 #' @import GenomicRanges
-#' @importFrom IRanges findOverlapPairs
-#' @importFrom S4Vectors first second
+#' @import IRanges
+#' @import S4Vectors
 #'
 #' @examples
 #' segs.adj <- adjust_loh(segs.chas_example)
@@ -424,13 +422,13 @@ adjust_loh <- function(segments) {
 
     # Apply on each arm
     loh.adj <- lapply(unique(seqnames(segments)), function(arm) {
-        segs.loh <- segments[segments$cn.type == oncoscanR::cntype.loh & seqnames(segments) ==
+        segs.loh <- segments[segments$cn.type == cntypes$LOH & seqnames(segments) ==
             arm]
 
         if(length(segs.loh)==0) {
             return(GRanges())
         }
-        segs.loss <- segments[segments$cn.type == oncoscanR::cntype.loss & seqnames(segments) ==
+        segs.loss <- segments[segments$cn.type == cntypes$Loss & seqnames(segments) ==
             arm]
 
         pos.all <- sort(unique(c(start(segs.loh), end(segs.loh), start(segs.loss), end(segs.loss))))
@@ -484,12 +482,12 @@ adjust_loh <- function(segments) {
 
     new.loh <- do.call("c", unlist(loh.adj))
     new.loh$cn <- as.numeric(NA)
-    new.loh$cn.type <- as.character(oncoscanR::cntype.loh)
+    new.loh$cn.type <- as.character(cntypes$LOH)
     if(!is.null(segments$cn.subtype)){
-        new.loh$cn.subtype <- as.character(oncoscanR::cntype.loh)
+        new.loh$cn.subtype <- as.character(cntypes$LOH)
     }
 
-    return(c(segments[segments$cn.type != oncoscanR::cntype.loh], new.loh))
+    return(c(segments[segments$cn.type != cntypes$LOH], new.loh))
 }
 
 
@@ -505,7 +503,7 @@ adjust_loh <- function(segments) {
 #' number and copy number types.
 #' @export
 #'
-#' @importFrom IRanges width
+#' @import IRanges
 #'
 #' @examples
 #' segs.300k <- prune_by_size(segs.chas_example)

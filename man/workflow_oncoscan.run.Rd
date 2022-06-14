@@ -4,18 +4,15 @@
 \alias{workflow_oncoscan.run}
 \title{Run the standard workflow for Oncoscan ChAS files.}
 \usage{
-workflow_oncoscan.run(chas.fn, gender)
+workflow_oncoscan.run(chas.fn)
 }
 \arguments{
 \item{chas.fn}{Path to the text-export ChAS file}
-
-\item{gender}{Gender of the sample (M or F)}
 }
 \value{
 A list of lists with the following elements:
 \code{armlevel = list(AMP= list of arms, GAIN= list of arms, LOSS= list of arms, LOH= list of arms),
 scores = list(LST= number, LOH= number, TDplus= number, TD= number),
-gender = gender as given by the parameter,
 file = path of the ChAS file as given by the parameter)}
 }
 \description{
