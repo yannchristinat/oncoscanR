@@ -29,6 +29,8 @@ Load a ChAS text export file.
 The ChAS file is expected to have the following column names:
 'CN State' (number or empty), 'Type' (expected value: 'Gain', 'Loss' or
 'LOH') and 'Full Location' (in the format 'chr:start-end').
+
+The segments are attributed to each chromosome arm and split if necessary.
 }
 \examples{
 segs.filename <- system.file('extdata', 'chas_example.txt',

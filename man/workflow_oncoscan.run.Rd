@@ -26,5 +26,5 @@ amplified.
 }
 \examples{
 segs.filename <- system.file('extdata', 'chas_example.txt', package = 'oncoscanR')
-workflow_oncoscan.run(segs.filename, 'M')
+workflow_oncoscan.run(segs.filename)
 }

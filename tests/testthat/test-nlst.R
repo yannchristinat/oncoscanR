@@ -11,10 +11,8 @@ test_that("Avg CN computes correctly", {
                     ranges = IRanges(start = c(30, 50, 70,  90, 25,  50) + 1,
                                      end =   c(50, 70, 90, 100, 75, 100)),
                     cn = c(NA, 3, 1, 0, NA, 14),
-                    cn.type = c(cntype.loh, cntype.gain, cntype.loss, cntype.loss,
-                                cntype.loh, cntype.gain),
-                    cn.subtype = c(cntype.loh, cntype.gain, cntype.hetloss, cntype.homloss,
-                                   cntype.loh, cntype.strongamp))
+                    cn.type = c("LOH", "Gain", "Loss", "Loss",
+                                "LOH", "Gain"))
     avgcn <- score_avgcn(segs, cov)
     expect_equal(avgcn, 3.45)
 })
@@ -25,7 +23,7 @@ test_that("Est WGD works on limit cases", {
                    ranges = IRanges(start = 1, end = 100))
     # Test at avgCN=0
     seg <- GRanges(seqnames = factor('1p', levels = c('1p')),
-                ranges = IRanges(start = 1, end = 100), cn=0, cn.type = cntype.loss)
+                ranges = IRanges(start = 1, end = 100), cn=0, cn.type = "Loss")
     est <- score_estwgd(seg, cov)
     expect_equal(est, c(WGD=0,avgCN=0))
 
@@ -35,43 +33,43 @@ test_that("Est WGD works on limit cases", {
 
     # Test at avgCN=2.19
     seg <- GRanges(seqnames = factor('1p', levels = c('1p')),
-                   ranges = IRanges(start = 1, end = 19), cn=3, cn.type = cntype.gain)
+                   ranges = IRanges(start = 1, end = 19), cn=3, cn.type = "Gain")
     est <- score_estwgd(seg, cov)
     expect_equal(est, c(WGD=0,avgCN=2.19))
 
     # Test at avgCN=2.2
     seg <- GRanges(seqnames = factor('1p', levels = c('1p')),
-                   ranges = IRanges(start = 1, end = 20), cn=3, cn.type = cntype.gain)
+                   ranges = IRanges(start = 1, end = 20), cn=3, cn.type = "Gain")
     est <- score_estwgd(seg, cov)
     expect_equal(est, c(WGD=0,avgCN=2.2))
 
     # Test at avgCN=2.21
     seg <- GRanges(seqnames = factor('1p', levels = c('1p')),
-                   ranges = IRanges(start = 1, end = 21), cn=3, cn.type = cntype.gain)
+                   ranges = IRanges(start = 1, end = 21), cn=3, cn.type = "Gain")
     est <- score_estwgd(seg, cov)
     expect_equal(est, c(WGD=1,avgCN=2.21))
 
     # Test at avgCN=3.38
     seg <- GRanges(seqnames = factor('1p', levels = c('1p')),
-                   ranges = IRanges(start = 1, end = 69), cn=4, cn.type = cntype.gain)
+                   ranges = IRanges(start = 1, end = 69), cn=4, cn.type = "Gain")
     est <- score_estwgd(seg, cov)
     expect_equal(est, c(WGD=1,avgCN=3.38))
 
     # Test at avgCN=3.4
     seg <- GRanges(seqnames = factor('1p', levels = c('1p')),
-                   ranges = IRanges(start = 1, end = 70), cn=4, cn.type = cntype.gain)
+                   ranges = IRanges(start = 1, end = 70), cn=4, cn.type = "Gain")
     est <- score_estwgd(seg, cov)
     expect_equal(est, c(WGD=1,avgCN=3.4))
 
     # Test at avgCN=3.42
     seg <- GRanges(seqnames = factor('1p', levels = c('1p')),
-                   ranges = IRanges(start = 1, end = 71), cn=4, cn.type = cntype.gain)
+                   ranges = IRanges(start = 1, end = 71), cn=4, cn.type = "Gain")
     est <- score_estwgd(seg, cov)
     expect_equal(est, c(WGD=2,avgCN=3.42))
 
     # Test at avgCN=10
     seg <- GRanges(seqnames = factor('1p', levels = c('1p')),
-                   ranges = IRanges(start = 1, end = 100), cn=10, cn.type = cntype.gain)
+                   ranges = IRanges(start = 1, end = 100), cn=10, cn.type = "Gain")
     est <- score_estwgd(seg, cov)
     expect_equal(est, c(WGD=2,avgCN=10))
 })
@@ -85,10 +83,7 @@ test_that("nLST works - simple case and limit cases", {
                     ranges = IRanges(start = c(30, 50, 70,  90, 25,  50)*10^6 + 1,
                                      end =   c(50, 70, 90, 100, 75, 100)*10^6),
                     cn = c(NA, 3, 1, 0, NA, 14),
-                    cn.type = c(cntype.loh, cntype.gain, cntype.loss, cntype.loss,
-                                cntype.loh, cntype.gain),
-                    cn.subtype = c(cntype.loh, cntype.gain, cntype.hetloss, cntype.homloss,
-                                   cntype.loh, cntype.strongamp))
+                    cn.type = c("LOH", "Gain", "Loss", "Loss", "LOH", "Gain"))
 
     # Test with WGD=0, threshold=15 (default)
     n <- score_nlst(segs, 0, cov)

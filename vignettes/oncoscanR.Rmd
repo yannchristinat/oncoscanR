@@ -97,7 +97,7 @@ resolution genome-wide) are merged. The remaining segments are filtered to a min
 For instance if we want to get all arms that have a global LOH alteration, we run:
 ```{r}
 oncoscan.cov <- oncoscan_na33.cov[seqnames(oncoscan_na33.cov) != "21p"]
-chas.fn <- system.file("testdata", "triploide_gene_list_full_location.txt", 
+chas.fn <- system.file("extdata", "triploide_gene_list_full_location.txt", 
                        package = "oncoscanR")
 segments <- load_chas(chas.fn, oncoscan.cov)
 armlevel.loh <- get_loh_segments(segments) %>% 
@@ -109,7 +109,7 @@ threshold (90%). To obtain the percentage of LOH bases in all arms, one could se
 
 ```{r}
 oncoscan.cov <- oncoscan_na33.cov[seqnames(oncoscan_na33.cov) != "21p"]
-chas.fn <- system.file("testdata", "triploide_gene_list_full_location.txt", 
+chas.fn <- system.file("extdata", "triploide_gene_list_full_location.txt", 
                        package = "oncoscanR")
 segments <- load_chas(chas.fn, oncoscan.cov)
 armlevel.loh <- get_loh_segments(segments) %>%
@@ -156,7 +156,7 @@ library(magrittr)
 
 # Load data
 oncoscan.cov <- oncoscanR::oncoscan_na33.cov[seqnames(oncoscanR::oncoscan_na33.cov) != "21p"]
-chas.fn <- system.file("testdata", "LST_gene_list_full_location.txt", package = "oncoscanR")
+chas.fn <- system.file("extdata", "LST_gene_list_full_location.txt", package = "oncoscanR")
 segments <- load_chas(chas.fn, oncoscan.cov)
 
 # Clean the segments: restricted to Oncoscan coverage, LOH not overlapping
@@ -201,7 +201,7 @@ this second category. Nonetheless it is reported by the function but not by the 
 
 ```{r}
 # Load data
-chas.fn <- system.file("testdata", "TDplus_gene_list_full_location.txt", package = "oncoscanR")
+chas.fn <- system.file("extdata", "TDplus_gene_list_full_location.txt", package = "oncoscanR")
 segments <- load_chas(chas.fn, oncoscan_na33.cov)
 
 # Clean the segments: restricted to Oncoscan coverage, LOH not overlapping

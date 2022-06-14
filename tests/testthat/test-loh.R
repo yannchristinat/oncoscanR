@@ -47,7 +47,8 @@ test_that("HR-LOH score works - overlapping loh", {
 test_that("LOH works - real case", {
   oncoscan.cov <- oncoscanR::oncoscan_na33.cov[seqnames(oncoscanR::oncoscan_na33.cov) != '21p']
 
-  chas.fn <- "../testdata/LST_gene_list_full_location.txt"
+  chas.fn <- system.file("extdata", "LST_gene_list_full_location.txt",
+                         package = "oncoscanR")
   segments <- load_chas(chas.fn, oncoscan.cov)
 
   segs.clean <- trim_to_coverage(segments, oncoscan.cov) %>%
@@ -76,7 +77,8 @@ test_that("LOH works - empty segments", {
 test_that("gLOH works - real case", {
   oncoscan.cov <- oncoscanR::oncoscan_na33.cov[seqnames(oncoscanR::oncoscan_na33.cov) != '21p']
 
-  chas.fn <- "../testdata/LST_gene_list_full_location.txt"
+  chas.fn <- system.file("extdata", "LST_gene_list_full_location.txt",
+                         package = "oncoscanR")
   segments <- load_chas(chas.fn, oncoscan.cov)
   segs.clean <- trim_to_coverage(segments, oncoscan.cov) %>%
     adjust_loh() %>%
@@ -87,9 +89,9 @@ test_that("gLOH works - real case", {
   armlevel.hetloss <- get_hetloss_segments(segs.clean) %>%
     armlevel_alt(kit.coverage = oncoscan.cov)
 
-  sel.segs <- segs.clean$cn.type=="LOH" | (segs.clean$cn.type=="Loss" & segs.clean$cn==1)
+  sel.segs <- segs.clean$cn.type=="LOH" | (segs.clean$cn.type=="Loss" & segs.clean$cn>=1)
   sel.arms <- !as.vector(seqnames(segs.clean)) %in% c(names(armlevel.loh), names(armlevel.hetloss))
-  expected_p <- sum( width(segs.clean[sel.segs & sel.arms]))/sum(width(oncoscan.cov))
+  expected_p <- sum(width(segs.clean[sel.segs & sel.arms]))/sum(width(oncoscan.cov))
 
   p <- score_gloh(segs.clean, names(armlevel.loh), names(armlevel.hetloss), oncoscan.cov)
   expect_equal(p, expected_p)

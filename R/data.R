@@ -31,9 +31,9 @@
 #'   - 'Heterozygote loss': Loss of one copy out of two
 #'   - 'Homozygote loss': Loss of all copies
 #'   - 'LOH': copy-neutral loss of one parental allele
-#'   @source
-#'   cntypes <- list(LOH='LOH', Gain='Gain', Loss='Loss')
+#' @source
+#' cntypes <- list(LOH='LOH', Gain='Gain', Loss='Loss')
 #'
-#'   @noRd
+#' @noRd
 "cntypes"
 

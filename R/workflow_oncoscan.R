@@ -22,7 +22,7 @@
 #'
 #' @examples
 #' segs.filename <- system.file('extdata', 'chas_example.txt', package = 'oncoscanR')
-#' workflow_oncoscan.run(segs.filename, 'M')
+#' workflow_oncoscan.run(segs.filename)
 workflow_oncoscan.run <- function(chas.fn) {
     # Remove the 21p arm from the Oncoscan coverage as it is only partly
     # covered and we don't want to return results on this arm.

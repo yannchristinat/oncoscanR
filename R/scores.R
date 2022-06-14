@@ -371,7 +371,7 @@ score_estwgd <- function(segments, kit.coverage) {
 #' @examples
 #' w <- score_estwgd(segs.chas_example, oncoscan_na33.cov)
 #' score_nlst(segs.chas_example, w['WGD'], oncoscan_na33.cov)
-score_nlst <- function(segments, n.wgd, kit.coverage) {
+score_nlst <- function(segments, n.wgd, kit.coverage, threshold=15) {
     is_cn_segment(segments, raise_error = TRUE)
     stopifnot(is(kit.coverage, "GRanges"))
 

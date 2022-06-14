@@ -82,7 +82,8 @@ test_that("LST works - case 5", {
 test_that("LST works - real case", {
   oncoscan.cov <- oncoscanR::oncoscan_na33.cov[seqnames(oncoscanR::oncoscan_na33.cov) != '21p']
 
-  chas.fn <- "../testdata/LST_gene_list_full_location.txt"
+  chas.fn <- system.file("extdata", "LST_gene_list_full_location.txt",
+                         package = "oncoscanR")
   segments <- load_chas(chas.fn, oncoscan.cov)
 
   segs.clean <- trim_to_coverage(segments, oncoscan.cov) %>%

@@ -1,7 +1,8 @@
 test_that("Oncoscan workflow works - LST", {
   #skip_on_cran()
 
-  chas.fn <- "../testdata/LST_gene_list_full_location.txt"
+  chas.fn <- system.file("extdata", "LST_gene_list_full_location.txt",
+                         package = "oncoscanR")
   armlevel.fn <- "../testdata/LST_gene_list_full_location.armlevel_scna.csv"
 
   # Run standard workflow from package
@@ -19,7 +20,8 @@ test_that("Oncoscan workflow works - LST", {
 test_that("Oncoscan workflow works - triploide", {
   #skip_on_cran()
 
-  chas.fn <- "../testdata/triploide_gene_list_full_location.txt"
+  chas.fn <- system.file("extdata", "triploide_gene_list_full_location.txt",
+                         package = "oncoscanR")
   armlevel.fn <- "../testdata/triploide_gene_list_full_location.armlevel_scna.csv"
 
   # Run standard workflow from package
@@ -37,7 +39,8 @@ test_that("Oncoscan workflow works - triploide", {
 test_that("Oncoscan workflow works - TDplus", {
   #skip_on_cran()
 
-  chas.fn <- "../testdata/TDplus_gene_list_full_location.txt"
+  chas.fn <- system.file("extdata", "TDplus_gene_list_full_location.txt",
+                         package = "oncoscanR")
   armlevel.fn <- "../testdata/TDplus_gene_list_full_location.armlevel_scna.csv"
 
   # Run standard workflow from package

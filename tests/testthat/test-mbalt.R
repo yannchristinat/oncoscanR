@@ -6,10 +6,8 @@ test_that("Mbp alt works", {
                     ranges = IRanges(start = c(30, 50, 70,  90, 25,  50)*10^6 + 1,
                                      end =   c(50, 70, 90, 100, 75, 100)*10^6),
                     cn = c(NA, 3, 1, 0, NA, 14),
-                    cn.type = c(cntype.loh, cntype.gain, cntype.loss, cntype.loss,
-                                cntype.loh, cntype.gain),
-                    cn.subtype = c(cntype.loh, cntype.gain, cntype.hetloss, cntype.homloss,
-                                   cntype.loh, cntype.strongamp))
+                    cn.type = c("LOH", "Gain", "Loss", "Loss",
+                                "LOH", "Gain"))
 
     mbalt.wLOH <- score_mbalt(segs, cov, loh.rm = FALSE)
     expect_equal(mbalt.wLOH, c(sample=145, kit=400))

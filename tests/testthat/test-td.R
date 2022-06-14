@@ -35,7 +35,9 @@ test_that("TD score works - CN checks", {
 })
 
 test_that("TD scores work - real case", {
-  chas.fn <- "../testdata/TDplus_gene_list_full_location.txt"
+  chas.fn <- system.file("extdata", "TDplus_gene_list_full_location.txt",
+                         package = "oncoscanR")
+
   segments <- load_chas(chas.fn, oncoscanR::oncoscan_na33.cov)
   segs.clean <- trim_to_coverage(segments, oncoscanR::oncoscan_na33.cov) %>%
     prune_by_size()

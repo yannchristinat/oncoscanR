@@ -26,7 +26,8 @@ test_that("loading ChAS file with duplicated rows fails", {
 
 
 test_that("loading large ChAS file", {
-  segs.filename <- "../testdata/LST_gene_list_full_location.txt"
+  segs.filename <- system.file("extdata", "LST_gene_list_full_location.txt",
+                               package = "oncoscanR")
   segs <- load_chas(segs.filename, kit.coverage = oncoscan_na33.cov)
   expect_true(length(segs)>100) # Mostly testing that it does not fail nor return zero segments
 })

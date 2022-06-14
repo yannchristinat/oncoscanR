@@ -7,7 +7,7 @@
 #' @details The ChAS file is expected to have the following column names:
 #' 'CN State' (number or empty), 'Type' (expected value: 'Gain', 'Loss' or
 #' 'LOH') and 'Full Location' (in the format 'chr:start-end').
-#' 
+#'
 #' The segments are attributed to each chromosome arm and split if necessary.
 #'
 #' @param filename Path to the ChAS file.
@@ -253,7 +253,7 @@ get_loss_segments <- function(segments){
 get_hetloss_segments <- function(segments){
     is_cn_segment(segments, raise_error = TRUE)
 
-    return(segments[segments$cn.type == cntypes$Loss & segments$cn>0])
+    return(segments[segments$cn.type == cntypes$Loss & segments$cn>=1])
 }
 
 #' Return all segments with gain of copies.

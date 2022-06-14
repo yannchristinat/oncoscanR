@@ -4,11 +4,7 @@
 \alias{score_loh}
 \title{Compute the number HR deficiency-associated LOH regions.}
 \usage{
-<<<<<<< HEAD
 score_loh(segments, arms.loh, arms.hetloss, kit.coverage)
-=======
-score_loh(segments, kit.coverage, arms.loh, arms.hetloss)
->>>>>>> dev
 }
 \arguments{
 \item{segments}{A \code{GRanges} object containing the segments, their copy
@@ -16,11 +12,6 @@ number and copy number types.}
 
 \item{arms.loh}{A list of arms with global/arm-level LOH alteration.}
 
-<<<<<<< HEAD
-=======
-\item{arms.loh}{A list of arms with global/arm-level LOH alteration.}
-
->>>>>>> dev
 \item{arms.hetloss}{A list of arms with global/arm-level heterozygous
 losses.}
 
