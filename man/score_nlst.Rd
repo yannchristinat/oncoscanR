@@ -4,7 +4,7 @@
 \alias{score_nlst}
 \title{Compute the number of LSTs, normalized by the number of WGD events.}
 \usage{
-score_nlst(segments, n.wgd, kit.coverage)
+score_nlst(segments, n.wgd, kit.coverage, threshold = 15)
 }
 \arguments{
 \item{segments}{A \code{GRanges} object containing the segments, their copy
@@ -14,6 +14,8 @@ number and copy number types.}
 
 \item{kit.coverage}{A \code{GRanges} object containing the regions covered on
 each chromosome arm.}
+
+\item{threshold}{A number above which the test is returned positive (>=).}
 }
 \value{
 A named list with the number of nLSTs and the corresponding label
@@ -26,7 +28,12 @@ Compute the number of LSTs, normalized by the number of WGD events.
 Compute the number of LSTs in non-LOH segments via the
 \code{score_lst} function and subtract the extra noise induced by WGD events:
  nLST = LST - 7*W/2 where W is the number of WGD events.
+<<<<<<< HEAD
 A sample is HRD positive (deficient in HR pathway) if nLST is >=15.
+=======
+A sample is HRD positive (deficient in HR pathway) if nLST is greater or equal
+to the threshold (15 by default).
+>>>>>>> dev
 This score was linked to BRCA1/2-deficient tumors.
 }
 \examples{

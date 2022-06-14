@@ -14,7 +14,6 @@ Description: The software uses the copy number segments from a text file and
 License: MIT + file LICENSE
 Date: 2022-06-14
 Encoding: UTF-8
-LazyData: true
 VignetteBuilder: knitr
 biocViews:
     CopyNumberVariation,
@@ -38,3 +37,4 @@ Suggests:
 URL: https://github.com/yannchristinat/oncoscanR
 BugReports:
     https://github.com/yannchristinat/oncoscanR/issues
+LazyData: true
