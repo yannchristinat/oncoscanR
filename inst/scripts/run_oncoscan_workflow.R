@@ -14,15 +14,14 @@ suppressPackageStartupMessages(library(IRanges))
 suppressPackageStartupMessages(library(oncoscanR))
 
 #' Retrieve arguments from command line.
-#' Expects that the first argument is the ChAS file and the second the gender (F or M).
+#' Expects that the first argument is the ChAS file.
 args <- commandArgs(TRUE)
 if(length(args) != 2){
-  stop("The first argument has to be the ChAS file and the second the gender (F or M).")
+  stop("The first argument has to be the ChAS file ")
 }
 
 chas.fn <- args[1]
-gender <- args[2]
 
-dat <- workflow_oncoscan.run(chas.fn, gender)
+dat <- workflow_oncoscan.run(chas.fn)
 print(toJSON(dat, auto_unbox=TRUE, pretty=TRUE))
 

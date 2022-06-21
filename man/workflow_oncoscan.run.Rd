@@ -11,7 +11,8 @@ workflow_oncoscan.run(chas.fn)
 }
 \value{
 A list of lists with the following elements:
-\code{armlevel = list(AMP= list of arms, GAIN= list of arms, LOSS= list of arms, LOH= list of arms),
+\code{armlevel = list(AMP= list of arms, GAIN= list of arms, LOSS= list of 
+arms, LOH= list of arms),
 scores = list(LST= number, LOH= number, TDplus= number, TD= number),
 file = path of the ChAS file as given by the parameter)}
 }
@@ -19,12 +20,13 @@ file = path of the ChAS file as given by the parameter)}
 Run the standard workflow for Oncoscan ChAS files.
 }
 \details{
-Identifies the globally altered arms (\>=90\% of arm altered), computes the HRD and
-TD+ scores. The amplification is defined as a CN subtype \code{cntype.weakamp} or
-\code{cntype.strongamp}. An arm is gained if of CN type \code{cntype.gain} unless the arm is
-amplified.
+Identifies the globally altered arms (\>=90\% of arm altered), 
+computes the HRD and TD+ scores. The amplification is defined as a CN subtype
+ \code{cntype.weakamp} or \code{cntype.strongamp}. An arm is gained if of CN 
+ type \code{cntype.gain} unless the arm is amplified.
 }
 \examples{
-segs.filename <- system.file('extdata', 'chas_example.txt', package = 'oncoscanR')
+segs.filename <- system.file('extdata', 'chas_example.txt', 
+package = 'oncoscanR')
 workflow_oncoscan.run(segs.filename)
 }

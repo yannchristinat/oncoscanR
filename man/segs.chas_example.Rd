@@ -9,7 +9,8 @@ A \code{GRanges} object containing the segments, their copy number
 (field \code{cn}) and their copy number types (field \code{cn.type}).
 }
 \source{
-segs.filename <- system.file('extdata', 'chas_example.txt', package = 'oncoscanR')
+segs.filename <- system.file('extdata', 'chas_example.txt', 
+package = 'oncoscanR')
 mykit.cov <- get_oncoscan_coverage_from_probes()
 segs.chas_example <- load_chas(segs.filename, kit.coverage = mykit.cov)
 }

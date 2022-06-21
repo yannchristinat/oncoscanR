@@ -16,7 +16,8 @@
 #' Expected segments from loading the ChAS file 'chas_example.txt'.
 #'
 #' @source
-#' segs.filename <- system.file('extdata', 'chas_example.txt', package = 'oncoscanR')
+#' segs.filename <- system.file('extdata', 'chas_example.txt', 
+#' package = 'oncoscanR')
 #' mykit.cov <- get_oncoscan_coverage_from_probes()
 #' segs.chas_example <- load_chas(segs.filename, kit.coverage = mykit.cov)
 #'
