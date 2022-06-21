@@ -58,7 +58,7 @@ OncoscanR is available through Bioconductor. In R, enter the commands:
 ```{r eval=FALSE}
 if (!requireNamespace("BiocManager", quietly=TRUE))
     install.packages("BiocManager")
-# BiocManager::install()
+
 BiocManager::install("oncoscanR")
 ```
 
@@ -125,7 +125,10 @@ oncoscan assay (start/end for each chromosomal arm, hg19). One could re-compute
 the latter by downloading the annotation file from the ThermoFisher website
 and process it with the `get_oncoscan_coverage_from_probes`function.
 
+
 ## Computation of arm-level alteration
+Function `armlevel_alt`
+
 An arm is declared globally altered if more than 80% of its bases are altered 
 with a similar CNV type (amplifications [3 extra copies or more], gains [1-2 
 extra copies], losses or copy-neutral losses of heterozygozity [LOH]). For 
@@ -159,43 +162,10 @@ Note that the 21p arm have been removed from the coverage
 (`oncoscan.cov <- oncoscan_na33.cov[seqnames(oncoscan_na33.cov) != "21p"]`) 
 since it is not fully covered. Any result on this arm would be biased.
 
-## HRD scores
-The package contains several HRD scores described below.
 
-### Score LST (function `score_lst`)
-Procedure based on the paper from Popova et al, Can. Res. 2012 (PMID: 22933060).
-First segments smaller than 3Mb are removed, then segments are smoothed with 
-respect to copy number at a distance of 3Mb.
-The number of LSTs is the number of breakpoints (breakpoints closer than 3Mb are
-merged) that have a segment larger or equal to 10Mb on each side. This score was
-linked to BRCA1/2-deficient tumors.
-
-### Score HR-LOH (function `score_loh`)
-Procedure based on the paper from Abkevich et al., Br J Cancer 2012 (PMID: 
-23047548). 
-Number of LOH segments larger than 15Mb but excluding segments on chromosomes 
-with a global LOH alteration. This score was linked to BRCA1/2-deficient tumors.
-
-### Score nLST (function `score_nlst`)
-HRD score developed at HUG and based on the LST score by Popova et al. but 
-normalized by an estimation of the number of whole-genome doubling events.
-Of note, copy-neutral LOH segments are removed before computation.
-
-`nLST = LST - 7*W/2` where `W` is the number of whole-genome doubling events.
-
-The score is positive if there are at least 15 nLST.
-
-### Score gLOH (function `score_gloh`)
-The percentage genomic LOH score is computed as described in the FoundationFocus
-CDx BRCA LOH assay; i.e. the percentage of bases covered by the Oncoscan that 
-display a loss of heterozygosity independently of the number of copies, 
-excluding chromosomal arms that have a global LOH (>=90 arm length). To compute 
-with the armlevel_alt function on LOH segments only). This score was linked to 
-BRCA1/2-deficient tumors.
-
-
-### Global level of alteration
+## Global level of alteration
 Several functions are available to perform such computation:
+
 - `score_avgcn`: compute the average copy number across the genome
 - `score_estwgd`: computes an estimation of the number of whole-genome doubling 
 events
@@ -213,6 +183,49 @@ wgd <- score_estwgd(segments, oncoscan_na33.cov)
 message(paste('Average copy number:', round(avgcn, 2), '->', wgd['WGD'], 
 'whole-genome doubling event'))
 ```
+
+
+## HRD scores
+The package contains several HRD scores described below.
+
+### Score LST 
+Function `score_lst`
+
+Procedure based on the paper from Popova et al, Can. Res. 2012 (PMID: 22933060).
+First segments smaller than 3Mb are removed, then segments are smoothed with 
+respect to copy number at a distance of 3Mb.
+The number of LSTs is the number of breakpoints (breakpoints closer than 3Mb are
+merged) that have a segment larger or equal to 10Mb on each side. This score was
+linked to BRCA1/2-deficient tumors.
+
+### Score HR-LOH 
+Function `score_loh`
+
+Procedure based on the paper from Abkevich et al., Br J Cancer 2012 (PMID: 
+23047548). 
+Number of LOH segments larger than 15Mb but excluding segments on chromosomes 
+with a global LOH alteration. This score was linked to BRCA1/2-deficient tumors.
+
+### Score nLST
+Function `score_nlst`
+
+HRD score developed at HUG and based on the LST score by Popova et al. but 
+normalized by an estimation of the number of whole-genome doubling events.
+Of note, copy-neutral LOH segments are removed before computation.
+
+`nLST = LST - 7*W/2` where `W` is the number of whole-genome doubling events.
+
+The score is positive if there are at least 15 nLST.
+
+### Score gLOH
+Function `score_gloh`
+
+The percentage genomic LOH score is computed as described in the FoundationFocus
+CDx BRCA LOH assay; i.e. the percentage of bases covered by the Oncoscan that 
+display a loss of heterozygosity independently of the number of copies, 
+excluding chromosomal arms that have a global LOH (>=90 arm length). To compute 
+with the armlevel_alt function on LOH segments only). This score was linked to 
+BRCA1/2-deficient tumors.
 
 
 ### Example
@@ -258,7 +271,9 @@ print(c(LST=lst, `HR-LOH`=hrloh, gLOH=gloh, nLST=nlst))
 ```
 
 
-### Score TDplus
+## TDplus score
+function `score_td`
+
 Procedure based on the paper from Popova et al., Cancer Res 2016 (PMID: 
 26787835). The TDplus score is defined as the number of regions larger than 1Mb 
 but smaller or equal to 10Mb with a gain of one or two copies. This score was 
