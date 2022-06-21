@@ -27,34 +27,34 @@
 armlevel_alt <- function(segments, kit.coverage, threshold = 0.9) {
     is_cn_segment(segments, raise_error = TRUE)
     stopifnot(is(kit.coverage, "GRanges"))
-    
+
     vals <- vapply(levels(seqnames(kit.coverage)), function(arm) {
         if (!(arm %in% as.vector(seqnames(segments)))) {
             return(0)
         }
         # Get the number of bases covered by the kit
-        armlen <-
-            sum(width(kit.coverage[as.vector(seqnames(kit.coverage)) == arm]))
-        
+        iscov <- as.vector(seqnames(kit.coverage)) == arm
+        armlen <- sum(width(kit.coverage[iscov]))
+
         # Run trim_to_coverage on arm segments
-        segs <-
-            trim_to_coverage(segments[as.vector(seqnames(segments)) == arm],
-                             kit.coverage)
+        armsegs <- segments[as.vector(seqnames(segments)) == arm]
+        segs <- trim_to_coverage(armsegs, kit.coverage)
         if (length(segs) == 0) {
             return(0)
         }
-        
-        
+
+
         # Set the copy number to NA to make sure overlapping segments will be
         # merged, then merge
         segs$cn <- NA
         segs.flat <- merge_segments(segs, 1 / 1000)
-        
+
         # Get the number of bases altered
         segslen <- sum(width(segs.flat))
-        
+
         return(segslen / armlen)
     }, c(0), USE.NAMES = TRUE)
+
     return(vals[vals >= threshold])
 }
 
@@ -81,64 +81,56 @@ armlevel_alt <- function(segments, kit.coverage, threshold = 0.9) {
 score_lst <- function(segments, kit.coverage) {
     is_cn_segment(segments, raise_error = TRUE)
     stopifnot(is(kit.coverage, "GRanges"))
-    
+
     # Prune all segments < 3Mb
     segs.min3mb <- prune_by_size(segments, 3000)
     if (length(segs.min3mb) == 0) {
         return(0)
     }
-    
+
     # Merge segments by CN at a distance of 3Mb
     segs.merged <- merge_segments(segs.min3mb, 3000)
-    
+
     # Compute the number of Large-scale State Transitions for each arm
     vals <- lapply(unique(seqnames(segs.merged)), function(arm) {
         arm.cov <- kit.coverage[as.vector(seqnames(kit.coverage)) == arm]
         segs <- segs.merged[as.vector(seqnames(segs.merged)) == arm]
-        
+
         # Get breakpoints and start/end of arm
         starts <- start(segs)
         ends <- end(segs)
         breakpoints <-
-            sort(unique(c(
-                start(arm.cov), starts, ends + 1, end(arm.cov) +
-                    1
-            )))
-        
+            sort(unique(c(start(arm.cov), starts, ends + 1, end(arm.cov) + 1)))
+
         if (length(breakpoints) < 3) {
             # Since we add the start/end of arm, there has to be at least 3
             # elements in 'breakpoints' to have LSTs
             return(0)
         }
-        
+
         # Smooth breakpoints at 3Mb
         for (i in 2:length(breakpoints)) {
-            if (breakpoints[i] - breakpoints[i - 1] < 3 * 10 ^ 6) {
+            if (breakpoints[i] - breakpoints[i - 1] < 3*10^6) {
                 # Merge breakpoints
-                midpoint <-
-                    round((breakpoints[i] + breakpoints[i - 1]) / 2)
+                midpoint <- round((breakpoints[i] + breakpoints[i - 1]) / 2)
                 breakpoints[i - 1] <- NA
                 breakpoints[i] <- midpoint
             }
         }
         bp.smooth <- breakpoints[!is.na(breakpoints)]
-        
+
         if (length(bp.smooth) < 3) {
             # Since we add the start/end of arm, there has to be at least 3
             # elements in 'breakpoints' to have LSTs
             return(0)
         }
-        
+
         # Get the number of LSTs
         n.lst <- 0
         for (i in 2:(length(bp.smooth) - 1)) {
-            n.lst <-
-                ifelse(
-                    bp.smooth[i] - bp.smooth[i - 1] >= 10 * 10 ^ 6 & 
-                        bp.smooth[i + 1] - bp.smooth[i] >= 10 * 10 ^6,
-                    n.lst + 1,
-                    n.lst
-                )
+            prev.gt10m <- bp.smooth[i] - bp.smooth[i - 1] >= 10*10^6
+            next.gt10m <- bp.smooth[i + 1] - bp.smooth[i] >= 10*10^6
+            n.lst <- ifelse(prev.gt10m & next.gt10m, n.lst + 1, n.lst)
         }
         return(n.lst)
     })
@@ -172,91 +164,78 @@ score_lst <- function(segments, kit.coverage) {
 #'                              kit.coverage = oncoscan_na33.cov)
 #' armlevel.hetloss <- armlevel_alt(get_hetloss_segments(segs.chas_example),
 #'                              kit.coverage = oncoscan_na33.cov)
-#' score_loh(segs.chas_example, names(armlevel.loh), names(armlevel.hetloss), 
+#' score_loh(segs.chas_example, names(armlevel.loh), names(armlevel.hetloss),
 #' oncoscan_na33.cov)
-score_loh <-
-    function(segments,
-             arms.loh,
-             arms.hetloss,
-             kit.coverage) {
-        is_cn_segment(segments, raise_error = TRUE)
-        stopifnot(is(kit.coverage, "GRanges"))
-        
-        if (length(segments) == 0) {
-            return(0)
+score_loh <- function(segments, arms.loh, arms.hetloss, kit.coverage) {
+    is_cn_segment(segments, raise_error = TRUE)
+    stopifnot(is(kit.coverage, "GRanges"))
+
+    if (length(segments) == 0) { return(0) }
+
+    # Test if any arms in arms.loh or arms.loss is not in kit.coverage
+    if (length(c(arms.loh, arms.hetloss)) > 0) {
+        unknown.arms <- setdiff(c(arms.loh, arms.hetloss),
+                                seqnames(kit.coverage))
+        if (length(unknown.arms) > 0) {
+            msg <- paste('Some arms were not found in the kit:',
+                         paste(as.character(unknown.arms), collapse = TRUE))
+            stop(msg)
         }
-        
-        # Test if any arms in arms.loh or arms.loss is not in kit.coverage
-        if (length(c(arms.loh, arms.hetloss)) > 0) {
-            unknown.arms <-
-                setdiff(c(arms.loh, arms.hetloss), seqnames(kit.coverage))
-            if (length(unknown.arms) > 0) {
-                msg <- paste('Some arms were not found in the kit:',
-                             paste(as.character(unknown.arms), collapse = TRUE))
-                stop(msg)
-            }
-        }
-        
-        arms.to_ban <- c()
-        # Get chromosomes with LOH on both arms
-        if (length(arms.loh) > 0) {
-            # Check on each chromosome if both arms are within the parameter
-            # 'arms.loh'. Also account for the fact that a chromosome may have
-            # only one arm covered by the kit.
-            chromnames <-
-                unique(unlist(strsplit(as.character(
-                    seqnames(kit.coverage)
-                ),
-                "[pq]")))
-            arms_found.to_ban <- lapply(chromnames, function(chrom) {
-                arms <- paste0(chrom, c("p", "q"))
-                
-                arms.covered <-
-                    intersect(arms, as.vector(seqnames(kit.coverage)))
-                
-                arms.found <- unique(intersect(arms.covered, arms.loh))
-                if (length(arms.found) == length(arms.covered)) {
-                    return(as.character(arms.covered))
-                }
-            })
-            arms.to_ban <-
-                append(arms.to_ban, do.call("c", arms_found.to_ban))
-        }
-        # Get chromosomes with het loss on both arms
-        if (length(arms.hetloss) > 0) {
-            # Check on each chromosome if both arms are within the parameter
-            # 'arms.loh'. Also account for the fact that a chromosome may have
-            # only one arm covered by the kit.
-            chromnames <-
-                unique(unlist(strsplit(as.character(
-                    seqnames(kit.coverage)
-                ),
-                "[pq]")))
-            arms_found.to_ban <- lapply(chromnames, function(chrom) {
-                arms <- paste0(chrom, c("p", "q"))
-                
-                arms.covered <-
-                    intersect(arms, as.vector(seqnames(kit.coverage)))
-                
-                arms.found <-
-                    unique(intersect(arms.covered, arms.hetloss))
-                if (length(arms.found) == length(arms.covered)) {
-                    return(as.character(arms.covered))
-                }
-            })
-            arms.to_ban <-
-                append(arms.to_ban, do.call("c", arms_found.to_ban))
-        }
-        # Get LOH segments larger than 15Mb and not in 'arms.to_ban'
-        segs.loh <-
-            c(get_loh_segments(segments),
-              get_hetloss_segments(segments))
-        segs.loh <-
-            segs.loh[!(as.vector(seqnames(segs.loh)) %in% arms.to_ban)]
-        segs.merged <- merge_segments(segs.loh, 1 / 1000)
-        segs.loh_15m <- segs.merged[width(segs.merged) > 15 * 10 ^ 6]
-        return(length(segs.loh_15m))
     }
+
+    arms.to_ban <- c()
+    kit.chroms <- as.character(seqnames(kit.coverage))
+    chromnames <- unique(unlist(strsplit(kit.chroms, "[pq]")))
+
+    # Get chromosomes with LOH on both arms
+    if (length(arms.loh) > 0) {
+        # Check on each chromosome if both arms are within the parameter
+        # 'arms.loh'. Also account for the fact that a chromosome may have
+        # only one arm covered by the kit.
+        arms_found.to_ban <- lapply(chromnames, is_arm_to_ban,
+                                    arms=arms.loh, kit=kit.coverage)
+        arms.to_ban <- append(arms.to_ban, do.call("c", arms_found.to_ban))
+    }
+    # Get chromosomes with het loss on both arms
+    if (length(arms.hetloss) > 0) {
+        # Check on each chromosome if both arms are within the parameter
+        # 'arms.loh'. Also account for the fact that a chromosome may have
+        # only one arm covered by the kit.
+        arms_found.to_ban <- lapply(chromnames, is_arm_to_ban,
+                                    arms=arms.hetloss, kit=kit.coverage)
+        arms.to_ban <- append(arms.to_ban, do.call("c", arms_found.to_ban))
+    }
+    # Get LOH segments larger than 15Mb and not in 'arms.to_ban'
+    segs.loh <- c(get_loh_segments(segments), get_hetloss_segments(segments))
+    segs.loh <- segs.loh[!(as.vector(seqnames(segs.loh)) %in% arms.to_ban)]
+    segs.merged <- merge_segments(segs.loh, 1 / 1000)
+    segs.loh_15m <- segs.merged[width(segs.merged) > 15*10^6]
+    return(length(segs.loh_15m))
+}
+
+
+#' Helper function to detect if a chromosome is within a set of chromosomal arms
+#'
+#' @details Used in the score_loh function
+#'
+#' @param chrom String of a chromosome
+#' @param arms list of chromosomal arms (strings)
+#' @param kit A \code{GRanges} object containing the regions covered on
+#'  each chromosome arm.
+#'
+#' @return A list of chromosomal arms (string)
+#'
+#' @noRd
+is_arm_to_ban <- function(chrom, arms, kit) {
+    chrom.arms <- paste0(chrom, c("p", "q"))
+
+    arms.covered <- intersect(chrom.arms, as.vector(seqnames(kit)))
+
+    arms.found <- unique(intersect(arms.covered, arms))
+    if (length(arms.found) == length(arms.covered)) {
+        return(as.character(arms.covered))
+    }
+}
 
 
 #' Compute the number of large tandem duplication (TDplus).
@@ -282,19 +261,17 @@ score_loh <-
 #' score_td(segs.chas_example)
 score_td <- function(segments) {
     is_cn_segment(segments, raise_error = TRUE)
-    
+
     if (length(segments) == 0) {
         return(list(TDplus = 0, TD = 0))
     }
-    
-    
-    segs.gain <-
-        segments[segments$cn.type == cntypes$Gain & segments$cn < 5]
+
+
+    segs.gain <- segments[segments$cn.type == cntypes$Gain & segments$cn < 5]
     segs.width <- width(segs.gain)
-    segs.tdplus <-
-        segs.gain[segs.width > 1 * 10 ^ 6 & segs.width <= 10 * 10 ^ 6]
-    segs.td <- segs.gain[segs.width <= 1 * 10 ^ 6]
-    
+    segs.tdplus <- segs.gain[segs.width > 1*10^6 & segs.width <= 10*10^6]
+    segs.td <- segs.gain[segs.width <= 1*10^6]
+
     return(list(TDplus = length(segs.tdplus), TD = length(segs.td)))
 }
 
@@ -319,16 +296,16 @@ score_td <- function(segments) {
 score_avgcn <- function(segments, kit.coverage) {
     is_cn_segment(segments, raise_error = TRUE)
     stopifnot(is(kit.coverage, "GRanges"))
-    
+
     autosomes <-
-        as.vector(seqnames(kit.coverage)[!(as.vector(seqnames(kit.coverage)) %in%
-                                               c("Xp", "Xq", "Yp", "Yq"))])
-    
+        as.vector(seqnames(kit.coverage)[!(as.vector(seqnames(kit.coverage))
+                                           %in% c("Xp", "Xq", "Yp", "Yq"))])
+
     # Total number of bases (in Mbp) covered by the kit
     kitwidth.noXY <-
         sum(width(kit.coverage[as.vector(seqnames(kit.coverage)) %in%
-                                   autosomes]) / 10 ^ 6)
-    
+                                   autosomes]) / 10^6)
+
     # Select segments on autosomes and with non-copy neutral alterations
     segs <-
         segments[as.vector(seqnames(segments)) %in% autosomes &
@@ -337,14 +314,14 @@ score_avgcn <- function(segments, kit.coverage) {
     if (length(segs) == 0) {
         return(2)
     }
-    
-    segs.w <- width(segs) / 10 ^ 6  # Width of each segment in Mbp
-    
+
+    segs.w <- width(segs) / 10^6  # Width of each segment in Mbp
+
     # Round the copy number in case of subclones
     cn <- segs$cn
     cn[cn < 2] <- floor(cn[cn < 2])
     cn[cn > 2] <- ceiling(cn[cn > 2])
-    
+
     avgcn <-
         (sum(segs.w * cn) + 2 * (kitwidth.noXY - sum(segs.w))) / kitwidth.noXY
     return(avgcn)
@@ -375,13 +352,13 @@ score_avgcn <- function(segments, kit.coverage) {
 score_estwgd <- function(segments, kit.coverage) {
     is_cn_segment(segments, raise_error = TRUE)
     stopifnot(is(kit.coverage, "GRanges"))
-    
+
     # Get the average copy number
     avgcn <- score_avgcn(segments, kit.coverage)
-    
+
     # Estimate the number of WGD events
     wgd.est <- ifelse(avgcn > 3.4, 2, ifelse(avgcn > 2.2, 1, 0))
-    
+
     return(c(WGD = wgd.est, avgCN = avgcn))
 }
 
@@ -391,8 +368,8 @@ score_estwgd <- function(segments, kit.coverage) {
 #' @details Compute the number of LSTs in non-LOH segments via the
 #' \code{score_lst} function and subtract the extra noise induced by WGD events:
 #'  nLST = LST - 7*W/2 where W is the number of WGD events.
-#' A sample is HRD positive (deficient in HR pathway) if nLST is greater or equal
-#' to the threshold (15 by default).
+#' A sample is HRD positive (deficient in HR pathway) if nLST is greater or
+#' equal to the threshold (15 by default).
 #' This score was linked to BRCA1/2-deficient tumors.
 #'
 #' @param segments A \code{GRanges} object containing the segments, their copy
@@ -413,10 +390,10 @@ score_nlst <-
     function(segments, n.wgd, kit.coverage, threshold = 15) {
         is_cn_segment(segments, raise_error = TRUE)
         stopifnot(is(kit.coverage, "GRanges"))
-        
+
         lst.noLOH <-
             score_lst(segments[segments$cn.type != cntypes$LOH], kit.coverage)
-        
+
         nlst <- max(0, lst.noLOH - 3.5 * as.numeric(n.wgd))
         label <- ifelse(nlst >= threshold, "Positive", "Negative")
         return(c(nLST = nlst, HRD = label))
@@ -442,22 +419,22 @@ score_nlst <-
 score_mbalt <- function(segments, kit.coverage, loh.rm = TRUE) {
     is_cn_segment(segments, raise_error = TRUE)
     stopifnot(is(kit.coverage, "GRanges"))
-    
+
     # Compute the number Mbp present in the whole kit
-    mb.kit <- round(sum(width(kit.coverage) / 10 ^ 6))
-    
+    mb.kit <- round(sum(width(kit.coverage) / 10^6))
+
     # Exclude (or not) the LOH segments
     segs <- segments
     if (loh.rm) {
         segs <- segments[segments$cn.type != cntypes$LOH]
     }
-    
+
     if (length(segs) == 0) {
         return(c(sample = 0, kit = mb.kit))
     } else {
-        segs.w <- width(reduce(segs)) / 10 ^ 6  # Width of each segment in Mbp
+        segs.w <- width(reduce(segs)) / 10^6  # Width of each segment in Mbp
         mb.alt <- round(sum(segs.w))
-        
+
         return(c(sample = mb.alt, kit = mb.kit))
     }
 }
@@ -489,35 +466,28 @@ score_mbalt <- function(segments, kit.coverage, loh.rm = TRUE) {
 #'                              kit.coverage = oncoscan_na33.cov)
 #' armlevel.hetloss <- armlevel_alt(get_hetloss_segments(segs.chas_example),
 #'                              kit.coverage = oncoscan_na33.cov)
-#' score_gloh(segs.chas_example, names(armlevel.loh), names(armlevel.hetloss), 
+#' score_gloh(segs.chas_example, names(armlevel.loh), names(armlevel.hetloss),
 #' oncoscan_na33.cov)
-score_gloh <-
-    function(segments,
-             arms.loh,
-             arms.hetloss,
-             kit.coverage) {
-        is_cn_segment(segments, raise_error = TRUE)
-        stopifnot(is(kit.coverage, "GRanges"))
-        
-        # Test if any arms in arms.loh or arms.loss is not in kit.coverage
-        if (length(c(arms.loh, arms.hetloss)) > 0) {
-            unknown.arms <-
-                setdiff(c(arms.loh, arms.hetloss), seqnames(kit.coverage))
-            if (length(unknown.arms) > 0) {
-                msg <- paste('Some arms were not found in the kit:',
-                             paste(as.character(unknown.arms), collapse = TRUE))
-                stop(msg)
-            }
+score_gloh <- function(segments, arms.loh, arms.hetloss, kit.coverage) {
+    is_cn_segment(segments, raise_error = TRUE)
+    stopifnot(is(kit.coverage, "GRanges"))
+
+    # Test if any arms in arms.loh or arms.loss is not in kit.coverage
+    if (length(c(arms.loh, arms.hetloss)) > 0) {
+        unknown.arms <- setdiff(c(arms.loh, arms.hetloss),
+                                seqnames(kit.coverage))
+        if (length(unknown.arms) > 0) {
+            msg <- paste('Some arms were not found in the kit:',
+                         paste(as.character(unknown.arms), collapse = TRUE))
+            stop(msg)
         }
-        
-        arms.to_ban <- c(arms.loh, arms.hetloss)
-        
-        segs.loh <-
-            c(get_loh_segments(segments),
-              get_hetloss_segments(segments))
-        segs.loh <-
-            segs.loh[!(as.vector(seqnames(segs.loh)) %in% arms.to_ban)]
-        
-        width.loh <- width(segs.loh)
-        return(sum(width.loh) / sum(width(kit.coverage)))
     }
+
+    arms.to_ban <- c(arms.loh, arms.hetloss)
+
+    segs.loh <- c(get_loh_segments(segments), get_hetloss_segments(segments))
+    segs.loh <- segs.loh[!(as.vector(seqnames(segs.loh)) %in% arms.to_ban)]
+
+    width.loh <- width(segs.loh)
+    return(sum(width.loh) / sum(width(kit.coverage)))
+}

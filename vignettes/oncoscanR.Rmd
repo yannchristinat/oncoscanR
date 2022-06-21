@@ -3,27 +3,28 @@ title: "Secondary analyses of CNV data (HRD and more) with oncoscanR"
 author: "Yann Christinat"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 output:
-  BiocStyle::html_document:
-    number_sections: yes
-    toc: true
+    BiocStyle::html_document:
+        number_sections: yes
+        toc: true
 vignette: >
-  %\VignetteIndexEntry{oncoscanR vignette}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+    %\VignetteIndexEntry{oncoscanR vignette}
+    %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
+    collapse = TRUE,
+    comment = "#>"
 )
 ```
 
 # OncoscanR package description
 OncoscanR is an R package to handle Copy Number Variation analyses originating 
 from the Oncoscan assay (Affymetrix). It allows computation of different 
-homologous recombination deficiency (HRD) scores and the tandem duplication plus 
-score (TDplus) to identify CDK12-mutated tumors [Popova et al., Cancer Res 2016]. 
+homologous recombination deficiency (HRD) scores and the tandem duplication plus
+score (TDplus) to identify CDK12-mutated tumors [Popova et al., 
+Cancer Res 2016]. 
 The package also allows for identification of arm-level alterations (e.g. gain 
 of chromosome arm 1p).
 
@@ -43,7 +44,8 @@ file are correct and true. The ChAS text file has to contain the columns `Type`,
 `CN State` and `Full Location` (to setup in ChAS). Any text file that complies 
 with this structure should work equally well.
 
-Note that the Oncoscan does not cover the p arms of chromosome 13, 14, 15 and 22. 
+Note that the Oncoscan does not cover the p arms of chromosome 13, 14, 15 and 
+22. 
 The coverage on the p arm of chromosome 21 is only partial and is not included 
 in the standard Oncoscan workflow (function `workflow_oncoscan.run` or script 
 `bin/oncoscan-workflow.R`).
@@ -82,7 +84,8 @@ install.packages(c("magrittr", "jsonlite", "readr"))
 Open R and type the following commands:
 ```{r}
 library(oncoscanR)
-segs.filename <- system.file("extdata", "chas_example.txt", package = "oncoscanR")
+segs.filename <- system.file("extdata", "chas_example.txt", 
+                             package = "oncoscanR")
 res <- workflow_oncoscan.run(segs.filename)
 ```
 
@@ -122,11 +125,6 @@ oncoscan assay (start/end for each chromosomal arm, hg19). One could re-compute
 the latter by downloading the annotation file from the ThermoFisher website
 and process it with the `get_oncoscan_coverage_from_probes`function.
 
-For instance if the data that we want to analyse is based on hg38, one would 
-need to download the  
-`ChAS 4.2 Analysis Files for OncoScan CNV Array hg38 NA36.r5` zip file from the 
-ThermoFisher website (http://www.thermofisher.com), extract the and run the .
-
 ## Computation of arm-level alteration
 An arm is declared globally altered if more than 80% of its bases are altered 
 with a similar CNV type (amplifications [3 extra copies or more], gains [1-2 
@@ -157,21 +155,24 @@ armlevel.loh <- get_loh_segments(segments) %>%
         armlevel_alt(kit.coverage = oncoscan.cov, threshold = 0)
 ```
 
-Note that the 21p arm have been removed from the coverage (`oncoscan.cov <- oncoscan_na33.cov[seqnames(oncoscan_na33.cov) != "21p"]`)since it is not fully 
-covered. Any result on this arm would be biased.
+Note that the 21p arm have been removed from the coverage 
+(`oncoscan.cov <- oncoscan_na33.cov[seqnames(oncoscan_na33.cov) != "21p"]`) 
+since it is not fully covered. Any result on this arm would be biased.
+
 ## HRD scores
 The package contains several HRD scores described below.
 
 ### Score LST (function `score_lst`)
-Procedure based on the paper from Popova et al, Can. Res. 2012 (PMID: 22933060). 
+Procedure based on the paper from Popova et al, Can. Res. 2012 (PMID: 22933060).
 First segments smaller than 3Mb are removed, then segments are smoothed with 
 respect to copy number at a distance of 3Mb.
-The number of LSTs is the number of breakpoints (breakpoints closer than 3Mb are 
-merged) that have a segment larger or equal to 10Mb on each side. This score was 
+The number of LSTs is the number of breakpoints (breakpoints closer than 3Mb are
+merged) that have a segment larger or equal to 10Mb on each side. This score was
 linked to BRCA1/2-deficient tumors.
 
 ### Score HR-LOH (function `score_loh`)
-Procedure based on the paper from Abkevich et al., Br J Cancer 2012 (PMID: 23047548). 
+Procedure based on the paper from Abkevich et al., Br J Cancer 2012 (PMID: 
+23047548). 
 Number of LOH segments larger than 15Mb but excluding segments on chromosomes 
 with a global LOH alteration. This score was linked to BRCA1/2-deficient tumors.
 
@@ -185,7 +186,7 @@ Of note, copy-neutral LOH segments are removed before computation.
 The score is positive if there are at least 15 nLST.
 
 ### Score gLOH (function `score_gloh`)
-The percentage genomic LOH score is computed as described in the FoundationFocus 
+The percentage genomic LOH score is computed as described in the FoundationFocus
 CDx BRCA LOH assay; i.e. the percentage of bases covered by the Oncoscan that 
 display a loss of heterozygosity independently of the number of copies, 
 excluding chromosomal arms that have a global LOH (>=90 arm length). To compute 
@@ -193,8 +194,29 @@ with the armlevel_alt function on LOH segments only). This score was linked to
 BRCA1/2-deficient tumors.
 
 
+### Global level of alteration
+Several functions are available to perform such computation:
+- `score_avgcn`: compute the average copy number across the genome
+- `score_estwgd`: computes an estimation of the number of whole-genome doubling 
+events
+- `score_mbalt`: computes the total number of Mbp that have an alteration (w/o 
+LOH segments)
+
+```{r}
+mbalt <- score_mbalt(segments, oncoscan_na33.cov)
+percent.alt <- mbalt['sample']/mbalt['kit']
+message(paste(mbalt['sample'], 'Mbp altered ->', round(percent.alt*100), 
+              '% of genome'))
+
+avgcn <- score_avgcn(segments, oncoscan_na33.cov)
+wgd <- score_estwgd(segments, oncoscan_na33.cov)
+message(paste('Average copy number:', round(avgcn, 2), '->', wgd['WGD'], 
+'whole-genome doubling event'))
+```
+
+
 ### Example
-First we need to load and clean the ChAS export file (from a female patient). We 
+First we need to load and clean the ChAS export file (from a female patient). We
 adjust the  Oncoscan coverage to exclude the 21p arm as it is only partially 
 covered.
 
@@ -242,7 +264,7 @@ Procedure based on the paper from Popova et al., Cancer Res 2016 (PMID:
 but smaller or equal to 10Mb with a gain of one or two copies. This score was 
 linked to CDK12-deficient tumors. 
 They also identified as second category of tandem duplication whose size is 
-smaller or equal than 1Mb and around 300Kb but could not link it to a phenotype. 
+smaller or equal than 1Mb and around 300Kb but could not link it to a phenotype.
 Note that due to its resolution the Oncoscan assay will most likely miss  this 
 second category. Nonetheless it is reported by the function but not by the 
 standard workflow.
@@ -266,7 +288,7 @@ print(td$TDplus)
 ```
 
 
-## Usage at the Geneva University Hospitals
+## Main workflow (as used at the Geneva University Hospitals)
 The main workflow used for routine analysis can be launched either in R via the 
 `workflow_oncoscan.run(chas.fn, gender)` function or via the script 
 `bin/run_oncoscan_workflow.R`:
@@ -275,7 +297,8 @@ Usage:
 `Rscript path_to_oncoscanR_package/bin/oncoscan-workflow.R CHAS_FILE`
 - `CHAS_FILE`: Path to the text export file from ChAS or a compatible text file.
 
-The script will output a JSON string into the terminal with all the computed information. :
+The script will output a JSON string into the terminal with all the computed 
+information. :
 
 ```
 {
@@ -283,7 +306,8 @@ The script will output a JSON string into the terminal with all the computed inf
     "AMP": [],
     "LOSS": ["17p", "2q", "4p"],
     "LOH": ["14q", "5q", "8p", "8q"],
-    "GAIN": [19p", "19q", "1q", "20p", "20q", "3q", "5p", "6p", "9p", "9q", "Xp", "Xq"]
+    "GAIN": [19p", "19q", "1q", "20p", "20q", "3q", "5p", "6p", "9p", "9q", 
+    "Xp", "Xq"]
   },
   "scores": {
     "HRD": "Negative, nLST=12",
@@ -294,13 +318,27 @@ The script will output a JSON string into the terminal with all the computed inf
 }
 ```
 
+Or to launch the workflow within R:
+```{r}
+segs.filename <- system.file('extdata', 'LST_gene_list_full_location.txt', 
+                             package = 'oncoscanR')
+dat <- workflow_oncoscan.run(segs.filename)
+
+message(paste('Arms with copy loss:', 
+              paste(dat$armlevel$LOSS, collapse = ', ')))
+message(paste('Arms with copy gains:', 
+              paste(dat$armlevel$GAIN, collapse = ', ')))
+message(paste('HRD score:', dat$scores$HRD))
+```
+
+
 Please read the manual for a description of all available R functions.
 
 ## References
 1. "Homologous Recombination Deficiency (HRD) Score Predicts Response to 
 Platinum-Containing Neoadjuvant Chemotherapy in Patients with Triple-Negative 
 Breast Cancer.", M. Telli et al., Clin Cancer Res volume 22(15), august 2016.
-2. "Ovarian Cancers Harboring Inactivating Mutations in CDK12 Display a Distinct 
+2. "Ovarian Cancers Harboring Inactivating Mutations in CDK12 Display a Distinct
 Genomic Instability Pattern Characterized by Large Tandem Duplications.", T. 
 Popova et al., Cancer Res volume 76(7), april 2016.
 3. "Ploidy and large-scale genomic instability consistently identify basal-like 

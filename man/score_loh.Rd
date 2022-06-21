@@ -38,6 +38,6 @@ armlevel.loh <- armlevel_alt(get_loh_segments(segs.chas_example),
                              kit.coverage = oncoscan_na33.cov)
 armlevel.hetloss <- armlevel_alt(get_hetloss_segments(segs.chas_example),
                              kit.coverage = oncoscan_na33.cov)
-score_loh(segs.chas_example, names(armlevel.loh), names(armlevel.hetloss), 
+score_loh(segs.chas_example, names(armlevel.loh), names(armlevel.hetloss),
 oncoscan_na33.cov)
 }

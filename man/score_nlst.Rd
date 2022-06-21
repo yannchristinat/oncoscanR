@@ -28,8 +28,8 @@ Compute the number of LSTs, normalized by the number of WGD events.
 Compute the number of LSTs in non-LOH segments via the
 \code{score_lst} function and subtract the extra noise induced by WGD events:
  nLST = LST - 7*W/2 where W is the number of WGD events.
-A sample is HRD positive (deficient in HR pathway) if nLST is greater or equal
-to the threshold (15 by default).
+A sample is HRD positive (deficient in HR pathway) if nLST is greater or
+equal to the threshold (15 by default).
 This score was linked to BRCA1/2-deficient tumors.
 }
 \examples{
