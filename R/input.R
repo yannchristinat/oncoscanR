@@ -177,55 +177,36 @@ process_chas <- function(oncoscan_table, kit.coverage){
 }
 
 
-#' Load the oncoscan annotation file and infer the covered regions from it.
+#' Load the oncoscan coverage BED file into a GenomicRanges object.
 #'
-#' @details Expects the following columns from the annotation file (as the first
-#'  line of non-comment):
-#'   - 'Chromosome': chromosome name
-#'   - 'Physical Position': genomic position of the SNP
-#'   - 'Cytoband': cytoband name (e.g. 3q22.1)
+#' @details Expects the following columns from the BED file (no header):
+#'   1. Name of the chromosomal arm (e.g. "1p")
+#'   2. Start position of the arm
+#'   3. End position of the arm
 #'
-#' @param filename Path to the ChAS annotation file (either compressed or not).
-#' For instance 'OncoScan.na33.r1.annot.csv.zip'
+#' @param filename Path to the coverage BED file.
 #'
 #' @return A \code{GRanges} object containing the regions covered on each
-#' chromosome arm. If the  file does not respect the format specifications, then
-#'  an error is raised.
+#' chromosome arm.
 #'
 #' @export
 #'
 #' @import GenomicRanges
 #' @import IRanges
-#' @import readr
+#' @importFrom utils read.table
 #'
 #' @examples
-#' oncoscan_na33.covhead <- get_oncoscan_coverage_from_probes(
-#'        system.file('extdata', 'OncoScan.na33.r1.annot.csv.chr20.zip',
+#' oncoscan_na33.cov <- get_oncoscan_coverage_from_bed(
+#'        system.file('extdata', 'OncoScan.na33.r2.cov.processed.bed',
 #'        package = 'oncoscanR'))
-get_oncoscan_coverage_from_probes <- function(filename) {
+get_oncoscan_coverage_from_bed <- function(filename) {
     # Read the annotation file
-    cols <- cols_only(Chromosome = col_character(),
-                      `Physical Position` = col_integer(),
-                      Cytoband = col_character())
-    dat <- read_csv(filename, comment = "#", col_names = TRUE, col_types = cols)
+    dat <- read.table(filename, sep = '\t', header = FALSE)
+    colnames(dat) <- c('Arm', 'Start', 'Stop')
 
-    # Set a new column containing the chromosomal arm name (e.g. 3p).  Remove
-    # 'chr' if present
-    dat$Arm <- factor(paste0(gsub("chr", "", dat$Chromosome),
-                             substr(dat$Cytoband, 1, 1)))
-
-    # Get the min and max position of probes within each arm
-    segs <- lapply(levels(dat$Arm), function(a) {
-        minpos <- min(dat$`Physical Position`[dat$Arm == a])
-        maxpos <- max(dat$`Physical Position`[dat$Arm == a])
-
-        seg <- GRanges(seqnames = factor(a, levels = levels(dat$Arm)),
-                       ranges = IRanges(start = minpos, end = maxpos))
-        return(seg)
-    })
-
-    # Return all arms
-    return(do.call("c", segs))
+    cov <- GRanges(seqnames = factor(dat$Arm),
+                   ranges = IRanges(start = dat$Start, end = dat$Stop))
+    return(cov)
 }
 
 

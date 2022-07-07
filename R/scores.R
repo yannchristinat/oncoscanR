@@ -267,7 +267,7 @@ score_td <- function(segments) {
     }
 
 
-    segs.gain <- segments[segments$cn.type == cntypes$Gain & segments$cn < 5]
+    segs.gain <- segments[segments$cn.type == cntypes$Gain & segments$cn <= 4]
     segs.width <- width(segs.gain)
     segs.tdplus <- segs.gain[segs.width > 1*10^6 & segs.width <= 10*10^6]
     segs.td <- segs.gain[segs.width <= 1*10^6]

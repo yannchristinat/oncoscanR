@@ -3,20 +3,22 @@
 \docType{data}
 \name{oncoscan_na33.cov}
 \alias{oncoscan_na33.cov}
-\title{Arm coverage of the Oncoscan na33.r1 assay}
+\title{GenomicRanges object of the chromosomal arms coverage for the oncoscan assay
+(based on file extdata/Oncoscan.na33.r2.cov.processed.bed).}
 \format{
-A \code{GRanges} object containing the regions covered on each
-chromosome arm. Arms not covered by the kit are absent from the object.
+A \code{GRanges} object containing the region covered on each
+chromosome arm.
 }
 \source{
-Processing of the file OncoScan.na33.r1.annot.csv (obtained from
-https://www.affymetrix.com/analysis/downloads/na33/genotyping/) by the
-function \code{oncoscan_na33.cov <- get_oncoscan_coverage_from_probes()}.
+\code{oncoscan_na33.cov <- get_oncoscan_coverage_from_bed(
+    system.file('extdata', 'Oncoscan.na33.r2.cov.processed.bed',
+                package = 'oncoscanR'))}
 }
 \usage{
 oncoscan_na33.cov
 }
 \description{
-Arm coverage of the Oncoscan na33.r1 assay
+GenomicRanges object of the chromosomal arms coverage for the oncoscan assay
+(based on file extdata/Oncoscan.na33.r2.cov.processed.bed).
 }
 \keyword{datasets}
