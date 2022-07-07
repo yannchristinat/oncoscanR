@@ -3,9 +3,16 @@ test_that("loading ChAS file works", {
                                package = "oncoscanR")
   segs <- load_chas(segs.filename, kit.coverage = oncoscan_na33.cov)
 
+  split.segs <- GRanges(seqnames = c('7p','7q'),
+                        ranges=IRanges(start=c(55219200, 61545024),
+                                       end = c(58025423, 116328000)))
+  split.segs$cn <- c(7, 7)
+  split.segs$cn.type <- c('Gain', 'Gain')
+
+
   found <- 0
-  for(i in seq_along(segs.chas_example)){
-    segA <- segs.chas_example[i]
+  for(i in seq_along(split.segs)){
+    segA <- split.segs[i]
     for(j in seq_along(segs)){
       segB <- segs[j]
       if(same_segments(segA, segB)){
@@ -14,7 +21,9 @@ test_that("loading ChAS file works", {
     }
   }
 
-  expect_true(length(segs) == 15 & found == 15) # 14 segments in file but one is covering two arms
+  expect_equal(length(segs), 15)  # 14 segments in file but one is covering two arms
+  expect_equal(found, 2, info = print(found))
+
 })
 
 
@@ -33,26 +42,6 @@ test_that("loading large ChAS file", {
 })
 
 
-test_that("loading ChAS annotation file works", {
-  filename <- system.file("extdata", "OncoScan.na33.r1.annot.csv.chr20.zip",
-                               package = "oncoscanR")
-  cov <- get_oncoscan_coverage_from_probes(filename)
-
-  found <- 0
-  chr20 <- oncoscan_na33.cov[as.vector(seqnames(oncoscan_na33.cov)) %in% c('20p','20q')]
-  for(i in seq_along(chr20)){
-    segA <- chr20[i]
-    for(j in seq_along(cov)){
-      segB <- cov[j]
-      if(same_segments(segA, segB)){
-        found <- found+1
-      }
-    }
-  }
-
-  expect_true(length(cov) == 2 & found == 2)
-})
-
 test_that("Loading ChAS with missing 'Full Location' column fails",{
   segs.filename <- "../testdata/chas_example-noFullLocation.txt"
   expect_error(suppressWarnings(load_chas(segs.filename, kit.coverage = oncoscan_na33.cov)),
@@ -63,9 +52,15 @@ test_that("loading ChAS with 'chr' name scheme works", {
   segs.filename <- "../testdata/chas_example-withChr.txt"
   segs <- load_chas(segs.filename, kit.coverage = oncoscan_na33.cov)
 
+  split.segs <- GRanges(seqnames = c('7p','7q'),
+                        ranges=IRanges(start=c(55219200, 61545024),
+                                       end = c(58025423, 116328000)))
+  split.segs$cn <- c(7, 7)
+  split.segs$cn.type <- c('Gain', 'Gain')
+
   found <- 0
-  for(i in seq_along(segs.chas_example)){
-    segA <- segs.chas_example[i]
+  for(i in seq_along(split.segs)){
+    segA <- split.segs[i]
     for(j in seq_along(segs)){
       segB <- segs[j]
       if(same_segments(segA, segB)){
@@ -74,7 +69,7 @@ test_that("loading ChAS with 'chr' name scheme works", {
     }
   }
 
-  expect_true(length(segs) == 15 & found == 15) # 14 segments in file but one is covering two arms
+  expect_equal(c(length(segs), found), c(15, 2)) # 14 segments in file but one is covering two arms
 })
 
 test_that("Loading ChAS with empty file works",{

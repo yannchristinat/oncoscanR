@@ -14,7 +14,7 @@ test_that("Oncoscan workflow works - LST", {
   scores <- dat[['scores']]
   expect_equal(as.character(scores['HRD']), "Positive, nLST=22.5")
   expect_equal(as.character(scores['avgCN']), '2.64')
-  expect_equal(as.character(scores['TDplus']), '139')
+  expect_equal(as.character(scores['TDplus']), '128')
 })
 
 test_that("Oncoscan workflow works - triploide", {
@@ -52,7 +52,7 @@ test_that("Oncoscan workflow works - TDplus", {
   scores <- dat[['scores']]
   expect_equal(as.character(scores['HRD']), "Negative, nLST=10.5")
   expect_equal(as.character(scores['avgCN']), '3.21')
-  expect_equal(as.character(scores['TDplus']), '96')
+  expect_equal(as.character(scores['TDplus']), '93')
 })
 
 test_that("Oncoscan workflow returns the correct structure", {

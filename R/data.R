@@ -1,15 +1,17 @@
-# data.R Documentation of all R objects included in the package
+# objects_doc.R Documentation of all R objects included in the package
 # Author: Yann Christinat
-# Date: 14.06.2022
+# Date: 30.6.2022
 
-#' Arm coverage of the Oncoscan na33.r1 assay
+
+#' GenomicRanges object of the chromosomal arms coverage for the oncoscan assay
+#' (based on file extdata/Oncoscan.na33.r2.cov.processed.bed).
 #'
-#' @source Processing of the file OncoScan.na33.r1.annot.csv (obtained from
-#' https://www.affymetrix.com/analysis/downloads/na33/genotyping/) by the
-#' function \code{oncoscan_na33.cov <- get_oncoscan_coverage_from_probes()}.
+#' @source \code{oncoscan_na33.cov <- get_oncoscan_coverage_from_bed(
+#'     system.file('extdata', 'Oncoscan.na33.r2.cov.processed.bed',
+#'                 package = 'oncoscanR'))}
 #'
-#' @format A \code{GRanges} object containing the regions covered on each
-#' chromosome arm. Arms not covered by the kit are absent from the object.
+#' @format A \code{GRanges} object containing the region covered on each
+#' chromosome arm.
 "oncoscan_na33.cov"
 
 

@@ -26,18 +26,13 @@
 #' package = 'oncoscanR')
 #' workflow_oncoscan.run(segs.filename)
 workflow_oncoscan.run <- function(chas.fn) {
-    # Remove the 21p arm from the Oncoscan coverage as it is only partly
-    # covered and we don't want to return results on this arm.
-    selchroms <- seqnames(oncoscanR::oncoscan_na33.cov) != "21p"
-    oncoscan.cov <- oncoscanR::oncoscan_na33.cov[selchroms]
-
     # Load the ChAS file and assign subtypes.
-    segments <- load_chas(chas.fn, oncoscan.cov)
+    segments <- load_chas(chas.fn, oncoscanR::oncoscan_na33.cov)
 
     # Clean the segments: resctricted to Oncoscan coverage, LOH not overlapping
     # with copy loss segments, smooth&merge segments within 300kb and prune
     # segments smaller than 300kb.
-    segs.clean <- trim_to_coverage(segments, oncoscan.cov) %>%
+    segs.clean <- trim_to_coverage(segments, oncoscanR::oncoscan_na33.cov) %>%
         adjust_loh() %>%
         merge_segments() %>%
         prune_by_size()
@@ -46,26 +41,25 @@ workflow_oncoscan.run <- function(chas.fn) {
     # arm-level alterations.  Note that the segments with copy gains include
     # all amplified segments.
     armlevel.loss <- get_loss_segments(segs.clean) %>%
-        armlevel_alt(kit.coverage = oncoscan.cov)
+        armlevel_alt(kit.coverage = oncoscanR::oncoscan_na33.cov)
     armlevel.loh <- get_loh_segments(segs.clean) %>%
-        armlevel_alt(kit.coverage = oncoscan.cov)
+        armlevel_alt(kit.coverage = oncoscanR::oncoscan_na33.cov)
     armlevel.gain <- get_gain_segments(segs.clean) %>%
-        armlevel_alt(kit.coverage = oncoscan.cov)
+        armlevel_alt(kit.coverage = oncoscanR::oncoscan_na33.cov)
     armlevel.amp <- get_amp_segments(segs.clean) %>%
-        armlevel_alt(kit.coverage = oncoscan.cov)
+        armlevel_alt(kit.coverage = oncoscanR::oncoscan_na33.cov)
 
     # Remove amplified segments from armlevel.gain
     armlevel.gain <-
         armlevel.gain[!(names(armlevel.gain) %in% names(armlevel.amp))]
 
     # Get the number of nLST and TDplus
-    wgd <-
-        score_estwgd(segs.clean, oncoscan.cov)  # Get the avg CN, including 21p
-    hrd <- score_nlst(segs.clean, wgd["WGD"], oncoscan.cov)
+    wgd <- score_estwgd(segs.clean, oncoscanR::oncoscan_na33.cov)
+    hrd <- score_nlst(segs.clean, wgd["WGD"], oncoscanR::oncoscan_na33.cov)
 
     n.td <- score_td(segs.clean)
 
-    mbalt <- score_mbalt(segs.clean, oncoscan.cov, loh.rm = TRUE)
+    mbalt <- score_mbalt(segs.clean, oncoscanR::oncoscan_na33.cov, loh.rm=TRUE)
 
     hrd.label <- hrd["HRD"]
     if (mbalt['sample'] / mbalt['kit'] < 0.01)

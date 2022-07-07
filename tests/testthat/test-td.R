@@ -43,8 +43,7 @@ test_that("TD scores work - real case", {
     prune_by_size()
 
   n <- score_td(segs.clean)
-  expect_equal(n$TDplus, 104)
-  expect_equal(n$TD, 23)
+  expect_equal(n, list(TDplus=100, TD=22))  #Verified by hand in Excel and ChAS
 })
 
 test_that("TD scores work - empty segments", {
