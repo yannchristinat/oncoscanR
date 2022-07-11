@@ -1,5 +1,4 @@
-What's new in v1.0.0
---------------------
+## What's new in v1.0.0
 
 - The nLST test has been clinically validated on 384 patients from the PAOLA-1
     trial and the recommended threshold is now >=15.
@@ -10,8 +9,7 @@ What's new in v1.0.0
 - Package to be released on Bioconductor
 
 
-What's new in v0.2.0
---------------------
+## What's new in v0.2.0
 
 - Novel HRD score (nLST: number of LSTs, normalized by ploidy): `score_nlst`
 - Change in Oncoscan workflow to use the nLST score and thresholds.

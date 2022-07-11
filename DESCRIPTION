@@ -1,7 +1,7 @@
 Package: oncoscanR
 Type: Package
 Title: Secondary analyses of CNV data (HRD and more)
-Version: 0.99.0
+Version: 0.99.1
 Authors@R: c(person("Yann", "Christinat", email = "yann.christinat@hcuge.ch", 
                   role = c("aut", "cre")),
              person("Geneva University Hospitals", role=c("aut", "cph")))
