@@ -1,7 +1,7 @@
 # File `chas_example.txt`
 Toy example containing a subset of the alterations of a real ChAS export file.
 
-# File `OncoScan_CNV.na33.r2.annot.processed.csv`
+# File `OncoScan_CNV.na33.r2.annot.processed.bed`
 Arm coverage of the Oncoscan na33.r2 assay. Of note, the arms 13p, 14p, 15p,
 21p and 22p are not covered by the Oncoscan.
 
@@ -14,16 +14,18 @@ the following command:
 `SELECT Chr_id, Start, Stop, Cytoband, dbSNP_RS_ID, ProbeSet_ID FROM
 Annotations WHERE Process_Flag > 0;`
 
-Data was then processed to group probes based on their distance to the next
-probe (different groups if more than 300Kbp, the genome-wide Oncoscan
-resolution). Groups with less than 10 probes and situated at the ends of the
+
+Data was then saved in a temporary file (`sql-output.csv`) and processed to 
+group probes based on their distance to the next probe (different groups if 
+more than 300Kbp, the genome-wide Oncoscan resolution). 
+Groups with less than 10 probes and situated at the ends of the
 chromosome or close to the centromere were discarded.
 
 Grouping procedure in python3:
 
 ```{python}
 snp = dict()
-with open('OncoScan_CNV.na33.r2.annot.processed.csv', 'r') as f:
+with open('sql-output.csv', 'r') as f:
     h = f.readline()  # skip headers
     for l in f:
         toks = l.strip().split('\t')
@@ -46,6 +48,9 @@ for arm in sorted(snp.keys()):
                      str(len(snps)+1-start['i']),
                      str((snps[-1]-start['pos'])/1000)]))
 ```
+
+The output of the python script was saved in the file 
+`OncoScan_CNV.na33.r2.annot.processed.bed`
 
 ## Format
 A BED file with 3 columns (chromosome, start, end) and one line for each arm.

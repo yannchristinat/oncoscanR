@@ -141,12 +141,11 @@ minimum size of 300Kbp.
 For instance if we want to get all arms that have a global LOH alteration, we 
 run:
 ```{r}
-oncoscan.cov <- oncoscan_na33.cov[seqnames(oncoscan_na33.cov) != "21p"]
 chas.fn <- system.file("extdata", "triploide_gene_list_full_location.txt", 
                        package = "oncoscanR")
-segments <- load_chas(chas.fn, oncoscan.cov)
+segments <- load_chas(chas.fn, oncoscan_na33.cov)
 armlevel.loh <- get_loh_segments(segments) %>% 
-    armlevel_alt(kit.coverage = oncoscan.cov)
+    armlevel_alt(kit.coverage = oncoscan_na33.cov)
 ```
 
 The variable `armlevel.loh`is a named vector containing the arms that have 
@@ -155,12 +154,8 @@ of LOH bases in all arms, one could set the threshold to zero:
 
 ```{r}
 armlevel.loh <- get_loh_segments(segments) %>%
-        armlevel_alt(kit.coverage = oncoscan.cov, threshold = 0)
+        armlevel_alt(kit.coverage = oncoscan_na33.cov, threshold = 0)
 ```
-
-Note that the 21p arm have been removed from the coverage 
-(`oncoscan.cov <- oncoscan_na33.cov[seqnames(oncoscan_na33.cov) != "21p"]`) 
-since it is not fully covered. Any result on this arm would be biased.
 
 
 ## Global level of alteration
@@ -237,12 +232,12 @@ covered.
 # Load data
 chas.fn <- system.file("extdata", "LST_gene_list_full_location.txt", 
                        package = "oncoscanR")
-segments <- load_chas(chas.fn, oncoscan.cov)
+segments <- load_chas(chas.fn, oncoscan_na33.cov)
 
 # Clean the segments: restricted to Oncoscan coverage, LOH not overlapping
 # with copy loss segments, smooth&merge segments within 300kb and prune
 # segments smaller than 300kb.
-segs.clean <- trim_to_coverage(segments, oncoscan.cov) %>%
+segs.clean <- trim_to_coverage(segments, oncoscan_na33.cov) %>%
     adjust_loh() %>%
     merge_segments() %>%
     prune_by_size()
@@ -250,22 +245,22 @@ segs.clean <- trim_to_coverage(segments, oncoscan.cov) %>%
 # Then we need to compute the arm-level alteration for loss and LOH since many 
 # scores discard arms that are globally altered.
 arms.loss <- names(get_loss_segments(segs.clean) %>%
-        armlevel_alt(kit.coverage = oncoscan.cov))
+        armlevel_alt(kit.coverage = oncoscan_na33.cov))
 arms.loh <- names(get_loh_segments(segs.clean) %>%
-        armlevel_alt(kit.coverage = oncoscan.cov))
+        armlevel_alt(kit.coverage = oncoscan_na33.cov))
 
 # Get the number of LST
-lst <- score_lst(segs.clean, oncoscan.cov)
+lst <- score_lst(segs.clean, oncoscan_na33.cov)
 
 # Get the number of HR-LOH
-hrloh <- score_loh(segs.clean, arms.loh, arms.loss, oncoscan.cov)
+hrloh <- score_loh(segs.clean, arms.loh, arms.loss, oncoscan_na33.cov)
 
 # Get the genomic LOH score
-gloh <- score_gloh(segs.clean, arms.loh, arms.loss, oncoscan.cov)
+gloh <- score_gloh(segs.clean, arms.loh, arms.loss, oncoscan_na33.cov)
 
 # Get the number of nLST
-wgd <- score_estwgd(segs.clean, oncoscan.cov)  # Get the avg CN, including 21p
-nlst <- score_nlst(segs.clean, wgd["WGD"], oncoscan.cov)
+wgd <- score_estwgd(segs.clean, oncoscan_na33.cov)  # Get the avg CN, including 21p
+nlst <- score_nlst(segs.clean, wgd["WGD"], oncoscan_na33.cov)
 
 print(c(LST=lst, `HR-LOH`=hrloh, gLOH=gloh, nLST=nlst))
 ```

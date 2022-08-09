@@ -1,3 +1,15 @@
+## What's new in v1.1.0
+
+- To simplify the workflow, the gender of the patient is not taken into account 
+anymore. That implies that in a male sample, a gain of 3 extra copies on the X 
+or Y chromosome is considered as a gain and not an amplification anymore. For 
+female samples, nothing changes.
+- The oncoscan coverage has been corrected to reflect only areas where there are
+groups of probes. Isolated probes where causing issues to identify arm-level 
+alterations as ChAS segments where never extended to these probes and the 90% 
+threshold could never be met (particularly on chromosomal arms 9p and Yq).
+- Minor corrections in vignette
+
 ## What's new in v1.0.0
 
 - The nLST test has been clinically validated on 384 patients from the PAOLA-1
