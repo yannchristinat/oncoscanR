@@ -14,7 +14,6 @@ the following command:
 `SELECT Chr_id, Start, Stop, Cytoband, dbSNP_RS_ID, ProbeSet_ID FROM
 Annotations WHERE Process_Flag > 0;`
 
-
 Data was then saved in a temporary file (`sql-output.csv`) and processed to 
 group probes based on their distance to the next probe (different groups if 
 more than 300Kbp, the genome-wide Oncoscan resolution). 
