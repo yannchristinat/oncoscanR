@@ -197,7 +197,7 @@ process_chas <- function(oncoscan_table, kit.coverage){
 #'
 #' @examples
 #' oncoscan_na33.cov <- get_oncoscan_coverage_from_bed(
-#'        system.file('extdata', 'OncoScan.na33.r2.cov.processed.bed',
+#'        system.file('extdata', 'Oncoscan.na33.r2.cov.processed.bed',
 #'        package = 'oncoscanR'))
 get_oncoscan_coverage_from_bed <- function(filename) {
     # Read the annotation file
