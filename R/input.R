@@ -442,17 +442,21 @@ adjust_loh <- function(segments) {
     is_cn_segment(segments, raise_error = TRUE)
     if (length(segments) == 0) { return(segments) }
 
+    loh.segs <- segments[segments$cn.type == cntypes$LOH]
+    if (length(loh.segs) == 0) {
+        return(loh.segs)  # Nothing to do if no LOH segments
+    }
+    
     # Apply on each arm
-    loh.adj <- lapply(unique(seqnames(segments)), function(arm) {
-        segs.loh <- segments[segments$cn.type == cntypes$LOH &
-                                 seqnames(segments) == arm]
+    loh.adj <- lapply(unique(seqnames(loh.segs)), function(arm) {
+        armsegs.loh <- loh.segs[seqnames(loh.segs) == arm]
 
-        if (length(segs.loh) == 0) { return(GRanges()) }
-        segs.loss <- segments[segments$cn.type == cntypes$Loss &
+        if (length(armsegs.loh) == 0) { return(GRanges()) }
+        armsegs.loss <- segments[segments$cn.type == cntypes$Loss &
                                   seqnames(segments) == arm]
 
-        pos.all <- sort(unique(c(start(segs.loh), end(segs.loh),
-                                 start(segs.loss), end(segs.loss))))
+        pos.all <- sort(unique(c(start(armsegs.loh), end(armsegs.loh),
+                                 start(armsegs.loss), end(armsegs.loss))))
         dt <- data.frame(
             row.names = pos.all,
             loss = factor(rep('nd', length(pos.all)),
@@ -460,10 +464,10 @@ adjust_loh <- function(segments) {
             loh = factor(rep('nd', length(pos.all)),
                          levels = c('nd', 'start', 'end'))
         )
-        dt[as.character(start(segs.loh)), 'loh'] <- 'start'
-        dt[as.character(end(segs.loh)), 'loh'] <- 'end'
-        dt[as.character(start(segs.loss)), 'loss'] <- 'start'
-        dt[as.character(end(segs.loss)), 'loss'] <- 'end'
+        dt[as.character(start(armsegs.loh)), 'loh'] <- 'start'
+        dt[as.character(end(armsegs.loh)), 'loh'] <- 'end'
+        dt[as.character(start(armsegs.loss)), 'loss'] <- 'start'
+        dt[as.character(end(armsegs.loss)), 'loss'] <- 'end'
 
         loh.toadd <- getLOHtoadd(dt)
 
