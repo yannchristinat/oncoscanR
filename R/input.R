@@ -83,6 +83,103 @@ load_chas <- function(filename, kit.coverage) {
 }
 
 
+#' Load am ASCAT text export file.
+#'
+#' @details The ASCAT file is expected to have the following column names:
+#' 'chr' (chromosome number), 'startpos' (first position of CNV segment),
+#' 'endpos' (last position of CNV segment), 'nMajor' (Number of copies of the 
+#' major allele) and 'nMinor' (Number of copies of the minor allele).
+#'
+#' The segments are attributed to each chromosome arm and split if necessary.
+#'
+#' @param filename Path to the ASCAT file.
+#' @param kit.coverage A \code{GRanges} object containing the regions covered on
+#'  each chromosome arm by the kit.
+#'
+#' @return A \code{GRanges} object containing the segments, their copy number
+#' (field \code{cn}), their copy
+#' number types (field \code{cntype}). \code{cntype} contains either 'Gain',
+#' 'Loss' or 'LOH'.
+#' If the file contains twice the same segment or does not respect the format
+#' specifications, then an error is raised. 
+#' NB. If the chromosome name is in the format '1' and not 'chr1' and will
+#' be transformed if needed.
+#'
+#' @export
+#'
+#' @import readr
+#' @import GenomicRanges
+#' @import IRanges
+#' @importFrom methods is
+#'
+#' @examples
+#' segs.filename <- system.file('extdata', 'ascat_example.txt',
+#'   package = 'oncoscanR')
+#' segs.ascat_example <- load_ascat(segs.filename, oncoscan_na33.cov)
+load_ascat <- function(filename, kit.coverage) {
+    ascat.segments <- read.table(filename, header = TRUE, sep = '\t')
+    segs <- ascat.segments[, c('chr', 'startpos', 'endpos', 'nMajor', 'nMinor')]
+    segs$cn <- segs$nMajor + segs$nMinor
+    segs$full.loc <- paste0(segs$chr, ':', segs$startpos, '-', segs$endpos)
+    cn.type <- sapply(segs$cn, function(cn) {
+        # NOTE: To adapt for the sexual chromosomes if the sample can be male!
+        if (cn < 2) {
+            return("Loss")
+        }
+        if (cn > 2) {
+            return("Gain")
+        }
+        return(NA)
+    })
+    segments_table <- data.frame(
+        `Full Location` = segs$full.loc[!is.na(cn.type)],
+        `CN State` = segs$cn[!is.na(cn.type)],
+        Type = cn.type[!is.na(cn.type)],
+        check.names = FALSE
+    )
+    
+    # Add LOH segments (not necessary for nLST computation)
+    segs.loh <- segs[(segs$nMajor == 0 | segs$nMinor == 0) & segs$cn > 1, ]
+    if (dim(segs.loh)[1] > 0) {
+        dt.loh <- data.frame(`Full Location` = segs.loh$full.loc,
+                             `CN State` = '',
+                             Type = rep('LOH', dim(segs.loh)[1]),
+                             check.names = FALSE)
+        segments_table <- rbind(segments_table, dt.loh)
+    }
+    
+    # Process the data into GRanges segments
+    segs <- process_chas(segments_table, kit.coverage)
+    
+    # Test for duplicated entries
+    errmsg <- paste("The file", filename, "contains duplicated entries.")
+    for (arm in unique(seqnames(segs))) {
+        arm_segs <- sort(segs[seqnames(segs) == arm])
+        if (length(arm_segs) > 1) {
+            for (i in 2:length(arm_segs)) {
+                segA <- arm_segs[i - 1]
+                segB <- arm_segs[i]
+                if (IRanges::start(segA) == IRanges::start(segB) &
+                    IRanges::end(segA) == IRanges::end(segB) &
+                    segA$cn.type == segB$cn.type) {
+                    if (segA$cn.type == cntypes$LOH) {
+                        stop(errmsg)
+                    } else if (segA$cn == segB$cn) {
+                        stop(errmsg)
+                    }
+                }
+            }
+        }
+    }
+    
+    if (length(segs) == 0) {
+        warning("No segments loaded!")
+    }
+    
+    return(segs)
+}
+
+
 #' Process ChAS table.
 #'
 #' @details Used in the load_chas function.
@@ -444,7 +541,7 @@ adjust_loh <- function(segments) {
 
     loh.segs <- segments[segments$cn.type == cntypes$LOH]
     if (length(loh.segs) == 0) {
-        return(loh.segs)  # Nothing to do if no LOH segments
+        return(segments)  # Nothing to do if no LOH segments
     }
     
     # Apply on each arm
@@ -455,8 +552,8 @@ adjust_loh <- function(segments) {
         armsegs.loss <- segments[segments$cn.type == cntypes$Loss &
                                   seqnames(segments) == arm]
 
-        pos.all <- sort(unique(c(start(armsegs.loh), end(armsegs.loh),
-                                 start(armsegs.loss), end(armsegs.loss))))
+        pos.all <- sort(unique(c(start(armsegs.loh), end(armsegs.loh)+1,
+                                 start(armsegs.loss), end(armsegs.loss)+1)))
         dt <- data.frame(
             row.names = pos.all,
             loss = factor(rep('nd', length(pos.all)),
@@ -465,9 +562,9 @@ adjust_loh <- function(segments) {
                          levels = c('nd', 'start', 'end'))
         )
         dt[as.character(start(armsegs.loh)), 'loh'] <- 'start'
-        dt[as.character(end(armsegs.loh)), 'loh'] <- 'end'
+        dt[as.character(end(armsegs.loh)+1), 'loh'] <- 'end'
         dt[as.character(start(armsegs.loss)), 'loss'] <- 'start'
-        dt[as.character(end(armsegs.loss)), 'loss'] <- 'end'
+        dt[as.character(end(armsegs.loss)+1), 'loss'] <- 'end'
 
         loh.toadd <- getLOHtoadd(dt)
 
@@ -522,7 +619,7 @@ getLOHtoadd <- function(dt){
         if (in.loh & !in.loss) {
             # Start of a LOH segment
             lohseg.start <- ifelse(dt[i, 'loss'] == 'end',
-                                   as.numeric(rownames(dt)[i]) + 1,
+                                   as.numeric(rownames(dt)[i]),
                                    as.numeric(rownames(dt)[i]))
         }
         else if ((dt[i, 'loh'] == 'nd' && dt[i, 'loss'] == 'start' && in.loh) ||
@@ -530,12 +627,12 @@ getLOHtoadd <- function(dt){
                  (dt[i, 'loh'] == 'end' && dt[i, 'loss'] == 'nd' && !in.loss)) {
             # End of a LOH segment
             lohseg.end <- ifelse(dt[i, 'loss'] == 'start',
-                                 as.numeric(rownames(dt)[i]) - 1,
+                                 as.numeric(rownames(dt)[i]),
                                  as.numeric(rownames(dt)[i]))
 
             # Add segment
             loh.toadd <- append(loh.toadd,
-                                IRanges(start = lohseg.start, end = lohseg.end))
+                                IRanges(start = lohseg.start, end = lohseg.end-1))
             }
     }
 

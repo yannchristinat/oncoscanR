@@ -1,6 +1,9 @@
 # File `chas_example.txt`
 Toy example containing a subset of the alterations of a real ChAS export file.
 
+# File `ascat_example.txt`
+Toy example containing a subset of the alterations of a ASCAT result file.
+
 # File `OncoScan_CNV.na33.r2.annot.processed.bed`
 Arm coverage of the Oncoscan na33.r2 assay. Of note, the arms 13p, 14p, 15p,
 21p and 22p are not covered by the Oncoscan.

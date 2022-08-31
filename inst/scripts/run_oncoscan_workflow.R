@@ -21,6 +21,6 @@ if(length(args) != 2){
 
 chas.fn <- args[1]
 
-dat <- workflow_oncoscan.run(chas.fn)
+dat <- workflow_oncoscan.chas(chas.fn)
 print(toJSON(dat, auto_unbox=TRUE, pretty=TRUE))
 

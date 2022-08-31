@@ -79,3 +79,30 @@ test_that("Loading ChAS with empty file works",{
   expect_equal(length(segs), 0)
 })
 
+test_that("Loading ASCAT file works", {
+    segs.filename <- system.file("extdata", "ascat_example.txt",
+                                 package = "oncoscanR")
+    segs <- load_ascat(segs.filename, kit.coverage = oncoscan_na33.cov)
+    
+    expected.segs <- GRanges(seqnames = c('1q','5p'),
+                          ranges=IRanges(start=c(144009053, 38139),
+                                         end = c(249212878, 46193462)))
+    expected.segs$cn <- c(3, 3)
+    expected.segs$cn.type <- c('Gain', 'Gain')
+    
+    
+    found <- 0
+    for(i in seq_along(expected.segs)){
+        segA <- expected.segs[i]
+        for(j in seq_along(segs)){
+            segB <- segs[j]
+            if(same_segments(segA, segB)){
+                found <- found+1
+            }
+        }
+    }
+    
+    expect_equal(length(segs), 2)  # 2 segments in file 
+    expect_equal(found, 2, info = print(found))
+})
+
