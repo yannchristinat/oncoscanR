@@ -176,6 +176,7 @@ load_ascat <- function(filename, kit.coverage) {
         warning("No segments loaded!")
     }
     
+    segs$cn <- as.numeric(segs$cn)
     return(segs)
 }
 
