@@ -102,3 +102,20 @@ test_that("Oncoscan ASCAT workflow works", {
     expect_equal(as.character(scores['avgCN']), '2.05')
     expect_equal(as.character(scores['TDplus']), '0')
 })
+
+test_that("ASCAT workflow works with an empty file", {
+    segs.filename <- "../testdata/ascat_example-empty.txt"
+    armlevel.fn <- "../testdata/chas_example-empty.armlevel_scna.csv"
+    
+    expect_warning(dat <- workflow_oncoscan.ascat(segs.filename))
+    
+    # Test arm-level detection
+    tests <- armlevel.test(dat[['armlevel']], armlevel.fn)
+    expect_true(sum(tests)==4)
+    
+    # Test scores
+    scores <- unlist(dat[['scores']])
+    expect_equal(as.character(scores['HRD']), "Negative (no tumor?), nLST=0")
+    expect_equal(as.character(scores['avgCN']), '2')
+    expect_equal(as.character(scores['TDplus']), '0')
+})

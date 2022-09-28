@@ -148,24 +148,28 @@ load_ascat <- function(filename, kit.coverage) {
         segments_table <- rbind(segments_table, dt.loh)
     }
     
-    # Process the data into GRanges segments
-    segs <- process_chas(segments_table, kit.coverage)
     
-    # Test for duplicated entries
-    errmsg <- paste("The file", filename, "contains duplicated entries.")
-    for (arm in unique(seqnames(segs))) {
-        arm_segs <- sort(segs[seqnames(segs) == arm])
-        if (length(arm_segs) > 1) {
-            for (i in 2:length(arm_segs)) {
-                segA <- arm_segs[i - 1]
-                segB <- arm_segs[i]
-                if (IRanges::start(segA) == IRanges::start(segB) &
-                    IRanges::end(segA) == IRanges::end(segB) &
-                    segA$cn.type == segB$cn.type) {
-                    if (segA$cn.type == cntypes$LOH) {
-                        stop(errmsg)
-                    } else if (segA$cn == segB$cn) {
-                        stop(errmsg)
+    segs <- GRanges()
+    if(dim(segments_table)[1] > 0){
+        # Process the data into GRanges segments
+        segs <- process_chas(segments_table, kit.coverage)
+        
+        # Test for duplicated entries
+        errmsg <- paste("The file", filename, "contains duplicated entries.")
+        for (arm in unique(seqnames(segs))) {
+            arm_segs <- sort(segs[seqnames(segs) == arm])
+            if (length(arm_segs) > 1) {
+                for (i in 2:length(arm_segs)) {
+                    segA <- arm_segs[i - 1]
+                    segB <- arm_segs[i]
+                    if (IRanges::start(segA) == IRanges::start(segB) &
+                        IRanges::end(segA) == IRanges::end(segB) &
+                        segA$cn.type == segB$cn.type) {
+                        if (segA$cn.type == cntypes$LOH) {
+                            stop(errmsg)
+                        } else if (segA$cn == segB$cn) {
+                            stop(errmsg)
+                        }
                     }
                 }
             }
@@ -227,8 +231,8 @@ process_chas <- function(oncoscan_table, kit.coverage){
         # Test if copy number type is correct
         if (!(seg_cntype %in% cntypes)) {
             msg <- paste("The column \"Type\" should contain only the",
-                         "following values:", cntypes, "whereas",
-                         seg_cntype, "was found!")
+                         "following values:", paste(cntypes, collapse = ','), 
+                         "whereas", seg_cntype, "was found!")
             stop(msg)
         }
 
