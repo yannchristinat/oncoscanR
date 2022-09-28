@@ -87,6 +87,7 @@ library(oncoscanR)
 segs.filename <- system.file("extdata", "chas_example.txt", 
                              package = "oncoscanR")
 res <- workflow_oncoscan.chas(segs.filename)
+print(res)
 ```
 
 If everything is setup fine, `res` should contain a list with no arm-level 
@@ -232,9 +233,9 @@ Function `score_gloh`
 The percentage genomic LOH score is computed as described in the FoundationFocus
 CDx BRCA LOH assay; i.e. the percentage of bases covered by the Oncoscan that 
 display a loss of heterozygosity independently of the number of copies, 
-excluding chromosomal arms that have a global LOH (>=90 arm length). To compute 
-with the armlevel_alt function on LOH segments only). This score was linked to 
-BRCA1/2-deficient tumors.
+excluding chromosomal arms that have a global LOH (>=90% of arm length). To 
+compute with the armlevel_alt function on LOH segments only). This score was 
+linked to BRCA1/2-deficient tumors.
 
 
 ### Example

@@ -1,9 +1,9 @@
 # oncoscanR
 author: Yann Christinat
 
-date: 9th of August 2022
+date: September 28, 2022
 
-version: 1.1.0
+version: 1.2.0
 
 ## Description
 OncoscanR is an R package to handle Copy Number Variation analyses originating from the Oncoscan assay (Affymetrix). It
@@ -64,22 +64,6 @@ They also identified as second category of tandem duplication whose size is smal
 this second category. Nonetheless it is reported by the function but not by the standard workflow.
 
 ## Installation
-There are three options to install the package: 
-1. Install via bioconductor (nightly build):
-```{r}
-if (!require("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-
-# The following initializes usage of Bioc devel
-BiocManager::install(version='devel')
-
-BiocManager::install("oncoscanR")
-```
-2. Download the `oncoscanR_1.1.0.tar.gz` file (stable version). Then in R, set the working directory to where the
-compressed package is and run `install.packages('oncoscanR_1.1.0.tar.gz', repos=NULL, type='source')`.
-3. In R, install the devtools package (`install.packages('devtools')`), load it (`library(devtools)`), then run
-`install_github('yannchristinat/oncoscanR')`.
-
 The package requires the prior installation of the packages `GenomicRanges` (bioconductor), `magrittr`, `jsonlite` and
 `readr`.
 
@@ -91,19 +75,43 @@ BiocManager::install("GenomicRanges")
 install.packages(c("magrittr", "jsonlite", "readr"))
 ```
 
+There are three options to install the oncoscanR package: 
+
+1. Install via bioconductor (nightly build):
+```{r}
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+# The following initializes usage of Bioc devel
+BiocManager::install(version='devel')
+
+BiocManager::install("oncoscanR")
+```
+2. Install from tarball. Download the `oncoscanR_1.2.0.tar.gz` file (stable version). Then in R, set the working directory to where the
+compressed package is and run:
+```{r}
+install.packages('oncoscanR_1.2.0.tar.gz', repos=NULL, type='source')
+```
+3. Install from GitHub. In R, install the devtools package (`install.packages('devtools')`), then run:
+```{r}
+library(devtools)
+install_github('yannchristinat/oncoscanR')
+```
+
+
 ## Testing the installation
 Open R and type the following commands:
 ```{r}
 library(oncoscanR)
 segs.filename <- system.file("extdata", "chas_example.txt", package = "oncoscanR")
-workflow_oncoscan.run(segs.filename, "M")
+workflow_oncoscan.chas(segs.filename)
 ```
 
 If everything is setup fine, it should return a list with no arm-level alterations and a negative HRD score (nLST=1).
 
 
 ## Usage
-The main workflow can be launched either in R via the `workflow_oncoscan.run(chas.fn)` function or via the
+The main workflow can be launched either in R via the `workflow_oncoscan.chas(chas.fn)` function or via the
 script `bin/run_oncoscan_workflow.R`:
 
 Usage: `Rscript path_to_oncoscanR_package/scripts/run_oncoscan-workflow.R CHAS_FILE`
