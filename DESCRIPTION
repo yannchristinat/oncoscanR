@@ -1,7 +1,7 @@
 Package: oncoscanR
 Type: Package
 Title: Secondary analyses of CNV data (HRD and more)
-Version: 0.99.4
+Version: 1.2.0
 Authors@R: c(person("Yann", "Christinat", email = "yann.christinat@hcuge.ch", 
                   role = c("aut", "cre")),
              person("Geneva University Hospitals", role=c("aut", "cph")))
@@ -34,7 +34,8 @@ Suggests:
     testthat (>= 3.1.4),
     jsonlite,
     knitr,
-    rmarkdown
+    rmarkdown,
+	BiocStyle
 URL: https://github.com/yannchristinat/oncoscanR
 BugReports:
     https://github.com/yannchristinat/oncoscanR/issues
