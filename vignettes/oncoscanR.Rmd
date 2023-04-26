@@ -34,15 +34,14 @@ on existing bioconductor packages to enable rigourous and reproducible analyses.
 The package could, for example, be used to compute an HRD score using CNV data 
 from the `conumee` package. 
 
-To our knowledge there is no equivalent package on bioconductor (nor for HRD 
-analyses, nor for oncoscan ChAS data processing).
-
 **IMPORTANT**: The package expects as input the text exported file from ChAS 
 (Chromosome Analysis Suite; the Affymetrix software to identify CNV segments 
 from the Oncoscan Assay). The package assumes that all segments given in the 
 file are correct and true. The ChAS text file has to contain the columns `Type`,
 `CN State` and `Full Location` (to setup in ChAS). Any text file that complies 
 with this structure should work equally well.
+
+Starting with version 1.3.0, ASCAT output files can also be used as input.
 
 Note that the Oncoscan does not cover the p arms of chromosome 13, 14, 15 and 
 22. 
@@ -226,6 +225,17 @@ Of note, copy-neutral LOH segments are removed before computation.
 `nLST = LST - 7*W/2` where `W` is the number of whole-genome doubling events.
 
 The score is positive if there are at least 15 nLST.
+
+The nLST score has been validated on 469 high grade ovarian cancer samples from
+the PAOLA-1 clinical trial and is used in routine at the Geneva University 
+Hospitals for prediction of PARP inhibitors response.
+
+*How to cite*
+
+Christinat Y, Ho L, Clément S, et al. 2022-RA-567-ESGO The Geneva HRD test: 
+clinical validation on 469 samples from the PAOLA-1 trial. International Journal
+of Gynecologic Cancer 2022;32:A238-A239.
+
 
 ### Score gLOH
 Function `score_gloh`

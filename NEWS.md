@@ -1,3 +1,7 @@
+## What's new in v1.4.0 (1.3.0-devel)
+Versions on bioconductor and Github have been merged and, from now on, will have 
+consistent version numbers.
+
 ## What's new in v1.2.0
 - Added two functions to handle ASCAT files instead of ChAS `load_ascat` and
 `workflow_oncoscan.ascat`.

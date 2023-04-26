@@ -1,20 +1,23 @@
 # oncoscanR
 author: Yann Christinat
 
-date: September 28, 2022
+date: April 26, 2023
 
-version: 1.2.0
+version: 1.4.0 (bioconductor)
 
 ## Description
-OncoscanR is an R package to handle Copy Number Variation analyses originating from the Oncoscan assay (Affymetrix). It
-allows computation of different homologous recombination deficiency (HRD) scores and the tandem duplication plus score
-(TDplus) to identify CDK12-mutated tumors [Popova et al., Cancer Res 2016]. The package also allows for identification
-of arm-level alterations (e.g. gain of chromosome arm 1p).
+OncoscanR is an R package to handle Copy Number Variation analyses originating 
+from the Oncoscan assay (Affymetrix). It allows computation of different homologous 
+recombination deficiency (HRD) scores and the tandem duplication plus score
+(TDplus) to identify CDK12-mutated tumors [Popova et al., Cancer Res 2016]. The 
+package also allows for identification of arm-level alterations (e.g. gain of chromosome arm 1p).
 
 **IMPORTANT**: The package expects as input the text exported file from ChAS (Chromosome Analysis Suite; the Affymetrix
 software to identify CNV segments from the Oncoscan Assay). The package assumes that all segments given in the file are
 correct and true. The ChAS text file has to contain the columns `Type`, `CN State` and `Full Location` (to setup in
 ChAS). Any text file that complies with this structure should work equally well.
+
+Starting with version 1.2.0 (github), ASCAT output files can also be used as input.
 
 Note that the Oncoscan does not cover the p arms of chromosome 13, 14, 15 and 22. The coverage on the p arm of
 chromosome 21 is only partial and is not included in this package.
@@ -36,6 +39,15 @@ whole-genome doubling events.Of note, copy-neutral LOH segments are removed befo
 `nLST = LST - 7*W/2` where `W` is the number of whole-genome doubling events.
 
 The score is positive if there are at least 15 nLST.
+
+The nLST score has been validated on 469 high grade ovarian cancer samples from
+the PAOLA-1 clinical trial and is used in routine at the Geneva University Hospitals 
+for prediction of PARP inhibitors response.
+
+*How to cite*
+
+Christinat Y, Ho L, Clément S, et al. 2022-RA-567-ESGO The Geneva HRD test: clinical validation on 469 samples from the PAOLA-1 trial. International Journal of Gynecologic Cancer 2022;32:A238-A239.
+
 
 #### Score LST
 Procedure based on the paper from Popova et al, Can. Res. 2012 (PMID: 22933060). First segments
