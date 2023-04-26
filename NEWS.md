@@ -1,3 +1,12 @@
+## What's new in v1.2.0
+- Added two functions to handle ASCAT files instead of ChAS `load_ascat` and
+`workflow_oncoscan.ascat`.
+- Main workflow function `workflow_oncoscan.run` is renamed 
+`workflow_oncoscan.chas` for consistency with the ASCAT function
+- Bug fixes in adjust_loh (crashed with segments of length 1 or if no LOH 
+segments where present)
+- Bug fix in script `run_oncoscan_workflow.R`
+
 ## What's new in v1.1.0
 
 - To simplify the workflow, the gender of the patient is not taken into account 

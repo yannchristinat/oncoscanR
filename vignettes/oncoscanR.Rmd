@@ -47,7 +47,7 @@ with this structure should work equally well.
 Note that the Oncoscan does not cover the p arms of chromosome 13, 14, 15 and 
 22. 
 The coverage on the p arm of chromosome 21 is only partial and is not included 
-in the standard Oncoscan workflow (function `workflow_oncoscan.run` or script 
+in the standard Oncoscan workflow (function `workflow_oncoscan.chas` or script 
 `bin/oncoscan-workflow.R`).
 
 # Getting started
@@ -86,7 +86,8 @@ Open R and type the following commands:
 library(oncoscanR)
 segs.filename <- system.file("extdata", "chas_example.txt", 
                              package = "oncoscanR")
-res <- workflow_oncoscan.run(segs.filename)
+res <- workflow_oncoscan.chas(segs.filename)
+print(res)
 ```
 
 If everything is setup fine, `res` should contain a list with no arm-level 
@@ -107,7 +108,7 @@ trim and split these LOH with the `adjust_loh` function.
 ```{r}
 library(magrittr)
 
-# Load the ChAS file and assign subtypes.
+# Load the ChAS file
 chas.fn <- system.file("extdata", "chas_example.txt", package = "oncoscanR")
 segments <- load_chas(chas.fn, oncoscan_na33.cov)
 
@@ -125,6 +126,20 @@ oncoscan assay (start/end for each chromosomal arm, hg19). One could re-compute
 the latter by downloading the annotation file from the ThermoFisher website
 and process it with the `get_oncoscan_coverage_from_probes`function.
 
+A similar function is available for loading a result file from the ASCAT 
+program: `load_ascat`. The ASCAT file is expected to have the following column 
+names:
+- 'chr' (chromosome number, with or withour "chr")
+- 'startpos' (first position of CNV segment)
+- 'endpos' (last position of CNV segment)
+- 'nMajor' (Number of copies of the major allele)
+- 'nMinor' (Number of copies of the minor allele)
+
+```{r}
+ascat.fn <- system.file("extdata", "ascat_example.txt", package = "oncoscanR")
+ascat.segments <- load_ascat(ascat.fn, oncoscan_na33.cov)
+head(ascat.segments)
+```
 
 ## Computation of arm-level alteration
 Function `armlevel_alt`
@@ -218,9 +233,9 @@ Function `score_gloh`
 The percentage genomic LOH score is computed as described in the FoundationFocus
 CDx BRCA LOH assay; i.e. the percentage of bases covered by the Oncoscan that 
 display a loss of heterozygosity independently of the number of copies, 
-excluding chromosomal arms that have a global LOH (>=90 arm length). To compute 
-with the armlevel_alt function on LOH segments only). This score was linked to 
-BRCA1/2-deficient tumors.
+excluding chromosomal arms that have a global LOH (>=90% of arm length). To 
+compute with the armlevel_alt function on LOH segments only). This score was 
+linked to BRCA1/2-deficient tumors.
 
 
 ### Example
@@ -300,7 +315,7 @@ print(td$TDplus)
 
 ## Main workflow (as used at the Geneva University Hospitals)
 The main workflow used for routine analysis can be launched either in R via the 
-`workflow_oncoscan.run(chas.fn, gender)` function or via the script 
+`workflow_oncoscan.chas(chas.fn, gender)` function or via the script 
 `bin/run_oncoscan_workflow.R`:
 
 Usage: 
@@ -332,13 +347,24 @@ Or to launch the workflow within R:
 ```{r}
 segs.filename <- system.file('extdata', 'LST_gene_list_full_location.txt', 
                              package = 'oncoscanR')
-dat <- workflow_oncoscan.run(segs.filename)
+dat <- workflow_oncoscan.chas(segs.filename)
 
 message(paste('Arms with copy loss:', 
               paste(dat$armlevel$LOSS, collapse = ', ')))
 message(paste('Arms with copy gains:', 
               paste(dat$armlevel$GAIN, collapse = ', ')))
 message(paste('HRD score:', dat$scores$HRD))
+```
+
+A similar function is available for running the workflow from an ASCAT result
+file: `workflow_oncoscan.ascat`.
+
+```{r}
+library(jsonlite)
+segs.filename <- system.file('extdata', 'ascat_example.txt', 
+                             package = 'oncoscanR')
+dat <- workflow_oncoscan.ascat(segs.filename)
+toJSON(dat, auto_unbox=TRUE, pretty=TRUE)
 ```
 
 
