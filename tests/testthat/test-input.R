@@ -27,6 +27,33 @@ test_that("loading ChAS file works", {
 
 })
 
+test_that("loading ChAS file with separators in Full Location column works", {
+    segs.filename <- "../testdata/chas_example-withSeparators.txt"
+    segs <- load_chas(segs.filename, kit.coverage = oncoscan_na33.cov)
+    
+    split.segs <- GRanges(seqnames = c('7p','7q'),
+                          ranges=IRanges(start=c(55219200, 61545024),
+                                         end = c(58025423, 116328000)))
+    split.segs$cn <- c(7, 7)
+    split.segs$cn.type <- c('Gain', 'Gain')
+    
+    
+    found <- 0
+    for(i in seq_along(split.segs)){
+        segA <- split.segs[i]
+        for(j in seq_along(segs)){
+            segB <- segs[j]
+            if(same_segments(segA, segB)){
+                found <- found+1
+            }
+        }
+    }
+    
+    expect_equal(length(segs), 15)  
+    # 14 segments in file but one is covering two arms
+    expect_equal(found, 2, info = print(found))
+    
+})
 
 test_that("loading ChAS file with duplicated rows fails", {
   segs.filename <- "../testdata/chas_example-withDuplicates.txt"

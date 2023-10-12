@@ -212,8 +212,8 @@ process_chas <- function(oncoscan_table, kit.coverage){
         counter <- counter + 1
         # Start: Extract chr no, start, end, copy number
 
-        # Full location from oncoscan file
-        loc_cord <- oncoscan_table$`Full Location`[i]
+        # Full location from oncoscan file (remove commas or spaces if present)
+        loc_cord <- gsub("[,.' ]", "", oncoscan_table$`Full Location`[i])
         loc_cord_list <- strsplit(loc_cord, split = ":", fixed = TRUE)[[1]]
 
         # seg chr no based on oncoscan file
